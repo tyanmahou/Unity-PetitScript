@@ -1,0 +1,12 @@
+﻿{
+    "name": "com.tyanmahou.petit-script",
+    "displayName": "PetitScript",
+    "version": "1.0.0",
+    "unity": "2022.3",
+    "description": "Unity Petit Script",
+    "dependencies": {
+    },
+    "author": {
+      "name": "Tyanmahou"
+    }
+}
