@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Assetsフォルダへのパス
+assetPath="Assets"
+error=0
+
+# アントラックのファイルを取得
+untrack_files=$(git ls-files --others --exclude-standard)
+
+# 新規に追加されたファイルのリストを取得
+new_files=$(git diff --cached --name-only --diff-filter=A)
+new_folders=()
+
+# 新規に追加されたファイルの中で、Assetsフォルダ以下にあるファイルのみを処理
+IFS=$'\n'
+for file in $new_files; do
+    if [[ $file != "$assetPath"* ]]; then
+        continue
+    fi
+    # ファイルパスを「/」で分割し、非表示になるアセットをチェック
+    OLD_IFS=$IFS
+    IFS='/' read -ra components <<< "$file"
+    skip_file=false
+    for component in "${components[@]}"; do
+        # 名前が ‘.’ から始まるファイルとフォルダー
+        if [[ "$component" == .* ]]; then
+            skip_file=true
+            break
+        fi
+        # 名前が ‘~’ で終わるファイルとフォルダー
+        if [[ "$component" == *~ ]]; then
+            skip_file=true
+            break
+        fi
+        # 名前が cvs のファイルとフォルダー
+        if [[ "$component" == "cvs" ]]; then
+            skip_file=true
+            break
+        fi       
+        # 拡張子が .tmp のファイル
+        if [[ "$component" == *.tmp ]]; then
+            skip_file=true
+            break
+        fi   
+    done
+    IFS=$OLD_IFS
+
+    if [ "$skip_file" == true ]; then
+        continue
+    fi
+
+    new_folders+=($(dirname "$file"))
+	if [[  "$file" != *.meta && (" ${untrack_files[@]} " =~ "$file.meta" || ! -f "$file.meta") ]]; then
+        echo "Error: $file.meta がコミットされていません"
+        error=1
+    fi
+done
+
+# 重複削除
+new_folders=($(printf "%s\n" "${new_folders[@]}" | sort -u))
+
+# 新規に追加されたフォルダ内の.metaファイルがコミットされているかチェック
+for folder in "${new_folders[@]}"; do
+    if [ "$folder" == "$assetPath" ]; then
+        continue
+    fi
+	if [[ " ${untrack_files[@]} " =~ "$folder.meta" || ! -f "$folder.meta" ]]; then
+        echo "Error: $folder.meta がコミットされていません"
+        error_found=1
+    fi
+done
+unset IFS
+
+exit $error
