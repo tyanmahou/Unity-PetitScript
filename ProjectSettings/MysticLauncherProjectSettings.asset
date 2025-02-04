@@ -1,0 +1,230 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 53
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 901d12f0845b01f4fa7d0c2a3686ed9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _projectInfo:
+    ProjectName:
+      Text: Petit Script
+      Tooltip: 
+      Icon:
+        _icon: {fileID: 0}
+        _unityIcon: 
+        _emoji: 1f370
+    HeaderTexture: {fileID: 0}
+    HelpUrl: https://github.com/tyanmahou/Unity-PetitScript
+    CustomHeader:
+      rid: -2
+  PortalLayout:
+  - rid: 1232422897957470419
+  - rid: 1232422897957470420
+  - rid: 1232422897957470421
+  ProjectTabs: []
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1232422897957470419
+      type: {class: CategoryElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Repository
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: 
+            _emoji: 1f4bb
+        Elements:
+        - rid: 1232422897957470423
+        - rid: 1232422897957470435
+    - rid: 1232422897957470420
+      type: {class: CategoryElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Tools
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: d_CustomTool@2x
+            _emoji: 
+        Elements:
+        - rid: 1232422897957470424
+    - rid: 1232422897957470421
+      type: {class: CategoryElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Links
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: d_Linked@2x
+            _emoji: 
+        Elements:
+        - rid: 1232422897957470425
+    - rid: 1232422897957470423
+      type: {class: RepositoryElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Unity-PetitScript
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: 
+            _emoji: 
+        LocalPath: ./
+        RemoteUrl: https://github.com/tyanmahou/Unity-PetitScript
+    - rid: 1232422897957470424
+      type: {class: ToolNaviElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Elements:
+        - Label:
+            Text: Package
+            Tooltip: 
+            Icon:
+              _icon: {fileID: 0}
+              _unityIcon: d_Package Manager@2x
+              _emoji: 
+          _action:
+            rid: 1232422897957470426
+        - Label:
+            Text: Timeline
+            Tooltip: 
+            Icon:
+              _icon: {fileID: 0}
+              _unityIcon: UnityEditor.Timeline.TimelineWindow@2x
+              _emoji: 
+          _action:
+            rid: 1232422897957470427
+        - Label:
+            Text: Test Runner
+            Tooltip: 
+            Icon:
+              _icon: {fileID: 0}
+              _unityIcon: Progress@2x
+              _emoji: 
+          _action:
+            rid: 1232422897957470428
+        - Label:
+            Text: Profiler
+            Tooltip: 
+            Icon:
+              _icon: {fileID: 0}
+              _unityIcon: d_UnityEditor.ProfilerWindow@2x
+              _emoji: 
+          _action:
+            rid: 1232422897957470429
+        - Label:
+            Text: Search
+            Tooltip: 
+            Icon:
+              _icon: {fileID: 0}
+              _unityIcon: Search On Icon
+              _emoji: 
+          _action:
+            rid: 1232422897957470430
+    - rid: 1232422897957470425
+      type: {class: TreeElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Elements:
+        - Group: Unity
+          Element:
+            rid: 1232422897957470431
+        - Group: Unity
+          Element:
+            rid: 1232422897957470432
+        - Group: Unity
+          Element:
+            rid: 1232422897957470433
+        - Group: Mystic
+          Element:
+            rid: 1232422897957470434
+    - rid: 1232422897957470426
+      type: {class: MenuItemAction, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        ItemName: Window/Package Manager
+    - rid: 1232422897957470427
+      type: {class: MenuItemAction, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        ItemName: Window/Sequencing/Timeline
+    - rid: 1232422897957470428
+      type: {class: MenuItemAction, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        ItemName: Window/General/Test Runner
+    - rid: 1232422897957470429
+      type: {class: MenuItemAction, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        ItemName: Window/Analysis/Profiler %7
+    - rid: 1232422897957470430
+      type: {class: MenuItemAction, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        ItemName: Window/Search/New Window
+    - rid: 1232422897957470431
+      type: {class: URLElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Unity
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: 
+            _emoji: 
+        _action:
+          URL: https://unity.com/
+    - rid: 1232422897957470432
+      type: {class: URLElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Unity Document
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: 
+            _emoji: 
+        _action:
+          URL: https://docs.unity3d.com/
+    - rid: 1232422897957470433
+      type: {class: URLElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Unity Forum
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: 
+            _emoji: 
+        _action:
+          URL: https://discussions.unity.com
+    - rid: 1232422897957470434
+      type: {class: URLElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Unity-MysticLauncher
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: 
+            _emoji: 
+        _action:
+          URL: https://github.com/tyanmahou/Unity-MysticLauncher
+    - rid: 1232422897957470435
+      type: {class: MenuItemElement, ns: Mystic, asm: MysticLauncher.Editor}
+      data:
+        Label:
+          Text: Open C# Project
+          Tooltip: 
+          Icon:
+            _icon: {fileID: 0}
+            _unityIcon: cs script icon
+            _emoji: 
+        _action:
+          ItemName: Assets/Open C# Project
