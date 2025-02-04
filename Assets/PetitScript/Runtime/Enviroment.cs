@@ -2,7 +2,11 @@
 {
     class Enviroment
     {
-        public Variables Variables => _variables;
+        public Variables Variables
+        {
+            get => _variables;
+            set => _variables = value;
+        }
         Variables _variables = new();
     }
 }

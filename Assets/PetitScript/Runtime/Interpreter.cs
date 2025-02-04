@@ -12,7 +12,11 @@ namespace Petit
         /// <summary>
         /// 変数
         /// </summary>
-        public Variables Variables => _env.Variables;
+        public Variables Variables
+        {
+            get => _env.Variables;
+            set => _env.Variables = value;
+        }
 
         /// <summary>
         /// シンタックスエラー時処理
