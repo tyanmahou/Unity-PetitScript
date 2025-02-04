@@ -189,6 +189,17 @@ namespace Petit.Lexer
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }
+            {
+                var tokens = lexer.Tokenize("a <=> b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "<=>");
+                Assert.AreEqual(tokens[1].Type, TokenType.Spaceship);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
         }
         [Test]
         public void TestLogical()
@@ -240,6 +251,26 @@ namespace Petit.Lexer
                 Assert.AreEqual(tokens[1].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[2].Value, ")");
                 Assert.AreEqual(tokens[2].Type, TokenType.RParen);
+            }
+        }
+        [Test]
+        public void TestCond()
+        {
+            var lexer = new Lexer();
+            {
+                var tokens = lexer.Tokenize("a ? b : c");
+
+                Assert.AreEqual(tokens.Count, 5);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "?");
+                Assert.AreEqual(tokens[1].Type, TokenType.Question);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[3].Value, ":");
+                Assert.AreEqual(tokens[3].Type, TokenType.Colon);
+                Assert.AreEqual(tokens[4].Value, "c");
+                Assert.AreEqual(tokens[4].Type, TokenType.Ident);
             }
         }
     }

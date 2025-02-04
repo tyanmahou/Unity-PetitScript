@@ -1,0 +1,72 @@
+﻿namespace Petit.Parser
+{
+    using TokenType = Petit.Lexer.TokenType;
+
+    enum Precedence
+    {
+        Not,
+        Mul,
+        Add,
+        Spaceship,
+        Comp,
+        Equals,
+        LogicalAnd,
+        LogicalOr,
+        Assign,
+        Lowest,
+    }
+
+    static class PrecedenceExtensions
+    {
+        public static Precedence FromTokenType(TokenType tokenType, bool unary = false)
+        {
+            if (unary)
+            {
+                switch (tokenType)
+                {
+                    case TokenType.Not:
+                    case TokenType.Plus:
+                    case TokenType.Minus:
+                        return Precedence.Not;
+                }
+            }
+            switch (tokenType)
+            {
+                case TokenType.Mul:
+                case TokenType.Div:
+                case TokenType.Mod:
+                    return Precedence.Mul;
+
+                case TokenType.Add:
+                case TokenType.Sub:
+                    return Precedence.Add;
+
+                case TokenType.Spaceship:
+                    return Precedence.Spaceship;
+
+                case TokenType.LessThan:
+                case TokenType.LessThanOrEquals:
+                case TokenType.GreaterThan:
+                case TokenType.GreaterThanOrEquals:
+                    return Precedence.Comp;
+
+                case TokenType.Equals:
+                case TokenType.EqualsStrict:
+                case TokenType.NotEquals:
+                case TokenType.NotEqualsStrict:
+                    return Precedence.Equals;
+
+                case TokenType.LogicalAnd:
+                    return Precedence.LogicalAnd;
+
+                case TokenType.LogicalOr:
+                    return Precedence.LogicalOr;
+                case TokenType.Question:
+                case TokenType.Colon:
+                    return Precedence.Assign;
+                default:
+                    return Precedence.Lowest;
+            }
+        }
+    }
+}
