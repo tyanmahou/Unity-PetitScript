@@ -158,13 +158,7 @@ namespace Petit.Parser
             string op = _tokens[_iteratorPos].Value;
             ++_iteratorPos;
 
-            bool rightToLeft = false;
-            switch (tokenType)
-            {
-                case TokenType.Assign:
-                    rightToLeft = true;
-                    break;
-            }
+            bool rightToLeft = PrecedenceExtensions.RightToLeft(tokenType);
             IExpression right = ParseExpression(precedence, rightToLeft);
             return new BinaryExpression()
             {

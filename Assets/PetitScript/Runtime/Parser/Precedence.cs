@@ -64,10 +64,29 @@
                 case TokenType.Question:
                 case TokenType.Colon:
                 case TokenType.Assign:
+                case TokenType.AddAssign:
+                case TokenType.SubAssign:
+                case TokenType.MulAssign:
+                case TokenType.DivAssign:
+                case TokenType.ModAssign:
                     return Precedence.Assign;
                 default:
                     return Precedence.Lowest;
             }
+        }
+        public static bool RightToLeft(TokenType tokenType)
+        {
+            switch (tokenType)
+            {
+                case TokenType.Assign:
+                case TokenType.AddAssign:
+                case TokenType.SubAssign:
+                case TokenType.MulAssign:
+                case TokenType.DivAssign:
+                case TokenType.ModAssign:
+                    return true;
+            }
+            return false;
         }
     }
 }

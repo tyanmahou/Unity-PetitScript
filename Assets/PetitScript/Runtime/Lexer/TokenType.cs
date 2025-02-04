@@ -138,6 +138,31 @@
         Question,
 
         /// <summary>
+        /// +=
+        /// </summary>
+        AddAssign,
+
+        /// <summary>
+        /// -=
+        /// </summary>
+        SubAssign,
+
+        /// <summary>
+        /// *=
+        /// </summary>
+        MulAssign,
+
+        /// <summary>
+        /// /=
+        /// </summary>
+        DivAssign,
+
+        /// <summary>
+        /// /=
+        /// </summary>
+        ModAssign,
+
+        /// <summary>
         /// 改行
         /// </summary>
         NewLine,

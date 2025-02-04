@@ -147,6 +147,51 @@ namespace Petit.Executor
                 }
                 return (right.Item1, left.Item2);
             }
+            else if (expr.Op == "+=")
+            {
+                var eval = left.Item1 + right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == "-=")
+            {
+                var eval = left.Item1 - right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == "*=")
+            {
+                var eval = left.Item1 * right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == "/=")
+            {
+                var eval = left.Item1 / right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == "%=")
+            {
+                var eval = left.Item1 % right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
             return default;
         }
         (Value, string) ExecExpr(TernaryExpression expr)

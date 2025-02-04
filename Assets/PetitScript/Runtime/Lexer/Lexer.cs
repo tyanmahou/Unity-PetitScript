@@ -248,28 +248,68 @@ namespace Petit.Lexer
                 }
                 else if (line[pos] == '+')
                 {
-                    _tokens.Add(new Token(TokenType.Add, "+", lineNum, pos + 1));
-                    ++pos;
+                    if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.AddAssign, "+=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.Add, "+", lineNum, pos + 1));
+                        ++pos;
+                    }
                 }
                 else if (line[pos] == '-')
                 {
-                    _tokens.Add(new Token(TokenType.Sub, "-", lineNum, pos + 1));
-                    ++pos;
+                    if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.SubAssign, "-=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.Sub, "-", lineNum, pos + 1));
+                        ++pos;
+                    }
                 }
                 else if (line[pos] == '*')
                 {
-                    _tokens.Add(new Token(TokenType.Mul, "*", lineNum, pos + 1));
-                    ++pos;
+                    if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.MulAssign, "*=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.Mul, "*", lineNum, pos + 1));
+                        ++pos;
+                    }
                 }
                 else if (line[pos] == '/')
                 {
-                    _tokens.Add(new Token(TokenType.Div, "/", lineNum, pos + 1));
-                    ++pos;
+                    if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.DivAssign, "/=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.Div, "/", lineNum, pos + 1));
+                        ++pos;
+                    }
                 }
                 else if (line[pos] == '%')
                 {
-                    _tokens.Add(new Token(TokenType.Mod, "%", lineNum, pos + 1));
-                    ++pos;
+                    if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.ModAssign, "%=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.Mod, "%", lineNum, pos + 1));
+                        ++pos;
+                    }
                 }
                 else if (line[pos] == '?')
                 {

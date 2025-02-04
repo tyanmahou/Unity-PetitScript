@@ -62,6 +62,22 @@ namespace Petit
                 Assert.AreEqual(interpreter.Variables.Get("b"), 7);
             }
         }
+        [Test]
+        public void TestCond()
+        {
+            RunInt("true ? 1 : 2", 1);
+            RunInt("false ? 1 : 2", 2);
+            {
+                Interpreter interpreter = RunInt("(true ? a : b) = 10", 10);
+                Assert.AreEqual(interpreter.Variables.Get("a"), 10);
+                Assert.AreEqual(interpreter.Variables.Get("b"), Value.Invalid);
+            }
+            {
+                Interpreter interpreter = RunInt("(false ? a : b) = 10", 10);
+                Assert.AreEqual(interpreter.Variables.Get("a"), Value.Invalid);
+                Assert.AreEqual(interpreter.Variables.Get("b"), 10);
+            }
+        }
         Interpreter RunInt(string code, int actual)
         {
             Interpreter interpreter = new Interpreter();
