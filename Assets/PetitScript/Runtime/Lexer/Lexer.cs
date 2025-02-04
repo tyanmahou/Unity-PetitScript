@@ -161,7 +161,7 @@ namespace Petit.Lexer
                     {
                         if (pos + 2 < length && line[pos + 2] == '=')
                         {
-                            _tokens.Add(new Token(TokenType.EqualsStrict, "===", lineNum, pos + 1));
+                            _tokens.Add(new Token(TokenType.Identical, "===", lineNum, pos + 1));
                             pos += 3;
                         }
                         else
@@ -221,7 +221,7 @@ namespace Petit.Lexer
                     {
                         if (pos + 2 < length && line[pos + 2] == '=')
                         {
-                            _tokens.Add(new Token(TokenType.NotEqualsStrict, "!==", lineNum, pos + 1));
+                            _tokens.Add(new Token(TokenType.NotIdentical, "!==", lineNum, pos + 1));
                             pos += 3;
                         }
                         else

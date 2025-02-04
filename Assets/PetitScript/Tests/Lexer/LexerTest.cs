@@ -119,7 +119,7 @@ namespace Petit.Lexer
                 Assert.AreEqual(tokens[0].Value, "a");
                 Assert.AreEqual(tokens[0].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[1].Value, "===");
-                Assert.AreEqual(tokens[1].Type, TokenType.EqualsStrict);
+                Assert.AreEqual(tokens[1].Type, TokenType.Identical);
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }
@@ -141,7 +141,7 @@ namespace Petit.Lexer
                 Assert.AreEqual(tokens[0].Value, "a");
                 Assert.AreEqual(tokens[0].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[1].Value, "!==");
-                Assert.AreEqual(tokens[1].Type, TokenType.NotEqualsStrict);
+                Assert.AreEqual(tokens[1].Type, TokenType.NotIdentical);
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }

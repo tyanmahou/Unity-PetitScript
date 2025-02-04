@@ -60,7 +60,7 @@
         /// <summary>
         /// ===
         /// </summary>
-        EqualsStrict,
+        Identical,
 
         /// <summary>
         /// !=
@@ -70,7 +70,7 @@
         /// <summary>
         /// !==
         /// </summary>
-        NotEqualsStrict,
+        NotIdentical,
 
         /// <summary>
         /// <

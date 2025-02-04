@@ -11,9 +11,7 @@ namespace Petit.Parser
         {
             string code = @"a";
             var (root, errors) = Parse(code);
-            var r = As<AST.Root>(root);
-            var g = As<GlobalStatement>(r.Statement);
-            Assert.True(g.Expression != null);
+            Assert.True(root?.Statement?.Expression != null);
         }
         [Test]
         public void TestPrefixUnaryExpression()
@@ -149,9 +147,7 @@ namespace Petit.Parser
         private IExpression GetExpr(string code)
         {
             var (root, errors) = Parse(code);
-            var r = root as AST.Root;
-            var g = r.Statement as GlobalStatement;
-            return g.Expression;
+            return root?.Statement?.Expression;
         }
     }
 }

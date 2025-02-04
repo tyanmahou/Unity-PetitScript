@@ -51,9 +51,9 @@
                     return Precedence.Comp;
 
                 case TokenType.Equals:
-                case TokenType.EqualsStrict:
+                case TokenType.Identical:
                 case TokenType.NotEquals:
-                case TokenType.NotEqualsStrict:
+                case TokenType.NotIdentical:
                     return Precedence.Equals;
 
                 case TokenType.LogicalAnd:

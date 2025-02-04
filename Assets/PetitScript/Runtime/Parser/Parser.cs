@@ -79,9 +79,9 @@ namespace Petit.Parser
                     case TokenType.GreaterThanOrEquals:
                     case TokenType.Spaceship:
                     case TokenType.Equals:
-                    case TokenType.EqualsStrict:
+                    case TokenType.Identical:
                     case TokenType.NotEquals:
-                    case TokenType.NotEqualsStrict:
+                    case TokenType.NotIdentical:
                     case TokenType.LogicalOr:
                     case TokenType.LogicalAnd:
                         return ParseBinaryExpression;
