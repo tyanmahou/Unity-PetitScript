@@ -1,6 +1,4 @@
-﻿
-
-namespace Petit.Lexer
+﻿namespace Petit.Lexer
 {
     enum TokenType
     {

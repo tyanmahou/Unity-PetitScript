@@ -1,0 +1,14 @@
+root = true
+
+[*]
+
+end_of_line = crlf
+charset = utf-8
+
+[*.cs]
+end_of_line = lf
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+insert_final_newline = true
