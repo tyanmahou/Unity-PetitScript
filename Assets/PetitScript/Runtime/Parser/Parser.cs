@@ -84,6 +84,7 @@ namespace Petit.Parser
                     case TokenType.NotIdentical:
                     case TokenType.LogicalOr:
                     case TokenType.LogicalAnd:
+                    case TokenType.Assign:
                         return ParseBinaryExpression;
                     case TokenType.Question:
                         return ParseTernaryExpression;
@@ -152,10 +153,19 @@ namespace Petit.Parser
         }
         BinaryExpression ParseBinaryExpression(IExpression left)
         {
-            Precedence precedence = PrecedenceExtensions.FromTokenType(_tokens[_iteratorPos].Type);
+            TokenType tokenType = _tokens[_iteratorPos].Type;
+            Precedence precedence = PrecedenceExtensions.FromTokenType(tokenType);
             string op = _tokens[_iteratorPos].Value;
             ++_iteratorPos;
-            IExpression right = ParseExpression(precedence);
+
+            bool rightToLeft = false;
+            switch (tokenType)
+            {
+                case TokenType.Assign:
+                    rightToLeft = true;
+                    break;
+            }
+            IExpression right = ParseExpression(precedence, rightToLeft);
             return new BinaryExpression()
             {
                 Left = left,

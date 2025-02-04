@@ -15,13 +15,13 @@ namespace Petit.Executor
 
         Value ExecGlobalStatement(GlobalStatement statement)
         {
-            return ExecExpr(statement?.Expression);
+            return ExecExpr(statement?.Expression).Item1;
         }
-        Value ExecExpr(IExpression expr)
+        (Value, string) ExecExpr(IExpression expr)
         {
             if (expr is null)
             {
-                return Value.Invalid;
+                return (Value.Invalid, null);
             }
             else if (expr is LiteralExpression literal)
             {
@@ -43,106 +43,120 @@ namespace Petit.Executor
             {
                 return ExecExpr(ternary);
             }
-            return Value.Invalid;
+            return (Value.Invalid, null);
         }
 
-        Value ExecExpr(LiteralExpression expr)
+        (Value, string) ExecExpr(LiteralExpression expr)
         {
-            return Value.Parse(expr.Value);
+            return (Value.Parse(expr.Value), null);
         }
-        Value ExecExpr(VariableExpression expr)
+        (Value, string) ExecExpr(VariableExpression expr)
         {
-            return _env.Variables.Get(expr.Ident);
+            return (_env.Variables.Get(expr.Ident), expr.Ident);
         }
-        Value ExecExpr(PrefixUnaryExpression expr)
+        (Value, string) ExecExpr(PrefixUnaryExpression expr)
         {
+            var eval = ExecExpr(expr.Right);
             if (expr.Op == "!")
             {
-                return !ExecExpr(expr.Right);
+                return (!eval.Item1, null);
             }
             else if (expr.Op == "+")
             {
-                return +ExecExpr(expr.Right);
+                return (+eval.Item1, null);
             }
             else if (expr.Op == "-")
             {
-                return -ExecExpr(expr.Right);
+                return (-eval.Item1, null);
             }
-            return ExecExpr(expr.Right);
+            return eval;
         }
-        Value ExecExpr(BinaryExpression expr)
+        (Value, string) ExecExpr(BinaryExpression expr)
         {
+            var left = ExecExpr(expr.Left);
+            var right = ExecExpr(expr.Right);
             if (expr.Op == "&&")
             {
-                return ExecExpr(expr.Left) && ExecExpr(expr.Right);
+                return (left.Item1 && right.Item1, null);
             }
             else if (expr.Op == "||")
             {
-                return ExecExpr(expr.Left) || ExecExpr(expr.Right);
+                return (left.Item1 || right.Item1, null);
             }
             else if (expr.Op == "==")
             {
-                return new Value(ExecExpr(expr.Left) == ExecExpr(expr.Right));
+                return (new Value(left.Item1 ==  right.Item1), null);
             }
             else if (expr.Op == "===")
             {
-                return new Value(Value.Identical(ExecExpr(expr.Left), ExecExpr(expr.Right)));
+                return (new Value(Value.Identical(left.Item1, right.Item1)), null);
             }
             else if (expr.Op == "!=")
             {
-                return new Value(ExecExpr(expr.Left) != ExecExpr(expr.Right));
+                return (new Value(left.Item1 != right.Item1), null);
             }
             else if (expr.Op == "!==")
             {
-                return new Value(!Value.NotIdentical(ExecExpr(expr.Left), ExecExpr(expr.Right)));
+                return (new Value(Value.NotIdentical(left.Item1, right.Item1)), null);
             }
             else if (expr.Op == ">")
             {
-                return new Value(ExecExpr(expr.Left) > ExecExpr(expr.Right));
+                return (new Value(left.Item1 > right.Item1), null);
             }
             else if (expr.Op == "<")
             {
-                return new Value(ExecExpr(expr.Left) < ExecExpr(expr.Right));
+                return (new Value(left.Item1 < right.Item1), null);
             }
             else if (expr.Op == ">=")
             {
-                return new Value(ExecExpr(expr.Left) >= ExecExpr(expr.Right));
+                return (new Value(left.Item1 >= right.Item1), null);
             }
             else if (expr.Op == "<=")
             {
-                return new Value(ExecExpr(expr.Left) <= ExecExpr(expr.Right));
+                return (new Value(left.Item1 <= right.Item1), null);
             }
             else if (expr.Op == "<=>")
             {
-                return new Value(Value.Compare(ExecExpr(expr.Left), ExecExpr(expr.Right)));
+                return (new Value(Value.Compare(left.Item1, right.Item1)), null);
             }
             else if (expr.Op == "+")
             {
-                return ExecExpr(expr.Left) + ExecExpr(expr.Right);
+                return (left.Item1 + right.Item1, null);
             }
             else if (expr.Op == "-")
             {
-                return ExecExpr(expr.Left) - ExecExpr(expr.Right);
+                return (left.Item1 - right.Item1, null);
             }
             else if (expr.Op == "*")
             {
-                return ExecExpr(expr.Left) * ExecExpr(expr.Right);
+                return (left.Item1 * right.Item1, null);
             }
             else if (expr.Op == "/")
             {
-                return ExecExpr(expr.Left) / ExecExpr(expr.Right);
+                return (left.Item1 / right.Item1, null);
             }
             else if (expr.Op == "%")
             {
-                return ExecExpr(expr.Left) % ExecExpr(expr.Right);
+                return (left.Item1 % right.Item1, null);
+            }
+            else if (expr.Op == "=")
+            {
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, right.Item1);
+                }
+                return (right.Item1, left.Item2);
             }
             return default;
         }
-        Value ExecExpr(TernaryExpression expr)
+        (Value, string) ExecExpr(TernaryExpression expr)
         {
+            var left = ExecExpr(expr.Left);
+            var mid = ExecExpr(expr.Mid);
+            var right = ExecExpr(expr.Right);
             if (expr.Op == "?" && expr.Op2 == ":")
             {
-                return ExecExpr(expr.Left) ? ExecExpr(expr.Mid) : ExecExpr(expr.Right);
+                return ((left.Item1 ? mid.Item1 : right.Item1), (left.Item1 ? mid.Item2 : right.Item2));
             }
             return default;
         }

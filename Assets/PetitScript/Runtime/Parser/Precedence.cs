@@ -63,6 +63,7 @@
                     return Precedence.LogicalOr;
                 case TokenType.Question:
                 case TokenType.Colon:
+                case TokenType.Assign:
                     return Precedence.Assign;
                 default:
                     return Precedence.Lowest;
