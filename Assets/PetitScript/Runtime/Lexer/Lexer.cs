@@ -304,7 +304,12 @@ namespace Petit.Lexer
                 }
                 else if (line[pos] == '/')
                 {
-                    if (pos + 1 < length && line[pos + 1] == '=')
+                    if (pos + 1 < length && line[pos + 1] == '/')
+                    {
+                        // コメント
+                        return;
+                    }
+                    else if (pos + 1 < length && line[pos + 1] == '=')
                     {
                         _tokens.Add(new Token(TokenType.DivAssign, "/=", lineNum, pos + 1));
                         pos += 2;
