@@ -12,6 +12,7 @@ namespace Petit.Parser
             string code = @"a";
             var (root, errors) = Parse(code);
             Assert.AreEqual(root.Statements.Count, 1);
+
             var e = As<ExpressionStatement>(root?.Statements?[0]);
             Assert.True(e?.Expression != null);
         }
@@ -139,6 +140,31 @@ namespace Petit.Parser
             string code = @"a=10;a+=2;";
             var (root, errors) = Parse(code);
             Assert.AreEqual(root.Statements.Count, 2);
+        }
+        [Test]
+        public void TestIf()
+        {
+            string code = @"
+if (a > 0)
+{
+   ""plus"";
+}
+else if (a == 0)
+{
+   ""zero"";
+}
+else
+{
+   ""minus"";
+}
+";
+            var (root, errors) = Parse(code);
+            var ifState = As<IfStatement>(root?.Statements?[0]);
+            Assert.True(ifState != null);
+            Assert.True(ifState.IfStatements.Count == 2);
+            Assert.True(ifState.IfStatements[0].Statement is BlockStatement);
+            Assert.True(ifState.IfStatements[1].Statement is BlockStatement);
+            Assert.True(ifState.ElseStatement is BlockStatement);
         }
         static U As<U>(object v)
             where U : class

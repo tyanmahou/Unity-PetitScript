@@ -23,6 +23,16 @@
         RParen,
 
         /// <summary>
+        /// {
+        /// </summary>
+        LBrace,
+
+        /// <summary>
+        /// }
+        /// </summary>
+        RBrace,
+
+        /// <summary>
         /// 識別子
         /// </summary>
         Ident,
@@ -166,6 +176,16 @@
         /// /=
         /// </summary>
         ModAssign,
+
+        /// <summary>
+        /// if
+        /// </summary>
+        If,
+
+        /// <summary>
+        /// else
+        /// </summary>
+        Else,
 
         /// <summary>
         /// 改行

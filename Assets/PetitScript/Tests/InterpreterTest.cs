@@ -87,6 +87,39 @@ namespace Petit
                 Assert.AreEqual(interpreter.Variables.Get("b"), 10);
             }
         }
+        [Test]
+        public void TestIf()
+        {
+            string code = @"
+if (a > 0)
+{
+   ""plus"";
+}
+else if (a == 0)
+{
+   ""zero"";
+}
+else
+{
+   ""minus"";
+}
+";
+            {
+                var vars = new Variables();
+                vars.Set("a", 1);
+                RunString(code, "plus", vars);
+            }
+            {
+                var vars = new Variables();
+                vars.Set("a", 0);
+                RunString(code, "zero", vars);
+            }
+            {
+                var vars = new Variables();
+                vars.Set("a", -1);
+                RunString(code, "minus", vars);
+            }
+        }
         Interpreter RunInt(string code, int actual)
         {
             Interpreter interpreter = new Interpreter();
@@ -109,6 +142,18 @@ namespace Petit
             var result = interpreter.Run(code);
             Assert.True(result.IsBool);
             Assert.AreEqual(result.ToBool(), actual);
+            return interpreter;
+        }
+        Interpreter RunString(string code, string actual, Variables vars = null)
+        {
+            Interpreter interpreter = new Interpreter();
+            if (vars != null)
+            {
+                interpreter.Variables = vars;
+            }
+            var result = interpreter.Run(code);
+            Assert.True(result.IsString);
+            Assert.AreEqual(result.ToString(), actual);
             return interpreter;
         }
     }

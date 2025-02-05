@@ -10,7 +10,7 @@ namespace Petit.Executor
         }
         public Value Exec(GlobalStatement global)
         {
-            return ExecBlockStatement(global);
+            return ExecGlobalStatement(global);
         }
         Value ExecStatement(IStatement statement)
         {
@@ -18,13 +18,25 @@ namespace Petit.Executor
             {
                 return ExecBlockStatement(block);
             }
+            else if (statement is IfStatement ifStatement)
+            {
+                return ExecIfStatement(ifStatement);
+            }
             else if (statement is ExpressionStatement expression)
             {
                 return ExecExpr(expression.Expression).Item1;
             }
             return Value.Invalid;
         }
-
+        Value ExecGlobalStatement(GlobalStatement global)
+        {
+            Value result = Value.Invalid;
+            foreach (var s in global.Statements)
+            {
+                result = ExecStatement(s);
+            }
+            return result;
+        }
         Value ExecBlockStatement(BlockStatement statement)
         {
             Value result = Value.Invalid;
@@ -33,6 +45,21 @@ namespace Petit.Executor
                 result = ExecStatement(s);
             }
             return result;
+        }
+        Value ExecIfStatement(IfStatement ifStatement)
+        {
+            foreach (IfParam param in ifStatement.IfStatements)
+            {
+                if (ExecExpr(param.Cond).Item1)
+                {
+                    return ExecStatement(param.Statement);
+                }
+            }
+            if (ifStatement.ElseStatement != null)
+            {
+                return ExecStatement(ifStatement.ElseStatement);
+            }
+            return Value.Invalid;
         }
         (Value, string) ExecExpr(IExpression expr)
         {

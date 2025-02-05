@@ -55,6 +55,14 @@ namespace Petit.Lexer
                     {
                         tokenType = TokenType.Value;
                     }
+                    else if (ident == "if")
+                    {
+                        tokenType = TokenType.If;
+                    }
+                    else if (ident == "else")
+                    {
+                        tokenType = TokenType.Else;
+                    }
                     _tokens.Add(new Token(tokenType, line.Substring(start, pos - start), lineNum, start + 1));
                 }
                 else if (char.IsDigit(line[pos]))
@@ -125,16 +133,16 @@ namespace Petit.Lexer
                 //    _tokens.Add(new Token(TokenType.RBracket, "]", lineNum, pos + 1));
                 //    ++pos;
                 //}
-                //else if (line[pos] == '{')
-                //{
-                //    _tokens.Add(new Token(TokenType.LBrace, "{", lineNum, pos + 1));
-                //    ++pos;
-                //}
-                //else if (line[pos] == '}')
-                //{
-                //    _tokens.Add(new Token(TokenType.RBrace, "}", lineNum, pos + 1));
-                //    ++pos;
-                //}
+                else if (line[pos] == '{')
+                {
+                    _tokens.Add(new Token(TokenType.LBrace, "{", lineNum, pos + 1));
+                    ++pos;
+                }
+                else if (line[pos] == '}')
+                {
+                    _tokens.Add(new Token(TokenType.RBrace, "}", lineNum, pos + 1));
+                    ++pos;
+                }
                 else if (line[pos] == ':')
                 {
                     _tokens.Add(new Token(TokenType.Colon, ":", lineNum, pos + 1));

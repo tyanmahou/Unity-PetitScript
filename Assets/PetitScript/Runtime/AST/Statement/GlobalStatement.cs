@@ -2,7 +2,8 @@
 
 namespace Petit.AST
 {
-    class GlobalStatement : BlockStatement
+    class GlobalStatement : IStatement
     {
+        public List<IStatement> Statements = new List<IStatement>();
     }
 }

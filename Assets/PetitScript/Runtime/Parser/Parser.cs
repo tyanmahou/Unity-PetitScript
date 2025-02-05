@@ -5,15 +5,13 @@ using System.Collections.Generic;
 
 namespace Petit.Parser
 {
-    using Root = GlobalStatement;
-
     class Parser
     {
         public Parser()
         {
         }
 
-        public (Root, IReadOnlyList<SyntaxError>) Parse(IReadOnlyList<Token> tokens)
+        public (GlobalStatement, IReadOnlyList<SyntaxError>) Parse(IReadOnlyList<Token> tokens)
         {
             if (_tokens != tokens)
             {
@@ -29,7 +27,13 @@ namespace Petit.Parser
             var globalStatement = new GlobalStatement();
             while (_iteratorPos < _tokens.Count)
             {
+                int prevPos = _iteratorPos;
                 IStatement statement = ParseStatement();
+                if (prevPos == _iteratorPos)
+                {
+                    // 無限ループ防止
+                    ++_iteratorPos;
+                }
                 if (statement != null)
                 {
                     globalStatement.Statements.Add(statement);
@@ -50,12 +54,97 @@ namespace Petit.Parser
                     ++_iteratorPos;
                     return null;
                 }
+                else if (_tokens[_iteratorPos].Type == TokenType.LBrace)
+                {
+                    return ParseBlockStatement();
+                }
+                else if (_tokens[_iteratorPos].Type == TokenType.If)
+                {
+                    return ParseIfStatement();
+                }
                 else
                 {
                     return ParseExpressionStatement();
                 }
             }
             return null;
+        }
+        BlockStatement ParseBlockStatement()
+        {
+            ++_iteratorPos; // {
+            var block = new BlockStatement();
+            while (_iteratorPos < _tokens.Count)
+            {
+                if (_tokens[_iteratorPos].Type == TokenType.RBrace)
+                {
+                    break;
+                }
+                int prevPos = _iteratorPos;
+                IStatement statement = ParseStatement();
+                if (prevPos == _iteratorPos)
+                {
+                    // 無限ループ防止
+                    ++_iteratorPos;
+                }
+                if (statement != null)
+                {
+                    block.Statements.Add(statement);
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            if (_iteratorPos >= _tokens.Count || _tokens[_iteratorPos].Type != TokenType.RBrace)
+            {
+                Error("Not Found '}'");
+            }
+            ++_iteratorPos; // }
+            return block;
+        }
+        IfStatement ParseIfStatement()
+        {
+            ++_iteratorPos; // if
+            IfStatement statement = new IfStatement();
+
+            IfParam ParseParam()
+            {
+                IfParam param = new IfParam();
+                if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.LParen)
+                {
+                    // (
+                    ++_iteratorPos;
+                }
+                else
+                {
+                    Error("Not Found if '('");
+                }
+                param.Cond = ParseExpression();
+                if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.RParen)
+                {
+                    // )
+                    ++_iteratorPos;
+                }
+                else
+                {
+                    Error("Not Found if ')'");
+                }
+                param.Statement = ParseStatement();
+                return param;
+            }
+            statement.IfStatements.Add(ParseParam());
+            while ((_iteratorPos + 1 < _tokens.Count) && _tokens[_iteratorPos].Type == TokenType.Else && _tokens[_iteratorPos + 1].Type == TokenType.If)
+            {
+                _iteratorPos += 2; // else if
+
+                statement.IfStatements.Add(ParseParam());
+            }
+            if ((_iteratorPos < _tokens.Count) && _tokens[_iteratorPos].Type == TokenType.Else)
+            {
+                ++_iteratorPos; // else
+                statement.ElseStatement = ParseStatement();
+            }
+            return statement;
         }
         ExpressionStatement ParseExpressionStatement()
         {
@@ -124,6 +213,10 @@ namespace Petit.Parser
                     case TokenType.Question:
                         return ParseTernaryExpression;
                 }
+                return null;
+            }
+            if (_iteratorPos >= _tokens.Count)
+            {
                 return null;
             }
             Func<IExpression> prefixOp = FindPrefixOp(_tokens[_iteratorPos].Type);
@@ -248,7 +341,7 @@ namespace Petit.Parser
         }
         IReadOnlyList<Token> _tokens;
         int _iteratorPos;
-        Root _cache;
+        GlobalStatement _cache;
         List<SyntaxError> _errors = new List<SyntaxError>();
     }
 }
