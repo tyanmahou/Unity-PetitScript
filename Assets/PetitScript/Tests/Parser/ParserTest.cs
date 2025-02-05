@@ -11,8 +11,8 @@ namespace Petit.Parser
         {
             string code = @"a";
             var (root, errors) = Parse(code);
-            Assert.AreEqual(root.Statement.Statements.Count, 1);
-            var e = As<ExpressionStatement>(root?.Statement?.Statements?[0]);
+            Assert.AreEqual(root.Statements.Count, 1);
+            var e = As<ExpressionStatement>(root?.Statements?[0]);
             Assert.True(e?.Expression != null);
         }
         [Test]
@@ -138,7 +138,7 @@ namespace Petit.Parser
         {
             string code = @"a=10;a+=2;";
             var (root, errors) = Parse(code);
-            Assert.AreEqual(root.Statement.Statements.Count, 2);
+            Assert.AreEqual(root.Statements.Count, 2);
         }
         static U As<U>(object v)
             where U : class
@@ -146,7 +146,7 @@ namespace Petit.Parser
             Assert.True(v is U);
             return v as U;
         }
-        private (AST.Root, IReadOnlyList<SyntaxError>) Parse(string code)
+        private (AST.GlobalStatement, IReadOnlyList<SyntaxError>) Parse(string code)
         {
             Lexer.Lexer lexer = new();
             var tokens = lexer.Tokenize(code);
@@ -156,7 +156,7 @@ namespace Petit.Parser
         private IExpression GetExpr(string code)
         {
             var (root, errors) = Parse(code);
-            var e = As<ExpressionStatement>(root?.Statement?.Statements?[0]);
+            var e = As<ExpressionStatement>(root?.Statements?[0]);
             return e?.Expression;
         }
     }

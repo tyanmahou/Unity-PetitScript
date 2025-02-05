@@ -5,31 +5,24 @@ using System.Collections.Generic;
 
 namespace Petit.Parser
 {
+    using Root = GlobalStatement;
+
     class Parser
     {
         public Parser()
         {
         }
 
-        public (AST.Root, IReadOnlyList<SyntaxError>) Parse(IReadOnlyList<Token> tokens)
+        public (Root, IReadOnlyList<SyntaxError>) Parse(IReadOnlyList<Token> tokens)
         {
             if (_tokens != tokens)
             {
                 this._tokens = tokens;
                 this._errors.Clear();
                 this._iteratorPos = 0;
-                _cache = ParseRoot();
+                _cache = ParseGlobalStatement();
             }
             return (_cache, _errors);
-        }
-        Root ParseRoot()
-        {
-            var root = new Root();
-            if (_iteratorPos < _tokens.Count)
-            {
-                root.Statement = ParseGlobalStatement();
-            }
-            return root;
         }
         GlobalStatement ParseGlobalStatement()
         {

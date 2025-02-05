@@ -8,15 +8,15 @@ namespace Petit.Executor
         {
             _env = env;
         }
-        public Value Exec(Root root)
+        public Value Exec(GlobalStatement global)
         {
-            return ExecGlobalStatement(root?.Statement);
+            return ExecBlockStatement(global);
         }
         Value ExecStatement(IStatement statement)
         {
-            if (statement is GlobalStatement global)
+            if (statement is BlockStatement block)
             {
-                return ExecGlobalStatement(global);
+                return ExecBlockStatement(block);
             }
             else if (statement is ExpressionStatement expression)
             {
@@ -25,7 +25,7 @@ namespace Petit.Executor
             return Value.Invalid;
         }
 
-        Value ExecGlobalStatement(GlobalStatement statement)
+        Value ExecBlockStatement(BlockStatement statement)
         {
             Value result = Value.Invalid;
             foreach(var s in statement.Statements)
