@@ -63,6 +63,10 @@ namespace Petit.Lexer
                     {
                         tokenType = TokenType.Else;
                     }
+                    else if (ident == "return")
+                    {
+                        tokenType = TokenType.Return;
+                    }
                     _tokens.Add(new Token(tokenType, line.Substring(start, pos - start), lineNum, start + 1));
                 }
                 else if (char.IsDigit(line[pos]))

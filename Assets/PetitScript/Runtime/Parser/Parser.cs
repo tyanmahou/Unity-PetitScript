@@ -62,6 +62,10 @@ namespace Petit.Parser
                 {
                     return ParseIfStatement();
                 }
+                else if (_tokens[_iteratorPos].Type == TokenType.Return)
+                {
+                    return ParseReturnStatement();
+                }
                 else
                 {
                     return ParseExpressionStatement();
@@ -143,6 +147,20 @@ namespace Petit.Parser
             {
                 ++_iteratorPos; // else
                 statement.ElseStatement = ParseStatement();
+            }
+            return statement;
+        }
+        ReturnStatement ParseReturnStatement()
+        {
+            var statement = new ReturnStatement();
+            ++_iteratorPos; // return
+            if (_iteratorPos < _tokens.Count)
+            {
+                statement.Expression = ParseExpression();
+            }
+            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.Semicolon)
+            {
+                ++_iteratorPos;
             }
             return statement;
         }

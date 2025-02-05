@@ -12,7 +12,7 @@ namespace Petit.Executor
         {
             return ExecGlobalStatement(global);
         }
-        Value ExecStatement(IStatement statement)
+        (Value, bool) ExecStatement(IStatement statement)
         {
             if (statement is BlockStatement block)
             {
@@ -22,31 +22,45 @@ namespace Petit.Executor
             {
                 return ExecIfStatement(ifStatement);
             }
+            else if (statement is ReturnStatement returnStatement)
+            {
+                return (ExecExpr(returnStatement.Expression).Item1, true);
+            }
             else if (statement is ExpressionStatement expression)
             {
-                return ExecExpr(expression.Expression).Item1;
+                return (ExecExpr(expression.Expression).Item1, false);
             }
-            return Value.Invalid;
+            return (Value.Invalid, false);
         }
         Value ExecGlobalStatement(GlobalStatement global)
         {
             Value result = Value.Invalid;
             foreach (var s in global.Statements)
             {
-                result = ExecStatement(s);
+                bool ret;
+                (result, ret) = ExecStatement(s);
+                if (ret)
+                {
+                    break;
+                }
             }
             return result;
         }
-        Value ExecBlockStatement(BlockStatement statement)
+        (Value, bool) ExecBlockStatement(BlockStatement statement)
         {
             Value result = Value.Invalid;
-            foreach(var s in statement.Statements)
+            bool ret = false;
+            foreach (var s in statement.Statements)
             {
-                result = ExecStatement(s);
+                (result, ret) = ExecStatement(s);
+                if (ret)
+                {
+                    break;
+                }
             }
-            return result;
+            return (result, ret);
         }
-        Value ExecIfStatement(IfStatement ifStatement)
+        (Value, bool) ExecIfStatement(IfStatement ifStatement)
         {
             foreach (IfParam param in ifStatement.IfStatements)
             {
@@ -59,7 +73,7 @@ namespace Petit.Executor
             {
                 return ExecStatement(ifStatement.ElseStatement);
             }
-            return Value.Invalid;
+            return (Value.Invalid, false);
         }
         (Value, string) ExecExpr(IExpression expr)
         {
