@@ -140,6 +140,11 @@ namespace Petit.Lexer
                     _tokens.Add(new Token(TokenType.Colon, ":", lineNum, pos + 1));
                     ++pos;
                 }
+                else if (line[pos] == ';')
+                {
+                    _tokens.Add(new Token(TokenType.Semicolon, ";", lineNum, pos + 1));
+                    ++pos;
+                }
                 //else if (line[pos] == '#')
                 //{
                 //    _tokens.Add(new Token(TokenType.Sharp, "#", lineNum, pos + 1));

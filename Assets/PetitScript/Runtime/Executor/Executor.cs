@@ -12,10 +12,27 @@ namespace Petit.Executor
         {
             return ExecGlobalStatement(root?.Statement);
         }
+        Value ExecStatement(IStatement statement)
+        {
+            if (statement is GlobalStatement global)
+            {
+                return ExecGlobalStatement(global);
+            }
+            else if (statement is ExpressionStatement expression)
+            {
+                return ExecExpr(expression.Expression).Item1;
+            }
+            return Value.Invalid;
+        }
 
         Value ExecGlobalStatement(GlobalStatement statement)
         {
-            return ExecExpr(statement?.Expression).Item1;
+            Value result = Value.Invalid;
+            foreach(var s in statement.Statements)
+            {
+                result = ExecStatement(s);
+            }
+            return result;
         }
         (Value, string) ExecExpr(IExpression expr)
         {

@@ -38,6 +38,11 @@
         Colon,
 
         /// <summary>
+        /// ;
+        /// </summary>
+        Semicolon,
+
+        /// <summary>
         /// .
         /// </summary>
         Dot,

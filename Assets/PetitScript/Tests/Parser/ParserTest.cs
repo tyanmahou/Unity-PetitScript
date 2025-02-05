@@ -11,7 +11,9 @@ namespace Petit.Parser
         {
             string code = @"a";
             var (root, errors) = Parse(code);
-            Assert.True(root?.Statement?.Expression != null);
+            Assert.AreEqual(root.Statement.Statements.Count, 1);
+            var e = As<ExpressionStatement>(root?.Statement?.Statements?[0]);
+            Assert.True(e?.Expression != null);
         }
         [Test]
         public void TestPrefixUnaryExpression()
@@ -131,6 +133,13 @@ namespace Petit.Parser
             Assert.AreEqual(errors.Count, 1);
             Assert.AreEqual(errors[0].Line, 1);
         }
+        [Test]
+        public void TestMultiStatement()
+        {
+            string code = @"a=10;a+=2;";
+            var (root, errors) = Parse(code);
+            Assert.AreEqual(root.Statement.Statements.Count, 2);
+        }
         static U As<U>(object v)
             where U : class
         {
@@ -147,7 +156,8 @@ namespace Petit.Parser
         private IExpression GetExpr(string code)
         {
             var (root, errors) = Parse(code);
-            return root?.Statement?.Expression;
+            var e = As<ExpressionStatement>(root?.Statement?.Statements?[0]);
+            return e?.Expression;
         }
     }
 }

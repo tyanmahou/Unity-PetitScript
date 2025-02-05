@@ -34,11 +34,48 @@ namespace Petit.Parser
         GlobalStatement ParseGlobalStatement()
         {
             var globalStatement = new GlobalStatement();
-
-            // 式を評価
-            globalStatement.Expression = ParseExpression();
-
+            while (_iteratorPos < _tokens.Count)
+            {
+                IStatement statement = ParseStatement();
+                if (statement != null)
+                {
+                    globalStatement.Statements.Add(statement);
+                }
+                else
+                {
+                    continue;
+                }
+            }
             return globalStatement;
+        }
+        IStatement ParseStatement()
+        {
+            if ( _iteratorPos < _tokens.Count)
+            {
+                if (_tokens[_iteratorPos].Type == TokenType.Semicolon)
+                {
+                    ++_iteratorPos;
+                    return null;
+                }
+                else
+                {
+                    return ParseExpressionStatement();
+                }
+            }
+            return null;
+        }
+        ExpressionStatement ParseExpressionStatement()
+        {
+            var statement = new ExpressionStatement();
+            if (_iteratorPos < _tokens.Count)
+            {
+                statement.Expression = ParseExpression();
+            }
+            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.Semicolon)
+            {
+                ++_iteratorPos;
+            }
+            return statement;
         }
         IExpression ParseExpression()
         {
@@ -85,6 +122,11 @@ namespace Petit.Parser
                     case TokenType.LogicalOr:
                     case TokenType.LogicalAnd:
                     case TokenType.Assign:
+                    case TokenType.AddAssign:
+                    case TokenType.SubAssign:
+                    case TokenType.MulAssign:
+                    case TokenType.DivAssign:
+                    case TokenType.ModAssign:
                         return ParseBinaryExpression;
                     case TokenType.Question:
                         return ParseTernaryExpression;
@@ -94,6 +136,7 @@ namespace Petit.Parser
             Func<IExpression> prefixOp = FindPrefixOp(_tokens[_iteratorPos].Type);
             if (prefixOp is null)
             {
+                ++_iteratorPos;
                 return null;
             }
             IExpression left = prefixOp();

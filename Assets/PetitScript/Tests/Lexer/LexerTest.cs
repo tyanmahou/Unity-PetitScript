@@ -273,5 +273,31 @@ namespace Petit.Lexer
                 Assert.AreEqual(tokens[4].Type, TokenType.Ident);
             }
         }
+        [Test]
+        public void TestMultiStatement()
+        {
+            var lexer = new Lexer();
+            {
+                var tokens = lexer.Tokenize("a=10;a+=2;");
+
+                Assert.AreEqual(tokens.Count, 8);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "=");
+                Assert.AreEqual(tokens[1].Type, TokenType.Assign);
+                Assert.AreEqual(tokens[2].Value, "10");
+                Assert.AreEqual(tokens[2].Type, TokenType.Value);
+                Assert.AreEqual(tokens[3].Value, ";");
+                Assert.AreEqual(tokens[3].Type, TokenType.Semicolon);
+                Assert.AreEqual(tokens[4].Value, "a");
+                Assert.AreEqual(tokens[4].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[5].Value, "+=");
+                Assert.AreEqual(tokens[5].Type, TokenType.AddAssign);
+                Assert.AreEqual(tokens[6].Value, "2");
+                Assert.AreEqual(tokens[6].Type, TokenType.Value);
+                Assert.AreEqual(tokens[7].Value, ";");
+                Assert.AreEqual(tokens[7].Type, TokenType.Semicolon);
+            }
+        }
     }
 }

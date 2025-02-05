@@ -61,6 +61,15 @@ namespace Petit
                 Assert.AreEqual(interpreter.Variables.Get("a"), 7);
                 Assert.AreEqual(interpreter.Variables.Get("b"), 7);
             }
+            {
+                Interpreter interpreter = RunInt("a=10; a+=2", 12);
+                Assert.AreEqual(interpreter.Variables.Get("a"), 12);
+            }
+            {
+                Interpreter interpreter = RunInt("a=10; b=2; b+=a+a;", 22);
+                Assert.AreEqual(interpreter.Variables.Get("a"), 10);
+                Assert.AreEqual(interpreter.Variables.Get("b"), 22);
+            }
         }
         [Test]
         public void TestCond()
