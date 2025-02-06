@@ -23,6 +23,8 @@ namespace Petit.Core.Lexer
 
         void TokenizeLine(string line, int lineNum)
         {
+            bool isInterpolation = false;
+            bool isInterpolationEnd = false;
             int pos = 0;
             int length = line.Length;
             if (length <= 0)
@@ -32,7 +34,7 @@ namespace Petit.Core.Lexer
             while(pos < length)
             {
                 // 空白スキップ
-                while (char.IsWhiteSpace(line[pos]))
+                while (!isInterpolationEnd && char.IsWhiteSpace(line[pos]))
                 {
                     ++pos;
                     if (pos >= length)
@@ -40,7 +42,56 @@ namespace Petit.Core.Lexer
                         return;
                     }
                 }
-                if (char.IsLetter(line[pos]) || line[pos] == '$')
+                if (isInterpolationEnd || line[pos] == '"')
+                {
+                    // 文字列
+                    if (!isInterpolationEnd)
+                    {
+                        _tokens.Add(new Token(TokenType.DoubleQuote, "\"", lineNum, pos + 1));
+                        ++pos;
+                    }
+                    else
+                    {
+                        // 補完文字列復帰
+                        isInterpolationEnd = false;
+                    }
+                    int start = pos;
+                    while (pos < length)
+                    {
+                        if (line[pos] == '\"' && line[pos - 1] != '\\')
+                        {
+                            break;
+                        }
+                        if (line[pos] == '{')
+                        {
+                            if (pos + 1 < length)
+                            {
+                                if (line[pos + 1] == '{')
+                                {
+                                    ++pos;
+                                }
+                                else
+                                {
+                                    isInterpolation = true;
+                                    break;
+                                }
+                            }
+                        }
+                        ++pos;
+                    }
+                    string text = line.Substring(start, pos - start)
+                        .Replace("\\\"", "\"")
+                        .Replace("{{", "{")
+                        .Replace("}}", "}")
+                        ;
+                    _tokens.Add(new Token(TokenType.Value, text, lineNum, start + 1));
+                    if (!isInterpolation)
+                    {
+                        _tokens.Add(new Token(TokenType.DoubleQuote, "\"", lineNum, pos + 1));
+                        ++pos;
+                    }
+                }
+                else if(char.IsLetter(line[pos]) || line[pos] == '$')
                 {
                     // 識別子
                     int start = pos;
@@ -94,24 +145,6 @@ namespace Petit.Core.Lexer
                     }
                     _tokens.Add(new Token(TokenType.Value, line.Substring(start, pos - start), lineNum, start + 1));
                 }
-                else if (line[pos] == '"')
-                {
-                    // 文字列
-
-                    ++pos;
-                    int start = pos;
-                    while (pos < length)
-                    {
-                        if (line[pos] == '\"' && line[pos - 1] != '\\')
-                        {
-                            break;
-                        }
-                        ++pos;
-                    }
-                    string text = line.Substring(start, pos - start).Replace("\\\"", "\"");
-                    _tokens.Add(new Token(TokenType.Value, text, lineNum, start));
-                    ++pos;
-                }
                 //else if (line[pos] == '@')
                 //{
                 //    _tokens.Add(new Token(TokenType.At, "@", lineNum, pos + 1));
@@ -146,6 +179,12 @@ namespace Petit.Core.Lexer
                 {
                     _tokens.Add(new Token(TokenType.RBrace, "}", lineNum, pos + 1));
                     ++pos;
+                    if (isInterpolation)
+                    {
+                        // 補間終了
+                        isInterpolation = false;
+                        isInterpolationEnd = true;
+                    }
                 }
                 else if (line[pos] == ':')
                 {

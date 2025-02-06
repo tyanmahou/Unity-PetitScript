@@ -33,6 +33,11 @@
         RBrace,
 
         /// <summary>
+        /// "
+        /// </summary>
+        DoubleQuote,
+
+        /// <summary>
         /// 識別子
         /// </summary>
         Ident,

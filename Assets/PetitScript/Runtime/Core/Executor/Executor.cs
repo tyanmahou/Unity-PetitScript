@@ -1,4 +1,5 @@
 ﻿using Petit.Core.AST;
+using System.Text;
 
 namespace Petit.Core.Executor
 {
@@ -85,6 +86,10 @@ namespace Petit.Core.Executor
             {
                 return ExecExpr(literal);
             }
+            else if (expr is StringExpression str)
+            {
+                return ExecExpr(str);
+            }
             else if (expr is VariableExpression variable)
             {
                 return ExecExpr(variable);
@@ -107,6 +112,16 @@ namespace Petit.Core.Executor
         (Value, string) ExecExpr(LiteralExpression expr)
         {
             return (Value.Parse(expr.Value), null);
+        }
+        (Value, string) ExecExpr(StringExpression expr)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var e in expr.Expressions)
+            {
+                var (value, _) = ExecExpr(e);
+                sb.Append(value.ToString());
+            }
+            return (Value.Parse(sb.ToString()), null);
         }
         (Value, string) ExecExpr(VariableExpression expr)
         {

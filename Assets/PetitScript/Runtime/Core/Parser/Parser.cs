@@ -196,6 +196,8 @@ namespace Petit.Core.Parser
                         return ParseParen;
                     case TokenType.Value:
                         return ParseLiteralExpression;
+                    case TokenType.DoubleQuote:
+                        return ParseStringExpression;
                     case TokenType.Ident:
                         return ParseVariableExpression;
                 }
@@ -276,6 +278,49 @@ namespace Petit.Core.Parser
             {
                 Value = literal
             };
+        }
+        StringExpression ParseStringExpression()
+        {
+            var expr = new StringExpression();
+            ++_iteratorPos; // "
+            while (_iteratorPos < _tokens.Count)
+            {
+                if (_tokens[_iteratorPos].Type == TokenType.Value)
+                {
+                    expr.Expressions.Add(ParseLiteralExpression());
+                }
+                else if (_tokens[_iteratorPos].Type == TokenType.LBrace)
+                {
+                    ++_iteratorPos; // {
+                    // 補完文字列
+                    var inner = ParseExpression();
+                    if (inner != null)
+                    {
+                        expr.Expressions.Add(inner);
+                    }
+                    if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.RBrace)
+                    {
+                        ++_iteratorPos; // }
+                    }
+                    else
+                    {
+                        Error("Not Found }");
+                    }
+                }
+                else if (_tokens[_iteratorPos].Type == TokenType.DoubleQuote)
+                {
+                    break;
+                }
+            }
+            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.DoubleQuote)
+            {
+                ++_iteratorPos; // }
+            }
+            else
+            {
+                Error("Not Found \"");
+            }
+            return expr;
         }
         VariableExpression ParseVariableExpression()
         {
