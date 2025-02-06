@@ -1,1 +1,9 @@
-1 <= 2
+c = 102;
+
+if (c < 100) {
+    return "c is under 100 (c={c})"
+} else if (c == 100) {
+    return "c is 100"
+} else {
+    return "c is over 100 (c={(c)})"
+}

@@ -300,26 +300,30 @@ namespace Petit.Core.Parser
                     }
                     if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.RBrace)
                     {
-                        ++_iteratorPos; // }
                     }
                     else
                     {
                         Error("Not Found }");
                     }
+                    ++_iteratorPos; // }
                 }
                 else if (_tokens[_iteratorPos].Type == TokenType.DoubleQuote)
                 {
                     break;
                 }
+                else
+                {
+                    ++_iteratorPos;
+                }
             }
             if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.DoubleQuote)
             {
-                ++_iteratorPos; // }
             }
             else
             {
                 Error("Not Found \"");
             }
+            ++_iteratorPos; // }
             return expr;
         }
         VariableExpression ParseVariableExpression()

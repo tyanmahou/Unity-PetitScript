@@ -34,13 +34,36 @@ namespace Petit
             if (GUILayout.Button("Run"))
             {
                 var code = (_scriptFile != null) ? _scriptFile.Code : _scriptCode;
-                var interpreta = new Core.Interpreter();
-                _result = interpreta.Run(code).ToString();
+                var interpreter = new Core.Interpreter();
+                interpreter
+                    .SetOnResult((string v) =>
+                    {
+                        _result = v;
+                        _error = false;
+                    })
+                    .SetOnSyntaxError(e => {
+                        _result = e;
+                        _error = true;
+                    })
+                    .Run(code)
+                    ;
             }
             EditorGUILayout.LabelField("output", EditorStyles.boldLabel);
             using (new GUILayout.VerticalScope(GUI.skin.box))
             {
-                EditorGUILayout.LabelField(_result);
+                var color = GUI.color;
+                if (_error)
+                {
+                    GUI.color = Color.red;
+                }
+                {
+                    GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
+                    labelStyle.wordWrap = true;
+                    labelStyle.richText = true;
+                    var height = labelStyle.CalcHeight(new GUIContent(_result), EditorGUIUtility.currentViewWidth);
+                    EditorGUILayout.SelectableLabel(_result, labelStyle, GUILayout.Height(height));
+                }
+                GUI.color = color;
             }
         }
         static void DrawSeparator()
@@ -51,6 +74,7 @@ namespace Petit
         PetitScript _scriptFile;
         string _scriptCode;
         string _result = string.Empty;
+        bool _error = false;
         Vector2 _position;
     }
 }

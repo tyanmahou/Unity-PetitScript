@@ -19,10 +19,43 @@ namespace Petit.Core
         }
 
         /// <summary>
+        /// リザルト
+        /// </summary>
+        public Action<Value> OnResult { get; set; }
+        public Interpreter SetOnResult(Action<Value> action)
+        {
+            OnResult = action;
+            return this;
+        }
+        public Interpreter SetOnResult(Action<int> action)
+        {
+            OnResult = v => action?.Invoke(v.ToInt());
+            return this;
+        }
+        public Interpreter SetOnResult(Action<float> action)
+        {
+            OnResult = v => action?.Invoke(v.ToFloat());
+            return this;
+        }
+        public Interpreter SetOnResult(Action<string> action)
+        {
+            OnResult = v => action?.Invoke(v.ToString());
+            return this;
+        }
+        public Interpreter SetOnResult(Action<bool> action)
+        {
+            OnResult = v => action?.Invoke(v.ToBool());
+            return this;
+        }
+        /// <summary>
         /// シンタックスエラー時処理
         /// </summary>
         public Action<string> OnSyntaxError {  get; set; }
-
+        public Interpreter SetOnSyntaxError(Action<string> action)
+        {
+            OnSyntaxError = action;
+            return this;
+        }
         public Value Run(string code)
         {
             var lexer = new Lexer.Lexer();
@@ -38,7 +71,9 @@ namespace Petit.Core
             }
 
             var executer = new Executor.Executor(_env);
-            return executer.Exec(ast);
+            var result = executer.Exec(ast);
+            OnResult?.Invoke(result);
+            return result;
         }
 
         bool SyntaxError(IReadOnlyList<Parser.SyntaxError> errors)
