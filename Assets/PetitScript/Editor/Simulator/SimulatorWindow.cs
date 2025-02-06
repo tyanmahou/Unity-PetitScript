@@ -34,7 +34,7 @@ namespace Petit
             if (GUILayout.Button("Run"))
             {
                 var code = (_scriptFile != null) ? _scriptFile.Code : _scriptCode;
-                var interpreta = new Interpreter();
+                var interpreta = new Core.Interpreter();
                 _result = interpreta.Run(code).ToString();
             }
             EditorGUILayout.LabelField("output", EditorStyles.boldLabel);

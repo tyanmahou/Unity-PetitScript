@@ -2,7 +2,8 @@
     "name": "PetitScript.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:eb9d9b129dc6efa4a99e912b4fb28e69"
+        "GUID:eb9d9b129dc6efa4a99e912b4fb28e69",
+        "GUID:82c4743561dbe5347a5ee8c42649d707"
     ],
     "includePlatforms": [
         "Editor"

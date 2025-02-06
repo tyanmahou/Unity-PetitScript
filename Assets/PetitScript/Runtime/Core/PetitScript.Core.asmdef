@@ -1,9 +1,7 @@
 {
-    "name": "PetitScript",
+    "name": "PetitScript.Core",
     "rootNamespace": "",
-    "references": [
-        "GUID:82c4743561dbe5347a5ee8c42649d707"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -12,5 +10,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }

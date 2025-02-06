@@ -10,9 +10,9 @@ namespace Petit.Script
     {
         public string Code;
 
-        public Value Run(Variables variables = null)
+        public Core.Value Run(Core.Variables variables = null)
         {
-            var interpreter = new Interpreter();
+            var interpreter = new Core.Interpreter();
             if (variables != null)
             {
                 interpreter.Variables = variables;
