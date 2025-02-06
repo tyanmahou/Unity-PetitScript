@@ -67,9 +67,13 @@ namespace Petit.Core.Lexer
             {
                 var tokens = lexer.Tokenize("\"aaaa\"");
 
-                Assert.AreEqual(tokens.Count, 1);
-                Assert.AreEqual(tokens[0].Value, "aaaa");
-                Assert.AreEqual(tokens[0].Type, TokenType.Value);
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "\"");
+                Assert.AreEqual(tokens[0].Type, TokenType.DoubleQuote);
+                Assert.AreEqual(tokens[1].Value, "aaaa");
+                Assert.AreEqual(tokens[1].Type, TokenType.Value);
+                Assert.AreEqual(tokens[2].Value, "\"");
+                Assert.AreEqual(tokens[2].Type, TokenType.DoubleQuote);
             }
         }
         [Test]

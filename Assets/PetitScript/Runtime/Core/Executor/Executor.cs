@@ -121,7 +121,7 @@ namespace Petit.Core.Executor
                 var (value, _) = ExecExpr(e);
                 sb.Append(value.ToString());
             }
-            return (Value.Parse(sb.ToString()), null);
+            return (new Value(sb.ToString()), null);
         }
         (Value, string) ExecExpr(VariableExpression expr)
         {

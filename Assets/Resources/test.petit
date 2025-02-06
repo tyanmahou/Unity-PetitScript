@@ -5,5 +5,5 @@ if (c < 100) {
 } else if (c == 100) {
     return "c is 100"
 } else {
-    return "c is over 100 (c={(c)})"
+    return "c is over 100 (c={c})"
 }

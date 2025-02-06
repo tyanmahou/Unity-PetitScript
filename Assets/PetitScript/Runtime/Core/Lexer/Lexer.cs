@@ -8,7 +8,6 @@ namespace Petit.Core.Lexer
         public Lexer()
         {
         }
-
         public IReadOnlyList<Token> Tokenize(string code)
         {
             _tokens.Clear();
@@ -20,11 +19,9 @@ namespace Petit.Core.Lexer
             }
             return _tokens;
         }
-
         void TokenizeLine(string line, int lineNum)
         {
-            bool isInterpolation = false;
-            bool isInterpolationEnd = false;
+            Stack<bool> isInterpolation = new();
             int pos = 0;
             int length = line.Length;
             if (length <= 0)
@@ -33,6 +30,7 @@ namespace Petit.Core.Lexer
             }
             while(pos < length)
             {
+                bool isInterpolationEnd = (isInterpolation.Count > 0 && !isInterpolation.Peek());
                 // 空白スキップ
                 while (!isInterpolationEnd && char.IsWhiteSpace(line[pos]))
                 {
@@ -48,12 +46,12 @@ namespace Petit.Core.Lexer
                     if (!isInterpolationEnd)
                     {
                         _tokens.Add(new Token(TokenType.DoubleQuote, "\"", lineNum, pos + 1));
+                        isInterpolation.Push(false);
                         ++pos;
                     }
                     else
                     {
-                        // 補完文字列復帰
-                        isInterpolationEnd = false;
+                        // 文字列補間復帰
                     }
                     int start = pos;
                     while (pos < length)
@@ -72,7 +70,12 @@ namespace Petit.Core.Lexer
                                 }
                                 else
                                 {
-                                    isInterpolation = true;
+                                    // 文字列補間開始
+                                    if (isInterpolation.Count > 0)
+                                    {
+                                        isInterpolation.Pop();
+                                        isInterpolation.Push(true);
+                                    }
                                     break;
                                 }
                             }
@@ -84,10 +87,17 @@ namespace Petit.Core.Lexer
                         .Replace("{{", "{")
                         .Replace("}}", "}")
                         ;
+                    text = System.Text.RegularExpressions.Regex.Unescape(text);
                     _tokens.Add(new Token(TokenType.Value, text, lineNum, start + 1));
-                    if (!isInterpolation)
+                    if (!(isInterpolation.Count > 0 && isInterpolation.Peek()))
                     {
                         _tokens.Add(new Token(TokenType.DoubleQuote, "\"", lineNum, pos + 1));
+
+                        // 文字列終了
+                        if (isInterpolation.Count > 0)
+                        {
+                            isInterpolation.Pop();
+                        }
                         ++pos;
                     }
                 }
@@ -179,11 +189,10 @@ namespace Petit.Core.Lexer
                 {
                     _tokens.Add(new Token(TokenType.RBrace, "}", lineNum, pos + 1));
                     ++pos;
-                    if (isInterpolation)
+                    if (isInterpolation.Count > 0 && isInterpolation.Peek())
                     {
-                        // 補間終了
-                        isInterpolation = false;
-                        isInterpolationEnd = true;
+                        isInterpolation.Pop();
+                        isInterpolation.Push(false);
                     }
                 }
                 else if (line[pos] == ':')
