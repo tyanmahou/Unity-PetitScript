@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System;
+using static Codice.Client.Common.EventTracking.TrackFeatureUseEvent.Features.DesktopGUI.Filters;
 
 namespace Petit.Core
 {
@@ -13,7 +14,7 @@ namespace Petit.Core
         public readonly static Value Invalid = default;
         public readonly static Value True = new Value(true);
         public readonly static Value False = new Value(false);
-        public readonly static Value NaN = new Value(ValueType.NaN);
+        public readonly static Value NaN = new Value(float.NaN);
 
         /// <summary>
         /// 文字列からパース
@@ -63,7 +64,8 @@ namespace Petit.Core
             else
             {
                 type = ValueType.NaN;
-                value = default;
+                value = new ValueVariant();
+                value.FloatValue = float.NaN;
             }
         }
         public Value(string s)
@@ -71,11 +73,6 @@ namespace Petit.Core
             type = ValueType.String;
             value = new ValueVariant();
             value.StringValue = s;
-        }
-        Value(ValueType _type)
-        {
-            type = _type;
-            value = default;
         }
         /// <summary>
         /// 無効値か
@@ -187,6 +184,10 @@ namespace Petit.Core
             {
                 return false;
             }
+            if (this.IsNaN || other.IsNaN)
+            {
+                return false;
+            }
             switch (type)
             {
                 case ValueType.Bool:
@@ -258,6 +259,10 @@ namespace Petit.Core
         /// <returns></returns>
         public bool EqualsLooseSingly(in Value other)
         {
+            if (this.IsNaN || other.IsNaN)
+            {
+                return false;
+            }
             switch (type)
             {
                 case ValueType.Bool:
@@ -297,6 +302,8 @@ namespace Petit.Core
                     return value.FloatValue.GetHashCode();
                 case ValueType.String:
                     return value.StringValue.GetHashCode();
+                case ValueType.NaN:
+                    return float.NaN.GetHashCode();
             }
             return 0;
         }
@@ -308,10 +315,18 @@ namespace Petit.Core
 
         public static bool operator ==(in Value a, in Value b)
         {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
             return Compare(a, b) == 0;
         }
         public static bool operator !=(in Value a, in Value b)
         {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return true;
+            }
             return Compare(a, b) != 0;
         }
 
@@ -335,6 +350,18 @@ namespace Petit.Core
         }
         public static int Compare(in Value a, in Value b)
         {
+            if (a.IsNaN && b.IsNaN)
+            {
+                return 0;
+            }
+            else if (a.IsNaN)
+            {
+                return -1;
+            }
+            else if(b.IsNaN)
+            {
+                return 1;
+            }
             if (a.IsBool && b.IsBool)
             {
                 return a.value.BoolValue.CompareTo(b.value.BoolValue);
@@ -404,18 +431,34 @@ namespace Petit.Core
         }
         public static bool operator >(in Value a, in Value b)
         {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
             return Compare(a, b) > 0;
         }
         public static bool operator <(in Value a, in Value b)
         {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
             return Compare(a, b) < 0;
         }
         public static bool operator >=(in Value a, in Value b)
         {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
             return Compare(a, b) >= 0;
         }
         public static bool operator <=(in Value a, in Value b)
         {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
             return Compare(a, b) <= 0;
         }
         public static Value operator !(in Value a)
