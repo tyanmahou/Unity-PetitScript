@@ -128,6 +128,18 @@ namespace Petit.Core.Lexer
                     {
                         tokenType = TokenType.While;
                     }
+                    else if (ident == "break")
+                    {
+                        tokenType = TokenType.Break;
+                    }
+                    else if (ident == "continue")
+                    {
+                        tokenType = TokenType.Continue;
+                    }
+                    else if (ident == "for")
+                    {
+                        tokenType = TokenType.For;
+                    }
                     else if (ident == "return")
                     {
                         tokenType = TokenType.Return;

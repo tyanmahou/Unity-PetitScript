@@ -198,6 +198,21 @@
         While,
 
         /// <summary>
+        /// break
+        /// </summary>
+        Break,
+
+        /// <summary>
+        /// continue
+        /// </summary>
+        Continue,
+
+        /// <summary>
+        /// for
+        /// </summary>
+        For,
+
+        /// <summary>
         /// return
         /// </summary>
         Return,
