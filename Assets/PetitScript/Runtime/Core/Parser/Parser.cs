@@ -17,7 +17,7 @@ namespace Petit.Core.Parser
             {
                 this._tokens = tokens;
                 this._errors.Clear();
-                this._iteratorPos = 0;
+                this._pos = 0;
                 _cache = ParseGlobalStatement();
             }
             return (_cache, _errors);
@@ -25,14 +25,14 @@ namespace Petit.Core.Parser
         GlobalStatement ParseGlobalStatement()
         {
             var globalStatement = new GlobalStatement();
-            while (_iteratorPos < _tokens.Count)
+            while (_pos < _tokens.Count)
             {
-                int prevPos = _iteratorPos;
+                int prevPos = _pos;
                 IStatement statement = ParseStatement();
-                if (prevPos == _iteratorPos)
+                if (prevPos == _pos)
                 {
                     // 無限ループ防止
-                    ++_iteratorPos;
+                    ++_pos;
                 }
                 if (statement != null)
                 {
@@ -47,26 +47,26 @@ namespace Petit.Core.Parser
         }
         IStatement ParseStatement()
         {
-            if ( _iteratorPos < _tokens.Count)
+            if ( _pos < _tokens.Count)
             {
-                if (_tokens[_iteratorPos].Type == TokenType.Semicolon)
+                if (_tokens[_pos].Type == TokenType.Semicolon)
                 {
-                    ++_iteratorPos;
+                    ++_pos;
                     return null;
                 }
-                else if (_tokens[_iteratorPos].Type == TokenType.LBrace)
+                else if (_tokens[_pos].Type == TokenType.LBrace)
                 {
                     return ParseBlockStatement();
                 }
-                else if (_tokens[_iteratorPos].Type == TokenType.If)
+                else if (_tokens[_pos].Type == TokenType.If)
                 {
                     return ParseIfStatement();
                 }
-                else if (_tokens[_iteratorPos].Type == TokenType.While)
+                else if (_tokens[_pos].Type == TokenType.While)
                 {
                     return ParseWhileStatement();
                 }
-                else if (_tokens[_iteratorPos].Type == TokenType.Return)
+                else if (_tokens[_pos].Type == TokenType.Return)
                 {
                     return ParseReturnStatement();
                 }
@@ -79,20 +79,20 @@ namespace Petit.Core.Parser
         }
         BlockStatement ParseBlockStatement()
         {
-            ++_iteratorPos; // {
+            ++_pos; // {
             var block = new BlockStatement();
-            while (_iteratorPos < _tokens.Count)
+            while (_pos < _tokens.Count)
             {
-                if (_tokens[_iteratorPos].Type == TokenType.RBrace)
+                if (_tokens[_pos].Type == TokenType.RBrace)
                 {
                     break;
                 }
-                int prevPos = _iteratorPos;
+                int prevPos = _pos;
                 IStatement statement = ParseStatement();
-                if (prevPos == _iteratorPos)
+                if (prevPos == _pos)
                 {
                     // 無限ループ防止
-                    ++_iteratorPos;
+                    ++_pos;
                 }
                 if (statement != null)
                 {
@@ -103,107 +103,84 @@ namespace Petit.Core.Parser
                     continue;
                 }
             }
-            if (_iteratorPos >= _tokens.Count || _tokens[_iteratorPos].Type != TokenType.RBrace)
-            {
-                Error("Not Found '}'");
-            }
-            ++_iteratorPos; // }
+            TryErrorCheckType("Not Found '}'", TokenType.RBrace);
+            ++_pos; // }
             return block;
         }
         IfStatement ParseIfStatement()
         {
-            ++_iteratorPos; // if
+            ++_pos; // if
             IfStatement statement = new IfStatement();
 
             IfParam ParseParam()
             {
                 IfParam param = new IfParam();
-                if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.LParen)
-                {
-                    // (
-                    ++_iteratorPos;
-                }
-                else
-                {
-                    Error("Not Found if '('");
-                }
+                TryErrorCheckType("Not Found if (", TokenType.LParen);
+                // (
+                ++_pos;
+
                 param.Cond = ParseExpression();
-                if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.RParen)
-                {
-                    // )
-                    ++_iteratorPos;
-                }
-                else
-                {
-                    Error("Not Found if ')'");
-                }
+
+                TryErrorCheckType("Not Found if )", TokenType.RParen);
+                // )
+                ++_pos;
                 param.Statement = ParseStatement();
                 return param;
             }
             statement.IfStatements.Add(ParseParam());
-            while ((_iteratorPos + 1 < _tokens.Count) && _tokens[_iteratorPos].Type == TokenType.Else && _tokens[_iteratorPos + 1].Type == TokenType.If)
+            while ((_pos + 1 < _tokens.Count) && _tokens[_pos].Type == TokenType.Else && _tokens[_pos + 1].Type == TokenType.If)
             {
-                _iteratorPos += 2; // else if
+                _pos += 2; // else if
 
                 statement.IfStatements.Add(ParseParam());
             }
-            if ((_iteratorPos < _tokens.Count) && _tokens[_iteratorPos].Type == TokenType.Else)
+            if ((_pos < _tokens.Count) && _tokens[_pos].Type == TokenType.Else)
             {
-                ++_iteratorPos; // else
+                ++_pos; // else
                 statement.ElseStatement = ParseStatement();
             }
             return statement;
         }
         WhileStatement ParseWhileStatement()
         {
-            ++_iteratorPos; // while
+            ++_pos; // while
             WhileStatement statement = new WhileStatement();
-            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.LParen)
-            {
-                // (
-                ++_iteratorPos;
-            }
-            else
-            {
-                Error("Not Found if '('");
-            }
+            TryErrorCheckType("Not Found while (", TokenType.LParen);
+            // (
+            ++_pos;
+
             statement.Cond = ParseExpression();
-            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.RParen)
-            {
-                // )
-                ++_iteratorPos;
-            }
-            else
-            {
-                Error("Not Found if ')'");
-            }
+
+            TryErrorCheckType("Not Found while )", TokenType.RParen);
+            // )
+            ++_pos;
             statement.Statement = ParseStatement();
             return statement;
         }
         ReturnStatement ParseReturnStatement()
         {
             var statement = new ReturnStatement();
-            ++_iteratorPos; // return
-            if (_iteratorPos < _tokens.Count)
+            ++_pos; // return
+            if (_pos < _tokens.Count)
             {
                 statement.Expression = ParseExpression();
             }
-            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.Semicolon)
+            if (_pos < _tokens.Count && _tokens[_pos].Type == TokenType.Semicolon)
             {
-                ++_iteratorPos;
+                ++_pos;
             }
             return statement;
         }
         ExpressionStatement ParseExpressionStatement()
         {
             var statement = new ExpressionStatement();
-            if (_iteratorPos < _tokens.Count)
+            if (_pos < _tokens.Count)
             {
                 statement.Expression = ParseExpression();
             }
-            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.Semicolon)
+            if (_pos < _tokens.Count && _tokens[_pos].Type == TokenType.Semicolon)
             {
-                ++_iteratorPos;
+                ++_pos;
             }
             return statement;
         }
@@ -265,32 +242,32 @@ namespace Petit.Core.Parser
                 }
                 return null;
             }
-            if (_iteratorPos >= _tokens.Count)
+            if (_pos >= _tokens.Count)
             {
                 return null;
             }
-            Func<IExpression> prefixOp = FindPrefixOp(_tokens[_iteratorPos].Type);
+            Func<IExpression> prefixOp = FindPrefixOp(_tokens[_pos].Type);
             if (prefixOp is null)
             {
-                ++_iteratorPos;
+                ++_pos;
                 return null;
             }
             IExpression left = prefixOp();
 
             bool NeedParseLeft()
             {
-                if (_iteratorPos >= _tokens.Count)
+                if (_pos >= _tokens.Count)
                 {
                     return false;
                 }
                 return rightToLeft
-                    ? (precedence >= PrecedenceExtensions.FromTokenType(_tokens[_iteratorPos].Type))
-                    : (precedence > PrecedenceExtensions.FromTokenType(_tokens[_iteratorPos].Type))
+                    ? (precedence >= PrecedenceExtensions.FromTokenType(_tokens[_pos].Type))
+                    : (precedence > PrecedenceExtensions.FromTokenType(_tokens[_pos].Type))
                     ;
             }
             while (NeedParseLeft())
             {
-                Func<IExpression, IExpression> binaryOp = FindBinaryOp(_tokens[_iteratorPos].Type);
+                Func<IExpression, IExpression> binaryOp = FindBinaryOp(_tokens[_pos].Type);
                 if (binaryOp is null)
                 {
                     return left;
@@ -302,8 +279,8 @@ namespace Petit.Core.Parser
         }
         LiteralExpression ParseLiteralExpression()
         {
-            string literal = _tokens[_iteratorPos].Value;
-            ++_iteratorPos;
+            string literal = _tokens[_pos].Value;
+            ++_pos;
             return new LiteralExpression()
             {
                 Value = literal
@@ -312,54 +289,42 @@ namespace Petit.Core.Parser
         StringExpression ParseStringExpression()
         {
             var expr = new StringExpression();
-            ++_iteratorPos; // "
-            while (_iteratorPos < _tokens.Count)
+            ++_pos; // "
+            while (_pos < _tokens.Count)
             {
-                if (_tokens[_iteratorPos].Type == TokenType.Value)
+                if (_tokens[_pos].Type == TokenType.Value)
                 {
                     expr.Expressions.Add(ParseLiteralExpression());
                 }
-                else if (_tokens[_iteratorPos].Type == TokenType.LBrace)
+                else if (_tokens[_pos].Type == TokenType.LBrace)
                 {
-                    ++_iteratorPos; // {
+                    ++_pos; // {
                     // 補完文字列
                     var inner = ParseExpression();
                     if (inner != null)
                     {
                         expr.Expressions.Add(inner);
                     }
-                    if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.RBrace)
-                    {
-                    }
-                    else
-                    {
-                        Error("Not Found }");
-                    }
-                    ++_iteratorPos; // }
+                    TryErrorCheckType("Not Found }", TokenType.RBrace);
+                    ++_pos; // }
                 }
-                else if (_tokens[_iteratorPos].Type == TokenType.DoubleQuote)
+                else if (_tokens[_pos].Type == TokenType.DoubleQuote)
                 {
                     break;
                 }
                 else
                 {
-                    ++_iteratorPos;
+                    ++_pos;
                 }
             }
-            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.DoubleQuote)
-            {
-            }
-            else
-            {
-                Error("Not Found \"");
-            }
-            ++_iteratorPos; // }
+            TryErrorCheckType("Not Found \"", TokenType.DoubleQuote);
+            ++_pos; // }
             return expr;
         }
         VariableExpression ParseVariableExpression()
         {
-            string ident = _tokens[_iteratorPos].Value;
-            ++_iteratorPos;
+            string ident = _tokens[_pos].Value;
+            ++_pos;
             return new VariableExpression()
             {
                 Ident = ident
@@ -367,9 +332,9 @@ namespace Petit.Core.Parser
         }
         PrefixUnaryExpression ParsePrefixUnaryExpression()
         {
-            Precedence precedence = PrecedenceExtensions.FromTokenType(_tokens[_iteratorPos].Type, unary: true);
-            string op = _tokens[_iteratorPos].Value;
-            ++_iteratorPos;
+            Precedence precedence = PrecedenceExtensions.FromTokenType(_tokens[_pos].Type, unary: true);
+            string op = _tokens[_pos].Value;
+            ++_pos;
             IExpression right = ParseExpression(precedence);
             return new PrefixUnaryExpression()
             {
@@ -379,10 +344,10 @@ namespace Petit.Core.Parser
         }
         BinaryExpression ParseBinaryExpression(IExpression left)
         {
-            TokenType tokenType = _tokens[_iteratorPos].Type;
+            TokenType tokenType = _tokens[_pos].Type;
             Precedence precedence = PrecedenceExtensions.FromTokenType(tokenType);
-            string op = _tokens[_iteratorPos].Value;
-            ++_iteratorPos;
+            string op = _tokens[_pos].Value;
+            ++_pos;
 
             bool rightToLeft = PrecedenceExtensions.RightToLeft(tokenType);
             IExpression right = ParseExpression(precedence, rightToLeft);
@@ -395,17 +360,17 @@ namespace Petit.Core.Parser
         }
         TernaryExpression ParseTernaryExpression(IExpression left)
         {
-            Precedence precedence = PrecedenceExtensions.FromTokenType(_tokens[_iteratorPos].Type);
-            string op = _tokens[_iteratorPos].Value;
-            ++_iteratorPos;
+            Precedence precedence = PrecedenceExtensions.FromTokenType(_tokens[_pos].Type);
+            string op = _tokens[_pos].Value;
+            ++_pos;
             IExpression mid = ParseExpression(precedence, rightToLeft: true);
-            if (_iteratorPos >= _tokens.Count)
+            if (_pos >= _tokens.Count)
             {
                 Error("Not Found ternary operator");
                 return null;
             }
-            string op2 = _tokens[_iteratorPos].Value;
-            ++_iteratorPos;
+            string op2 = _tokens[_pos].Value;
+            ++_pos;
             IExpression right = ParseExpression(precedence, rightToLeft: true);
 
             return new TernaryExpression()
@@ -420,24 +385,34 @@ namespace Petit.Core.Parser
         IExpression ParseParen()
         {
             // (
-            ++_iteratorPos;
+            ++_pos;
             IExpression expr = ParseExpression();
-            if (_iteratorPos >= _tokens.Count || _tokens[_iteratorPos].Type != TokenType.RParen)
-            {
-                Error("Not Found ')'");
-            }
+
+            TryErrorCheckType("Not Found ')'", TokenType.RParen);
             // )
-            ++_iteratorPos;
+            ++_pos;
             return expr;
         }
-        void Error(string message) => Error(message, _iteratorPos - 1, head: false);
+        bool TryErrorCheckType(string message, TokenType type)
+        {
+            if (_pos < _tokens.Count && _tokens[_pos].Type == type)
+            {
+                return false;
+            }
+            else
+            {
+                Error(message);
+                return true;
+            }
+        }
+        void Error(string message) => Error(message, _pos - 1, head: false);
         void Error(string message, int pos, bool head = true)
         {
             Token errorToken = pos >= _tokens.Count ? _tokens[_tokens.Count - 1] : _tokens[pos];
             _errors.Add(new SyntaxError(message, errorToken.Line, errorToken.Column + (head ? 0 : errorToken.Value.Length)));
         }
         IReadOnlyList<Token> _tokens;
-        int _iteratorPos;
+        int _pos;
         GlobalStatement _cache;
         List<SyntaxError> _errors = new List<SyntaxError>();
     }
