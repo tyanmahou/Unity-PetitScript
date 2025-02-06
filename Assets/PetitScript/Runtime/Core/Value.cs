@@ -13,7 +13,7 @@ namespace Petit.Core
         public readonly static Value Invalid = default;
         public readonly static Value True = new Value(true);
         public readonly static Value False = new Value(false);
-        public readonly static Value NaN = new Value("NaN");
+        public readonly static Value NaN = new Value(ValueType.NaN);
 
         /// <summary>
         /// 文字列からパース
@@ -54,9 +54,17 @@ namespace Petit.Core
         }
         public Value(float f)
         {
-            type = ValueType.Float;
-            value = new ValueVariant();
-            value.FloatValue = f;
+            if (!float.IsNaN(f))
+            {
+                type = ValueType.Float;
+                value = new ValueVariant();
+                value.FloatValue = f;
+            }
+            else
+            {
+                type = ValueType.NaN;
+                value = default;
+            }
         }
         public Value(string s)
         {
@@ -64,7 +72,11 @@ namespace Petit.Core
             value = new ValueVariant();
             value.StringValue = s;
         }
-
+        Value(ValueType _type)
+        {
+            type = _type;
+            value = default;
+        }
         /// <summary>
         /// 無効値か
         /// </summary>
@@ -90,6 +102,10 @@ namespace Petit.Core
         /// </summary>
         public bool IsString => type == ValueType.String;
 
+        /// <summary>
+        /// NaNか
+        /// </summary>
+        public bool IsNaN => type == ValueType.NaN;
         public readonly bool ToBool()
         {
             switch (type)
@@ -140,6 +156,8 @@ namespace Petit.Core
                         return strParseValue;
                     }
                     break;
+                case ValueType.NaN:
+                    return float.NaN;
             }
             return 0;
         }
@@ -147,7 +165,7 @@ namespace Petit.Core
         {
             const string trueStr = "true";
             const string falseStr = "false";
-
+            const string NaNStr = "NaN";
             switch (type)
             {
                 case ValueType.Bool:
@@ -158,6 +176,8 @@ namespace Petit.Core
                     return value.FloatValue.ToString();
                 case ValueType.String:
                     return value.StringValue;
+                case ValueType.NaN:
+                    return NaNStr;
             }
             return string.Empty;
         }
@@ -404,6 +424,32 @@ namespace Petit.Core
         }
         public static Value operator +(in Value a)
         {
+            switch (a.type)
+            {
+                case ValueType.Bool:
+                    return new Value(a.ToInt());
+                case ValueType.Int:
+                    return a;
+                case ValueType.Float:
+                    return a;
+                case ValueType.String:
+                    if (bool.TryParse(a.value.StringValue, out bool bo))
+                    {
+                        return new Value(bo ? 1 : 0);
+                    }
+                    else if (int.TryParse(a.value.StringValue, out int i))
+                    {
+                        return new Value(i);
+                    }
+                    else if (float.TryParse(a.value.StringValue, out float f))
+                    {
+                        return new Value(f);
+                    }
+                    else
+                    {
+                        return Value.NaN;
+                    }
+            }
             return a;
         }
         public static Value operator -(in Value a)
@@ -442,7 +488,8 @@ namespace Petit.Core
             out int aiValue,
             out int biValue,
             out float afValue,
-            out float bfValue
+            out float bfValue,
+            bool prioritizeString = false
             )
         {
             bool stringOp = false;
@@ -455,6 +502,30 @@ namespace Petit.Core
             if (a.IsInvalid && b.IsInvalid)
             {
                 return ValueType.Invalid;
+            }
+            if (a.IsNaN || b.IsNaN)
+            {
+                return ValueType.NaN;
+            }
+            if (prioritizeString && (a.IsString || b.IsString))
+            {
+                // 文字列優先
+                stringOp = true;
+            }
+            else if (a.IsInvalid && b.IsString)
+            {
+                // aだけ無効
+                stringOp = true;
+            }
+            else if (a.IsString && b.IsInvalid)
+            {
+                // bだけ無効
+                stringOp = true;
+            }
+            if (stringOp)
+            {
+                // 既に文字列結合ならパース処理スキップ
+                return ValueType.String;
             }
             if (a.IsString)
             {
@@ -536,7 +607,8 @@ namespace Petit.Core
                 out int aiValue,
                 out int biValue,
                 out float afValue,
-                out float bfValue
+                out float bfValue,
+                prioritizeString: true
                 );
             if (opType == ValueType.Int)
             {
@@ -549,6 +621,10 @@ namespace Petit.Core
             else if (opType == ValueType.String)
             {
                 return new Value(a.ToString() + b.ToString());
+            }
+            else if (opType == ValueType.NaN)
+            {
+                return Value.NaN;
             }
             return Value.Invalid;
         }
@@ -569,6 +645,10 @@ namespace Petit.Core
                 return new Value(afValue - bfValue);
             }
             else if (opType == ValueType.String)
+            {
+                return Value.NaN;
+            }
+            else if (opType == ValueType.NaN)
             {
                 return Value.NaN;
             }
@@ -594,6 +674,10 @@ namespace Petit.Core
             {
                 return Value.NaN;
             }
+            else if (opType == ValueType.NaN)
+            {
+                return Value.NaN;
+            }
             return Value.Invalid;
         }
         public static Value operator /(in Value a, in Value b)
@@ -613,6 +697,10 @@ namespace Petit.Core
                 return new Value(afValue / bfValue);
             }
             else if (opType == ValueType.String)
+            {
+                return Value.NaN;
+            }
+            else if (opType == ValueType.NaN)
             {
                 return Value.NaN;
             }
@@ -638,6 +726,10 @@ namespace Petit.Core
             {
                 return Value.NaN;
             }
+            else if (opType == ValueType.NaN)
+            {
+                return Value.NaN;
+            }
             return Value.Invalid;
         }
         enum ValueType
@@ -647,6 +739,8 @@ namespace Petit.Core
             Int,
             Float,
             String,
+
+            NaN
         }
 
         [StructLayout(LayoutKind.Explicit)]

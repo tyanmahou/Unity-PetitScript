@@ -118,8 +118,17 @@ namespace Petit.Core.Executor
             StringBuilder sb = new StringBuilder();
             foreach (var e in expr.Expressions)
             {
-                var (value, _) = ExecExpr(e);
-                sb.Append(value.ToString());
+                string value;
+                if (e is LiteralExpression l)
+                {
+                    // そのまま流し込む
+                    value = l.Value;
+                }
+                else
+                {
+                    value = ExecExpr(e).Item1.ToString();
+                }
+                sb.Append(value);
             }
             return (new Value(sb.ToString()), null);
         }
