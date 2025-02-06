@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using System;
-using static Codice.Client.Common.EventTracking.TrackFeatureUseEvent.Features.DesktopGUI.Filters;
 
 namespace Petit.Core
 {
