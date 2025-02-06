@@ -23,6 +23,10 @@ namespace Petit.Core.Executor
             {
                 return ExecIfStatement(ifStatement);
             }
+            else if (statement is WhileStatement whileStatement)
+            {
+                return ExecWhileStatement(whileStatement);
+            }
             else if (statement is ReturnStatement returnStatement)
             {
                 return (ExecExpr(returnStatement.Expression).Item1, true);
@@ -75,6 +79,15 @@ namespace Petit.Core.Executor
                 return ExecStatement(ifStatement.ElseStatement);
             }
             return (Value.Invalid, false);
+        }
+        (Value, bool) ExecWhileStatement(WhileStatement whileStatement)
+        {
+            (Value, bool) result = (default, false);
+            while (ExecExpr(whileStatement.Cond).Item1)
+            {
+                result = ExecStatement(whileStatement.Statement);
+            }
+            return result;
         }
         (Value, string) ExecExpr(IExpression expr)
         {

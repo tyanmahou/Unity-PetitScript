@@ -124,6 +124,10 @@ namespace Petit.Core.Lexer
                     {
                         tokenType = TokenType.Else;
                     }
+                    else if (ident == "while")
+                    {
+                        tokenType = TokenType.While;
+                    }
                     else if (ident == "return")
                     {
                         tokenType = TokenType.Return;

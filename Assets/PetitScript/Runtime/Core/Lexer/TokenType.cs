@@ -193,6 +193,11 @@
         Else,
 
         /// <summary>
+        /// while
+        /// </summary>
+        While,
+
+        /// <summary>
         /// return
         /// </summary>
         Return,

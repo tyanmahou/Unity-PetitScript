@@ -62,6 +62,10 @@ namespace Petit.Core.Parser
                 {
                     return ParseIfStatement();
                 }
+                else if (_tokens[_iteratorPos].Type == TokenType.While)
+                {
+                    return ParseWhileStatement();
+                }
                 else if (_tokens[_iteratorPos].Type == TokenType.Return)
                 {
                     return ParseReturnStatement();
@@ -148,6 +152,32 @@ namespace Petit.Core.Parser
                 ++_iteratorPos; // else
                 statement.ElseStatement = ParseStatement();
             }
+            return statement;
+        }
+        WhileStatement ParseWhileStatement()
+        {
+            ++_iteratorPos; // while
+            WhileStatement statement = new WhileStatement();
+            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.LParen)
+            {
+                // (
+                ++_iteratorPos;
+            }
+            else
+            {
+                Error("Not Found if '('");
+            }
+            statement.Cond = ParseExpression();
+            if (_iteratorPos < _tokens.Count && _tokens[_iteratorPos].Type == TokenType.RParen)
+            {
+                // )
+                ++_iteratorPos;
+            }
+            else
+            {
+                Error("Not Found if ')'");
+            }
+            statement.Statement = ParseStatement();
             return statement;
         }
         ReturnStatement ParseReturnStatement()
