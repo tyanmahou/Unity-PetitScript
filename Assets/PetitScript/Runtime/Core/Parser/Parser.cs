@@ -66,6 +66,14 @@ namespace Petit.Core.Parser
                 {
                     return ParseWhileStatement();
                 }
+                else if (_tokens[_pos].Type == TokenType.Break)
+                {
+                    return ParseBreakStatement();
+                }
+                else if (_tokens[_pos].Type == TokenType.Continue)
+                {
+                    return ParseContinueStatement();
+                }
                 else if (_tokens[_pos].Type == TokenType.Return)
                 {
                     return ParseReturnStatement();
@@ -157,11 +165,34 @@ namespace Petit.Core.Parser
             statement.Statement = ParseStatement();
             return statement;
         }
+        BreakStatement ParseBreakStatement()
+        {
+            var statement = new BreakStatement();
+            ++_pos; // break;
+
+            if (_pos < _tokens.Count && _tokens[_pos].Type == TokenType.Semicolon)
+            {
+                ++_pos;
+            }
+            return statement;
+        }
+        ContinueStatement ParseContinueStatement()
+        {
+            var statement = new ContinueStatement();
+            ++_pos; // break;
+
+            if (_pos < _tokens.Count && _tokens[_pos].Type == TokenType.Semicolon)
+            {
+                ++_pos;
+            }
+
+            return statement;
+        }
         ReturnStatement ParseReturnStatement()
         {
             var statement = new ReturnStatement();
             ++_pos; // return
-            if (_pos < _tokens.Count)
+            if (_pos < _tokens.Count && _tokens[_pos].Type != TokenType.Semicolon)
             {
                 statement.Expression = ParseExpression();
             }

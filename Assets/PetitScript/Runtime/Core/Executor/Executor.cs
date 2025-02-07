@@ -5,6 +5,13 @@ namespace Petit.Core.Executor
 {
     class Executor
     {
+        enum StatementCommand
+        {
+            None,
+            Reutrn,
+            Break,
+            Continue
+        }
         public Executor(Enviroment env)
         {
             _env = env;
@@ -13,7 +20,7 @@ namespace Petit.Core.Executor
         {
             return ExecGlobalStatement(global);
         }
-        (Value, bool) ExecStatement(IStatement statement)
+        (Value, StatementCommand) ExecStatement(IStatement statement)
         {
             if (statement is BlockStatement block)
             {
@@ -27,45 +34,53 @@ namespace Petit.Core.Executor
             {
                 return ExecWhileStatement(whileStatement);
             }
+            else if (statement is BreakStatement breakStatement)
+            {
+                return (Value.Invalid, StatementCommand.Break);
+            }
+            else if (statement is ContinueStatement continueStatement)
+            {
+                return (Value.Invalid, StatementCommand.Continue);
+            }
             else if (statement is ReturnStatement returnStatement)
             {
-                return (ExecExpr(returnStatement.Expression).Item1, true);
+                return (ExecExpr(returnStatement.Expression).Item1, StatementCommand.Reutrn);
             }
             else if (statement is ExpressionStatement expression)
             {
-                return (ExecExpr(expression.Expression).Item1, false);
+                return (ExecExpr(expression.Expression).Item1, StatementCommand.None);
             }
-            return (Value.Invalid, false);
+            return (Value.Invalid, StatementCommand.None);
         }
         Value ExecGlobalStatement(GlobalStatement global)
         {
             Value result = Value.Invalid;
             foreach (var s in global.Statements)
             {
-                bool ret;
+                StatementCommand ret;
                 (result, ret) = ExecStatement(s);
-                if (ret)
+                if (ret == StatementCommand.Reutrn)
                 {
                     break;
                 }
             }
             return result;
         }
-        (Value, bool) ExecBlockStatement(BlockStatement statement)
+        (Value, StatementCommand) ExecBlockStatement(BlockStatement statement)
         {
             Value result = Value.Invalid;
-            bool ret = false;
+            StatementCommand ret = StatementCommand.None;
             foreach (var s in statement.Statements)
             {
                 (result, ret) = ExecStatement(s);
-                if (ret)
+                if (ret == StatementCommand.Reutrn || ret == StatementCommand.Break || ret == StatementCommand.Continue)
                 {
                     break;
                 }
             }
             return (result, ret);
         }
-        (Value, bool) ExecIfStatement(IfStatement ifStatement)
+        (Value, StatementCommand) ExecIfStatement(IfStatement ifStatement)
         {
             foreach (IfParam param in ifStatement.IfStatements)
             {
@@ -78,14 +93,22 @@ namespace Petit.Core.Executor
             {
                 return ExecStatement(ifStatement.ElseStatement);
             }
-            return (Value.Invalid, false);
+            return (Value.Invalid, StatementCommand.None);
         }
-        (Value, bool) ExecWhileStatement(WhileStatement whileStatement)
+        (Value, StatementCommand) ExecWhileStatement(WhileStatement whileStatement)
         {
-            (Value, bool) result = (default, false);
+            (Value, StatementCommand) result = (default, default);
             while (ExecExpr(whileStatement.Cond).Item1)
             {
                 result = ExecStatement(whileStatement.Statement);
+                if (result.Item2 == StatementCommand.Reutrn || result.Item2 == StatementCommand.Break)
+                {
+                    return result;
+                }
+                else if (result.Item2 == StatementCommand.Continue)
+                {
+                    continue;
+                }
             }
             return result;
         }
