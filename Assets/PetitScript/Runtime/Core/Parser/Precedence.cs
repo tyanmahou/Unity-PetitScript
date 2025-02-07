@@ -4,6 +4,7 @@
 
     enum Precedence
     {
+        Dot,
         Not,
         Mul,
         Add,
@@ -18,20 +19,25 @@
 
     static class PrecedenceExtensions
     {
-        public static Precedence FromTokenType(TokenType tokenType, bool unary = false)
+        public static Precedence FromTokenType(TokenType tokenType, bool prefix = false)
         {
-            if (unary)
+            if (prefix)
             {
                 switch (tokenType)
                 {
                     case TokenType.Not:
                     case TokenType.Plus:
                     case TokenType.Minus:
+                    case TokenType.Inc:
+                    case TokenType.Dec:
                         return Precedence.Not;
                 }
             }
             switch (tokenType)
             {
+                case TokenType.Inc:
+                case TokenType.Dec:
+                    return Precedence.Dot;
                 case TokenType.Mul:
                 case TokenType.Div:
                 case TokenType.Mod:
@@ -74,8 +80,20 @@
                     return Precedence.Lowest;
             }
         }
-        public static bool RightToLeft(TokenType tokenType)
+        public static bool RightToLeft(TokenType tokenType, bool prefix = false)
         {
+            if (prefix)
+            {
+                switch (tokenType)
+                {
+                    case TokenType.Not:
+                    case TokenType.Plus:
+                    case TokenType.Minus:
+                    case TokenType.Inc:
+                    case TokenType.Dec:
+                        return true;
+                }
+            }
             switch (tokenType)
             {
                 case TokenType.Assign:

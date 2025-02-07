@@ -151,9 +151,13 @@ namespace Petit.Core.Executor
             {
                 return ExecExpr(variable);
             }
-            else if (expr is PrefixUnaryExpression unary)
+            else if (expr is PrefixUnaryExpression prefixUnary)
             {
-                return ExecExpr(unary);
+                return ExecExpr(prefixUnary);
+            }
+            else if (expr is PostfixUnaryExpression postfixUnary)
+            {
+                return ExecExpr(postfixUnary);
             }
             else if (expr is BinaryExpression binary)
             {
@@ -207,6 +211,47 @@ namespace Petit.Core.Executor
             else if (expr.Op == "-")
             {
                 return (-eval.Item1, null);
+            }
+            else if (expr.Op == "++")
+            {
+                var result = eval.Item1 + new Value(1);
+                if (eval.Item2 != null)
+                {
+                    _env.Variables.Set(eval.Item2, result);
+                }
+                return (result, eval.Item2);
+            }
+            else if (expr.Op == "--")
+            {
+                var result = eval.Item1 - new Value(1);
+                if (eval.Item2 != null)
+                {
+                    _env.Variables.Set(eval.Item2, result);
+                }
+                return (result, eval.Item2);
+            }
+            return eval;
+        }
+        (Value, string) ExecExpr(PostfixUnaryExpression expr)
+        {
+            var eval = ExecExpr(expr.Left);
+            if (expr.Op == "++")
+            {
+                var result = eval.Item1 + new Value(1);
+                if (eval.Item2 != null)
+                {
+                    _env.Variables.Set(eval.Item2, result);
+                }
+                return (eval.Item1, null);
+            }
+            else if (expr.Op == "--")
+            {
+                var result = eval.Item1 - new Value(1);
+                if (eval.Item2 != null)
+                {
+                    _env.Variables.Set(eval.Item2, result);
+                }
+                return (eval.Item1, null);
             }
             return eval;
         }
