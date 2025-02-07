@@ -334,6 +334,11 @@ namespace Petit.Core.Lexer
                         _tokens.Add(new Token(TokenType.AddAssign, "+=", lineNum, pos + 1));
                         pos += 2;
                     }
+                    else if (pos + 1 < length && line[pos + 1] == '+')
+                    {
+                        _tokens.Add(new Token(TokenType.Inc, "++", lineNum, pos + 1));
+                        pos += 2;
+                    }
                     else
                     {
                         _tokens.Add(new Token(TokenType.Add, "+", lineNum, pos + 1));
@@ -345,6 +350,11 @@ namespace Petit.Core.Lexer
                     if (pos + 1 < length && line[pos + 1] == '=')
                     {
                         _tokens.Add(new Token(TokenType.SubAssign, "-=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else if (pos + 1 < length && line[pos + 1] == '-')
+                    {
+                        _tokens.Add(new Token(TokenType.Dec, "--", lineNum, pos + 1));
                         pos += 2;
                     }
                     else

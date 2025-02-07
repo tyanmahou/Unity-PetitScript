@@ -183,6 +183,16 @@
         ModAssign,
 
         /// <summary>
+        /// ++
+        /// </summary>
+        Inc,
+
+        /// <summary>
+        /// --
+        /// </summary>
+        Dec,
+
+        /// <summary>
         /// if
         /// </summary>
         If,
