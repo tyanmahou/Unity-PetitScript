@@ -34,6 +34,10 @@ namespace Petit.Core.Executor
             {
                 return ExecWhileStatement(whileStatement);
             }
+            else if (statement is ForStatement forStatement)
+            {
+                return ExecForStatement(forStatement);
+            }
             else if (statement is BreakStatement breakStatement)
             {
                 return (Value.Invalid, StatementCommand.Break);
@@ -97,10 +101,27 @@ namespace Petit.Core.Executor
         }
         (Value, StatementCommand) ExecWhileStatement(WhileStatement whileStatement)
         {
-            (Value, StatementCommand) result = (default, default);
+            (Value, StatementCommand) result = default;
             while (ExecExpr(whileStatement.Cond).Item1)
             {
                 result = ExecStatement(whileStatement.Statement);
+                if (result.Item2 == StatementCommand.Reutrn || result.Item2 == StatementCommand.Break)
+                {
+                    return result;
+                }
+                else if (result.Item2 == StatementCommand.Continue)
+                {
+                    continue;
+                }
+            }
+            return result;
+        }
+        (Value, StatementCommand) ExecForStatement(ForStatement forStatement)
+        {
+            (Value, StatementCommand) result = default;
+            for(ExecExpr(forStatement.Init);  ExecExpr(forStatement.Cond).Item1; ExecExpr(forStatement.Loop))
+            {
+                result = ExecStatement(forStatement.Statement);
                 if (result.Item2 == StatementCommand.Reutrn || result.Item2 == StatementCommand.Break)
                 {
                     return result;

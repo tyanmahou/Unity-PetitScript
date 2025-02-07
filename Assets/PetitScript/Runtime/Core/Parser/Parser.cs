@@ -66,6 +66,10 @@ namespace Petit.Core.Parser
                 {
                     return ParseWhileStatement();
                 }
+                else if (_tokens[_pos].Type == TokenType.For)
+                {
+                    return ParseForStatement();
+                }
                 else if (_tokens[_pos].Type == TokenType.Break)
                 {
                     return ParseBreakStatement();
@@ -160,6 +164,40 @@ namespace Petit.Core.Parser
             statement.Cond = ParseExpression();
 
             TryErrorCheckType("Not Found while )", TokenType.RParen);
+            // )
+            ++_pos;
+            statement.Statement = ParseStatement();
+            return statement;
+        }
+        ForStatement ParseForStatement()
+        {
+            ++_pos; // for
+            ForStatement statement = new ForStatement();
+            TryErrorCheckType("Not Found for (", TokenType.LParen);
+            // (
+            ++_pos;
+
+            if (_pos < _tokens.Count && _tokens[_pos].Type != TokenType.Semicolon)
+            {
+                statement.Init = ParseExpression();
+            }
+
+            TryErrorCheckType("Not Found for ';'", TokenType.Semicolon);
+            // ;
+            ++_pos;
+            if (_pos < _tokens.Count && _tokens[_pos].Type != TokenType.Semicolon)
+            {
+                statement.Cond = ParseExpression();
+            }
+            TryErrorCheckType("Not Found for ';'", TokenType.Semicolon);
+            // ;
+            ++_pos;
+
+            if (_pos < _tokens.Count && _tokens[_pos].Type != TokenType.RParen)
+            {
+                statement.Loop = ParseExpression();
+            }
+            TryErrorCheckType("Not Found for )", TokenType.RParen);
             // )
             ++_pos;
             statement.Statement = ParseStatement();
@@ -280,7 +318,6 @@ namespace Petit.Core.Parser
             Func<IExpression> prefixOp = FindPrefixOp(_tokens[_pos].Type);
             if (prefixOp is null)
             {
-                ++_pos;
                 return null;
             }
             IExpression left = prefixOp();
