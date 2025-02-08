@@ -230,6 +230,10 @@ namespace Petit.Core.Executor
                 }
                 return (result, eval.Item2);
             }
+            else if (expr.Op == "~")
+            {
+                return (~eval.Item1, null);
+            }
             return eval;
         }
         (Value, string) ExecExpr(PostfixUnaryExpression expr)
@@ -303,6 +307,26 @@ namespace Petit.Core.Executor
             {
                 return (new Value(Value.Compare(left.Item1, right.Item1)), null);
             }
+            else if (expr.Op == "&")
+            {
+                return (left.Item1 & right.Item1, null);
+            }
+            else if (expr.Op == "|")
+            {
+                return (left.Item1 | right.Item1, null);
+            }
+            else if (expr.Op == "^")
+            {
+                return (left.Item1 ^ right.Item1, null);
+            }
+            else if (expr.Op == "<<")
+            {
+                return (left.Item1 << right.Item1.ToInt(), null);
+            }
+            else if (expr.Op == ">>")
+            {
+                return (left.Item1 >> right.Item1.ToInt(), null);
+            }
             else if (expr.Op == "+")
             {
                 return (left.Item1 + right.Item1, null);
@@ -370,6 +394,51 @@ namespace Petit.Core.Executor
             else if (expr.Op == "%=")
             {
                 var eval = left.Item1 % right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == "&=")
+            {
+                var eval = left.Item1 & right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == "|=")
+            {
+                var eval = left.Item1 | right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == "^=")
+            {
+                var eval = left.Item1 ^ right.Item1;
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == "<<=")
+            {
+                var eval = left.Item1 << right.Item1.ToInt();
+                if (left.Item2 != null)
+                {
+                    _env.Variables.Set(left.Item2, eval);
+                }
+                return (eval, left.Item2);
+            }
+            else if (expr.Op == ">>=")
+            {
+                var eval = left.Item1 >> right.Item1.ToInt();
                 if (left.Item2 != null)
                 {
                     _env.Variables.Set(left.Item2, eval);

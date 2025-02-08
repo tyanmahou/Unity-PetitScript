@@ -177,6 +177,14 @@ namespace Petit.Core
             }
             return string.Empty;
         }
+
+        public static explicit operator bool(in Value v) => v.ToBool();
+        public static explicit operator int(in Value v) => v.ToInt();
+        public static explicit operator float(in Value v) => v.ToFloat();
+        public static explicit operator string(in Value v) => v.ToString();
+        public static bool operator true(in Value v) => v.ToBool();
+        public static bool operator false(in Value v) => !v.ToBool();
+
         public bool Equals(Value other)
         {
             if (_type != other._type)
@@ -289,28 +297,6 @@ namespace Petit.Core
         {
             return a.EqualsLoose(b);
         }
-        public override int GetHashCode()
-        {
-            switch (_type)
-            {
-                case ValueType.Bool:
-                    return _value.BoolValue.GetHashCode();
-                case ValueType.Int:
-                    return _value.IntValue.GetHashCode();
-                case ValueType.Float:
-                    return _value.FloatValue.GetHashCode();
-                case ValueType.String:
-                    return _value.StringValue.GetHashCode();
-                case ValueType.NaN:
-                    return float.NaN.GetHashCode();
-            }
-            return 0;
-        }
-
-        public static explicit operator bool(in Value v) => v.ToBool();
-        public static explicit operator int(in Value v) => v.ToInt();
-        public static explicit operator float(in Value v) => v.ToFloat();
-        public static explicit operator string(in Value v) => v.ToString();
 
         public static bool operator ==(in Value a, in Value b)
         {
@@ -327,25 +313,6 @@ namespace Petit.Core
                 return true;
             }
             return Compare(a, b) != 0;
-        }
-
-        public static bool operator true(in Value v) => v.ToBool();
-        public static bool operator false(in Value v) => !v.ToBool();
-        public static Value operator &(in Value a, in Value b)
-        {
-            if (a.IsInt || b.IsInt)
-            {
-                return new Value(a.ToInt() & b.ToInt());
-            }
-            return new Value(a.ToBool() & b.ToBool());
-        }
-        public static Value operator |(in Value a, in Value b)
-        {
-            if (a.IsInt || b.IsInt)
-            {
-                return new Value(a.ToInt() | b.ToInt());
-            }
-            return new Value(a.ToBool() | b.ToBool());
         }
         public static int Compare(in Value a, in Value b)
         {
@@ -524,125 +491,6 @@ namespace Petit.Core
             }
             return a;
         }
-        private static ValueType OpValueGet(
-            in Value a,
-            in Value b,
-            out int aiValue,
-            out int biValue,
-            out float afValue,
-            out float bfValue,
-            bool prioritizeString = false
-            )
-        {
-            bool stringOp = false;
-            bool floatOp = false;
-            aiValue = 0;
-            biValue = 0;
-            afValue = 0.0f;
-            bfValue = 0.0f;
-
-            if (a.IsInvalid && b.IsInvalid)
-            {
-                return ValueType.Invalid;
-            }
-            if (a.IsNaN || b.IsNaN)
-            {
-                return ValueType.NaN;
-            }
-            if (prioritizeString && (a.IsString || b.IsString))
-            {
-                // 文字列優先
-                stringOp = true;
-            }
-            else if (a.IsInvalid && b.IsString)
-            {
-                // aだけ無効
-                stringOp = true;
-            }
-            else if (a.IsString && b.IsInvalid)
-            {
-                // bだけ無効
-                stringOp = true;
-            }
-            if (stringOp)
-            {
-                // 既に文字列結合ならパース処理スキップ
-                return ValueType.String;
-            }
-            if (a.IsString)
-            {
-                if (bool.TryParse(a._value.StringValue, out bool bo))
-                {
-                    aiValue = bo ? 1 : 0;
-                    afValue = aiValue;
-                }
-                else if (int.TryParse(a._value.StringValue, out int i))
-                {
-                    aiValue = i;
-                    afValue = aiValue;
-                }
-                else if (float.TryParse(a._value.StringValue, out float f))
-                {
-                    floatOp = true;
-                    afValue = f;
-                }
-                else
-                {
-                    stringOp = true;
-                }
-            }
-            else if (a.IsFloat)
-            {
-                floatOp = true;
-                afValue = a.ToFloat();
-            }
-            else
-            {
-                aiValue = a.ToInt();
-                afValue = aiValue;
-            }
-            if (b.IsString)
-            {
-                if (bool.TryParse(b._value.StringValue, out bool bo))
-                {
-                    biValue = bo ? 1 : 0;
-                    bfValue = biValue;
-                }
-                else if (int.TryParse(b._value.StringValue, out int i))
-                {
-                    biValue = i;
-                    bfValue = biValue;
-                }
-                else if (float.TryParse(b._value.StringValue, out float f))
-                {
-                    floatOp = true;
-                    bfValue = f;
-                }
-                else
-                {
-                    stringOp = true;
-                }
-            }
-            else if (b.IsFloat)
-            {
-                floatOp = true;
-                bfValue = b.ToFloat();
-            }
-            else
-            {
-                biValue = b.ToInt();
-                bfValue = biValue;
-            }
-            if (stringOp)
-            {
-                return ValueType.String;
-            }
-            if (floatOp)
-            {
-                return ValueType.Float;
-            }
-            return ValueType.Int;
-        }
         public static Value operator +(in Value a, in Value b)
         {
             ValueType opType = OpValueGet(a, b,
@@ -774,6 +622,168 @@ namespace Petit.Core
             }
             return Value.Invalid;
         }
+        public static Value operator ~(in Value a)
+        {
+            return new Value(~a.ToInt());
+        }
+        public static Value operator &(in Value a, in Value b)
+        {
+            return new Value(a.ToInt() & b.ToInt());
+        }
+        public static Value operator |(in Value a, in Value b)
+        {
+            return new Value(a.ToInt() | b.ToInt());
+        }
+        public static Value operator ^(in Value a, in Value b)
+        {
+            return new Value(a.ToInt() ^ b.ToInt());
+        }
+        public static Value operator <<(in Value a, int b)
+        {
+            return new Value(a.ToInt() << b);
+        }
+        public static Value operator >>(in Value a, int b)
+        {
+            return new Value(a.ToInt() << b);
+        }
+        public override int GetHashCode()
+        {
+            switch (_type)
+            {
+                case ValueType.Bool:
+                    return _value.BoolValue.GetHashCode();
+                case ValueType.Int:
+                    return _value.IntValue.GetHashCode();
+                case ValueType.Float:
+                    return _value.FloatValue.GetHashCode();
+                case ValueType.String:
+                    return _value.StringValue.GetHashCode();
+                case ValueType.NaN:
+                    return float.NaN.GetHashCode();
+            }
+            return 0;
+        }
+
+        private static ValueType OpValueGet(
+            in Value a,
+            in Value b,
+            out int aiValue,
+            out int biValue,
+            out float afValue,
+            out float bfValue,
+            bool prioritizeString = false
+            )
+        {
+            bool stringOp = false;
+            bool floatOp = false;
+            aiValue = 0;
+            biValue = 0;
+            afValue = 0.0f;
+            bfValue = 0.0f;
+
+            if (a.IsInvalid && b.IsInvalid)
+            {
+                return ValueType.Invalid;
+            }
+            if (a.IsNaN || b.IsNaN)
+            {
+                return ValueType.NaN;
+            }
+            if (prioritizeString && (a.IsString || b.IsString))
+            {
+                // 文字列優先
+                stringOp = true;
+            }
+            else if (a.IsInvalid && b.IsString)
+            {
+                // aだけ無効
+                stringOp = true;
+            }
+            else if (a.IsString && b.IsInvalid)
+            {
+                // bだけ無効
+                stringOp = true;
+            }
+            if (stringOp)
+            {
+                // 既に文字列結合ならパース処理スキップ
+                return ValueType.String;
+            }
+            if (a.IsString)
+            {
+                if (bool.TryParse(a._value.StringValue, out bool bo))
+                {
+                    aiValue = bo ? 1 : 0;
+                    afValue = aiValue;
+                }
+                else if (int.TryParse(a._value.StringValue, out int i))
+                {
+                    aiValue = i;
+                    afValue = aiValue;
+                }
+                else if (float.TryParse(a._value.StringValue, out float f))
+                {
+                    floatOp = true;
+                    afValue = f;
+                }
+                else
+                {
+                    stringOp = true;
+                }
+            }
+            else if (a.IsFloat)
+            {
+                floatOp = true;
+                afValue = a.ToFloat();
+            }
+            else
+            {
+                aiValue = a.ToInt();
+                afValue = aiValue;
+            }
+            if (b.IsString)
+            {
+                if (bool.TryParse(b._value.StringValue, out bool bo))
+                {
+                    biValue = bo ? 1 : 0;
+                    bfValue = biValue;
+                }
+                else if (int.TryParse(b._value.StringValue, out int i))
+                {
+                    biValue = i;
+                    bfValue = biValue;
+                }
+                else if (float.TryParse(b._value.StringValue, out float f))
+                {
+                    floatOp = true;
+                    bfValue = f;
+                }
+                else
+                {
+                    stringOp = true;
+                }
+            }
+            else if (b.IsFloat)
+            {
+                floatOp = true;
+                bfValue = b.ToFloat();
+            }
+            else
+            {
+                biValue = b.ToInt();
+                bfValue = biValue;
+            }
+            if (stringOp)
+            {
+                return ValueType.String;
+            }
+            if (floatOp)
+            {
+                return ValueType.Float;
+            }
+            return ValueType.Int;
+        }
+
         enum ValueType
         {
             Invalid,
