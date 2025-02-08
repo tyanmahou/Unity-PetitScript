@@ -644,7 +644,7 @@ namespace Petit.Core
         }
         public static Value operator >>(in Value a, int b)
         {
-            return new Value(a.ToInt() << b);
+            return new Value(a.ToInt() >> b);
         }
         public override int GetHashCode()
         {
