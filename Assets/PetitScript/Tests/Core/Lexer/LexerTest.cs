@@ -241,6 +241,133 @@ namespace Petit.Core.Lexer
             }
         }
         [Test]
+        public void TestBit()
+        {
+            var lexer = new Lexer();
+            {
+                var tokens = lexer.Tokenize("~a");
+
+                Assert.AreEqual(tokens.Count, 2);
+                Assert.AreEqual(tokens[0].Value, "~");
+                Assert.AreEqual(tokens[0].Type, TokenType.BitComplement);
+                Assert.AreEqual(tokens[1].Value, "a");
+                Assert.AreEqual(tokens[1].Type, TokenType.Ident);
+            }
+            {
+                var tokens = lexer.Tokenize("a | b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "|");
+                Assert.AreEqual(tokens[1].Type, TokenType.BitOr);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+
+            {
+                var tokens = lexer.Tokenize("a & b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "&");
+                Assert.AreEqual(tokens[1].Type, TokenType.BitAnd);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+            {
+                var tokens = lexer.Tokenize("a ^ b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "^");
+                Assert.AreEqual(tokens[1].Type, TokenType.BitXor);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+            {
+                var tokens = lexer.Tokenize("a << b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "<<");
+                Assert.AreEqual(tokens[1].Type, TokenType.ShiftLeft);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+            {
+                var tokens = lexer.Tokenize("a >> b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, ">>");
+                Assert.AreEqual(tokens[1].Type, TokenType.ShiftRight);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+            ////////////////////////////////////////////
+            {
+                var tokens = lexer.Tokenize("a |= b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "|=");
+                Assert.AreEqual(tokens[1].Type, TokenType.BitOrAssign);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+
+            {
+                var tokens = lexer.Tokenize("a &= b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "&=");
+                Assert.AreEqual(tokens[1].Type, TokenType.BitAndAssign);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+            {
+                var tokens = lexer.Tokenize("a ^= b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "^=");
+                Assert.AreEqual(tokens[1].Type, TokenType.BitXorAssign);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+            {
+                var tokens = lexer.Tokenize("a <<= b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, "<<=");
+                Assert.AreEqual(tokens[1].Type, TokenType.ShiftLeftAssign);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+            {
+                var tokens = lexer.Tokenize("a >>= b");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "a");
+                Assert.AreEqual(tokens[0].Type, TokenType.Ident);
+                Assert.AreEqual(tokens[1].Value, ">>=");
+                Assert.AreEqual(tokens[1].Type, TokenType.ShiftRightAssign);
+                Assert.AreEqual(tokens[2].Value, "b");
+                Assert.AreEqual(tokens[2].Type, TokenType.Ident);
+            }
+        }
+        [Test]
         public void TestParen()
         {
             var lexer = new Lexer();

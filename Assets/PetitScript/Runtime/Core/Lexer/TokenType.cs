@@ -128,6 +128,36 @@
         LogicalOr,
 
         /// <summary>
+        /// &
+        /// </summary>
+        BitAnd,
+
+        /// <summary>
+        /// |
+        /// </summary>
+        BitOr,
+
+        /// <summary>
+        /// ^
+        /// </summary>
+        BitXor,
+
+        /// <summary>
+        /// ~
+        /// </summary>
+        BitComplement,
+
+        /// <summary>
+        /// <<
+        /// </summary>
+        ShiftLeft,
+
+        /// <summary>
+        /// >>
+        /// </summary>
+        ShiftRight,
+
+        /// <summary>
         /// +
         /// </summary>
         Add,
@@ -183,6 +213,16 @@
         ModAssign,
 
         /// <summary>
+        /// <<=
+        /// </summary>
+        ShiftLeftAssign,
+
+        /// <summary>
+        /// >>=
+        /// </summary>
+        ShiftRightAssign,
+
+        /// <summary>
         /// ++
         /// </summary>
         Inc,
@@ -191,6 +231,26 @@
         /// --
         /// </summary>
         Dec,
+
+        /// <summary>
+        /// &=
+        /// </summary>
+        BitAndAssign,
+
+        /// <summary>
+        /// |=
+        /// </summary>
+        BitOrAssign,
+
+        /// <summary>
+        /// ^=
+        /// </summary>
+        BitXorAssign,
+
+        /// <summary>
+        /// ~=
+        /// </summary>
+        BitComplementAssign,
 
         /// <summary>
         /// if

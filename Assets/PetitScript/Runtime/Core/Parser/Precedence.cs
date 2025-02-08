@@ -8,9 +8,13 @@
         Not,
         Mul,
         Add,
+        Shift,
         Spaceship,
         Comp,
         Equals,
+        BitAnd,
+        BitXor,
+        BitOr,
         LogicalAnd,
         LogicalOr,
         Assign,
@@ -30,6 +34,7 @@
                     case TokenType.Minus:
                     case TokenType.Inc:
                     case TokenType.Dec:
+                    case TokenType.BitComplement:
                         return Precedence.Not;
                 }
             }
@@ -38,6 +43,7 @@
                 case TokenType.Inc:
                 case TokenType.Dec:
                     return Precedence.Dot;
+
                 case TokenType.Mul:
                 case TokenType.Div:
                 case TokenType.Mod:
@@ -46,6 +52,10 @@
                 case TokenType.Add:
                 case TokenType.Sub:
                     return Precedence.Add;
+
+                case TokenType.ShiftLeft:
+                case TokenType.ShiftRight:
+                    return Precedence.Shift;
 
                 case TokenType.Spaceship:
                     return Precedence.Spaceship;
@@ -62,6 +72,15 @@
                 case TokenType.NotIdentical:
                     return Precedence.Equals;
 
+                case TokenType.BitAnd:
+                    return Precedence.BitAnd;
+
+                case TokenType.BitXor:
+                    return Precedence.BitXor;
+
+                case TokenType.BitOr:
+                    return Precedence.BitOr;
+
                 case TokenType.LogicalAnd:
                     return Precedence.LogicalAnd;
 
@@ -75,36 +94,30 @@
                 case TokenType.MulAssign:
                 case TokenType.DivAssign:
                 case TokenType.ModAssign:
+                case TokenType.BitAndAssign:
+                case TokenType.BitOrAssign:
+                case TokenType.BitXorAssign:
+                case TokenType.BitComplementAssign:
+                case TokenType.ShiftLeftAssign:
+                case TokenType.ShiftRightAssign:
                     return Precedence.Assign;
                 default:
                     return Precedence.Lowest;
             }
         }
-        public static bool RightToLeft(TokenType tokenType, bool prefix = false)
+        public static bool RightToLeft(Precedence precedence)
         {
-            if (prefix)
+            switch (precedence)
             {
-                switch (tokenType)
-                {
-                    case TokenType.Not:
-                    case TokenType.Plus:
-                    case TokenType.Minus:
-                    case TokenType.Inc:
-                    case TokenType.Dec:
-                        return true;
-                }
-            }
-            switch (tokenType)
-            {
-                case TokenType.Assign:
-                case TokenType.AddAssign:
-                case TokenType.SubAssign:
-                case TokenType.MulAssign:
-                case TokenType.DivAssign:
-                case TokenType.ModAssign:
+                case Precedence.Not:
+                case Precedence.Assign:
                     return true;
             }
             return false;
+        }
+        public static bool RightToLeft(TokenType tokenType, bool prefix = false)
+        {
+            return RightToLeft(FromTokenType(tokenType, prefix));
         }
     }
 }

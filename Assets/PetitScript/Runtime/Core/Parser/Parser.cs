@@ -269,6 +269,7 @@ namespace Petit.Core.Parser
                     case TokenType.Minus:
                     case TokenType.Inc:
                     case TokenType.Dec:
+                    case TokenType.BitComplement:
                         return ParsePrefixUnaryExpression;
                     case TokenType.LParen:
                         return ParseParen;
@@ -290,26 +291,48 @@ namespace Petit.Core.Parser
                         return ParsePostfixUnaryExpression;
                     case TokenType.Add:
                     case TokenType.Sub:
+
                     case TokenType.Mul:
                     case TokenType.Div:
                     case TokenType.Mod:
+
+                    case TokenType.ShiftLeft:
+                    case TokenType.ShiftRight:
+
+                    case TokenType.Spaceship:
+
                     case TokenType.LessThan:
                     case TokenType.LessThanOrEquals:
                     case TokenType.GreaterThan:
                     case TokenType.GreaterThanOrEquals:
-                    case TokenType.Spaceship:
+
                     case TokenType.Equals:
                     case TokenType.Identical:
                     case TokenType.NotEquals:
                     case TokenType.NotIdentical:
-                    case TokenType.LogicalOr:
+
+                    case TokenType.BitAnd:
+
+                    case TokenType.BitXor:
+
+                    case TokenType.BitOr:
+
                     case TokenType.LogicalAnd:
+
+                    case TokenType.LogicalOr:
+
                     case TokenType.Assign:
                     case TokenType.AddAssign:
                     case TokenType.SubAssign:
                     case TokenType.MulAssign:
                     case TokenType.DivAssign:
                     case TokenType.ModAssign:
+                    case TokenType.BitAndAssign:
+                    case TokenType.BitOrAssign:
+                    case TokenType.BitXorAssign:
+                    case TokenType.BitComplementAssign:
+                    case TokenType.ShiftLeftAssign:
+                    case TokenType.ShiftRightAssign:
                         return ParseBinaryExpression;
                     case TokenType.Question:
                         return ParseTernaryExpression;
@@ -405,11 +428,10 @@ namespace Petit.Core.Parser
         }
         PrefixUnaryExpression ParsePrefixUnaryExpression()
         {
-            TokenType tokenType = _tokens[_pos].Type;
             Precedence precedence = PrecedenceExtensions.FromTokenType(_tokens[_pos].Type, prefix: true);
             string op = _tokens[_pos].Value;
             ++_pos;
-            bool rightToLeft = PrecedenceExtensions.RightToLeft(tokenType);
+            bool rightToLeft = PrecedenceExtensions.RightToLeft(precedence);
             IExpression right = ParseExpression(precedence);
             return new PrefixUnaryExpression()
             {
@@ -429,12 +451,11 @@ namespace Petit.Core.Parser
         }
         BinaryExpression ParseBinaryExpression(IExpression left)
         {
-            TokenType tokenType = _tokens[_pos].Type;
-            Precedence precedence = PrecedenceExtensions.FromTokenType(tokenType);
+            Precedence precedence = PrecedenceExtensions.FromTokenType(_tokens[_pos].Type);
             string op = _tokens[_pos].Value;
             ++_pos;
 
-            bool rightToLeft = PrecedenceExtensions.RightToLeft(tokenType);
+            bool rightToLeft = PrecedenceExtensions.RightToLeft(precedence);
             IExpression right = ParseExpression(precedence, rightToLeft);
             return new BinaryExpression()
             {

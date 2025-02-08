@@ -264,7 +264,20 @@ namespace Petit.Core.Lexer
                 }
                 else if (line[pos] == '<')
                 {
-                    if (pos + 1 < length && line[pos + 1] == '=')
+                    if (pos + 1 < length && line[pos + 1] == '<')
+                    {
+                        if (pos + 2 < length && line[pos + 2] == '=')
+                        {
+                            _tokens.Add(new Token(TokenType.ShiftLeftAssign, "<<=", lineNum, pos + 1));
+                            pos += 3;
+                        }
+                        else
+                        {
+                            _tokens.Add(new Token(TokenType.ShiftLeft, "<<", lineNum, pos + 1));
+                            pos += 2;
+                        }
+                    }
+                    else if (pos + 1 < length && line[pos + 1] == '=')
                     {
                         if (pos + 2 < length && line[pos + 2] == '>')
                         {
@@ -285,7 +298,20 @@ namespace Petit.Core.Lexer
                 }
                 else if (line[pos] == '>')
                 {
-                    if (pos + 1 < length && line[pos + 1] == '=')
+                    if (pos + 1 < length && line[pos + 1] == '>')
+                    {
+                        if (pos + 2 < length && line[pos + 2] == '=')
+                        {
+                            _tokens.Add(new Token(TokenType.ShiftRightAssign, ">>=", lineNum, pos + 1));
+                            pos += 3;
+                        }
+                        else
+                        {
+                            _tokens.Add(new Token(TokenType.ShiftRight, ">>", lineNum, pos + 1));
+                            pos += 2;
+                        }
+                    }
+                    else if (pos + 1 < length && line[pos + 1] == '=')
                     {
                         _tokens.Add(new Token(TokenType.GreaterThanOrEquals, ">=", lineNum, pos + 1));
                         pos += 2;
@@ -317,15 +343,67 @@ namespace Petit.Core.Lexer
                         ++pos;
                     }
                 }
-                else if (line[pos] == '&' && pos + 1 < length && line[pos + 1] == '&')
+                else if (line[pos] == '&')
                 {
-                    _tokens.Add(new Token(TokenType.LogicalAnd, "&&", lineNum, pos + 1));
-                    pos += 2;
+                    if (pos + 1 < length && line[pos + 1] == '&')
+                    {
+                        _tokens.Add(new Token(TokenType.LogicalAnd, "&&", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.BitAndAssign, "&=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.BitAnd, "&", lineNum, pos + 1));
+                        ++pos;
+                    }
                 }
-                else if (line[pos] == '|' && pos + 1 < length && line[pos + 1] == '|')
+                else if (line[pos] == '|')
                 {
-                    _tokens.Add(new Token(TokenType.LogicalOr, "||", lineNum, pos + 1));
-                    pos += 2;
+                    if (pos + 1 < length && line[pos + 1] == '|')
+                    {
+                        _tokens.Add(new Token(TokenType.LogicalOr, "||", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.BitOrAssign, "|=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.BitOr, "|", lineNum, pos + 1));
+                        ++pos;
+                    }
+                }
+                else if (line[pos] == '^')
+                {
+                    if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.BitXorAssign, "^=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.BitXor, "^", lineNum, pos + 1));
+                        ++pos;
+                    }
+                }
+                else if (line[pos] == '~')
+                {
+                    if (pos + 1 < length && line[pos + 1] == '=')
+                    {
+                        _tokens.Add(new Token(TokenType.BitComplementAssign, "~=", lineNum, pos + 1));
+                        pos += 2;
+                    }
+                    else
+                    {
+                        _tokens.Add(new Token(TokenType.BitComplement, "~", lineNum, pos + 1));
+                        ++pos;
+                    }
                 }
                 else if (line[pos] == '+')
                 {
