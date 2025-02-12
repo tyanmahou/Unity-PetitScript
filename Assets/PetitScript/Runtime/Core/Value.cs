@@ -623,7 +623,6 @@ namespace Petit.Core
             return Value.Invalid;
         }
         // &&, || のためにビット演算は別で定義する
-        [Obsolete("Use BitwiseAnd")]
         public static Value operator &(in Value a, in Value b)
         {
             if (!a.ToBool())
@@ -632,7 +631,6 @@ namespace Petit.Core
             }
             return b;
         }
-        [Obsolete("Use BitwiseOr")]
         public static Value operator |(in Value a, in Value b)
         {
             if (a.ToBool())

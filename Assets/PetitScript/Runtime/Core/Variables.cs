@@ -74,7 +74,18 @@ namespace Petit.Core
             }
             return Value.Invalid;
         }
-
+        public Function GetFunc(string key)
+        {
+            if (_functions.TryGetValue(key, out Function func))
+            {
+                return func;
+            }
+            return null;
+        }
+        public void SetFunc(string key, Function func)
+        {
+            _functions.TryAdd(key, func);
+        }
         public Value this[string key]
         {
             get => Get(key);
@@ -83,9 +94,10 @@ namespace Petit.Core
         public void ClearLocal()
         {
             _variables.Clear();
+            _functions.Clear();
         }
         Dictionary<string, Value> _variables = new();
-
+        Dictionary<string, Function> _functions = new();
         static Dictionary<string, Value> _globalVariables = new();
     }
 }

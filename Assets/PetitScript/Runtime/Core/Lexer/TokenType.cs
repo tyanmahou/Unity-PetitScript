@@ -58,6 +58,11 @@
         Semicolon,
 
         /// <summary>
+        /// ,
+        /// </summary>
+        Comma,
+
+        /// <summary>
         /// .
         /// </summary>
         Dot,

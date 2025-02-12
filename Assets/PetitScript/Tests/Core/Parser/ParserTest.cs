@@ -9,6 +9,7 @@ namespace Petit.Core.Parser
         [Test]
         public void TestGloabalStatement()
         {
+            System.Action<int> a;
             string code = @"a";
             var root = Parse(code);
             Assert.AreEqual(root.Statements.Count, 1);

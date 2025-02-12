@@ -131,6 +131,79 @@ else
                 RunString(code, "minus", vars);
             }
         }
+        [Test]
+        public void TestFunc()
+        {
+            {
+                Interpreter interpreter = new();
+                interpreter.Variables.SetFunc("Add", Function.Bind((a1, a2) =>
+                {
+                    return a1 + a2;
+                }));
+                var result = interpreter.Run("Add(1, 2 * 2)");
+                Assert.AreEqual(result, 5);
+            }
+            {
+                Interpreter interpreter = new();
+                interpreter.Variables.SetFunc("Sub", Function.Bind(
+                    (a, b) => a - b,
+                    new Argument("a"),
+                    new Argument("b")
+                    ));
+                {
+                    var result = interpreter.Run("Sub(a: 1, b: 2)");
+                    Assert.AreEqual(result, -1);
+                }
+                {
+                    var result = interpreter.Run("Sub(b: 2, a: 1)");
+                    Assert.AreEqual(result, -1);
+                }
+                {
+                    var result = interpreter.Run("Sub(2, a: 1)");
+                    Assert.AreEqual(result, -1);
+                }
+                {
+                    var result = interpreter.Run("Sub(a: 1, 2)");
+                    Assert.AreEqual(result, -1);
+                }
+                {
+                    var result = interpreter.Run("Sub(b: 2, 1)");
+                    Assert.AreEqual(result, -1);
+                }
+                {
+                    var result = interpreter.Run("Sub(1, b: 2)");
+                    Assert.AreEqual(result, -1);
+                }
+                {
+                    var result = interpreter.Run("Sub(1, 2)");
+                    Assert.AreEqual(result, -1);
+                }
+                {
+                    var result = interpreter.Run("Sub(2, 1)");
+                    Assert.AreEqual(result, 1);
+                }
+            }
+            {
+                Interpreter interpreter = new();
+                interpreter.Variables.SetFunc("Add", Function.Bind(
+                    (a, b) => a + b,
+                    new Argument("a", new(1)),
+                    new Argument("b", new(2))
+                    ));
+                {
+                    var result = interpreter.Run("Add()");
+                    Assert.AreEqual(result, 3);
+                }
+                {
+                    var result = interpreter.Run("Add(10)");
+                    Assert.AreEqual(result, 12);
+                }
+                {
+                    var result = interpreter.Run("Add(b:10)");
+                    Assert.AreEqual(result, 11);
+                }
+            }
+        }
         Interpreter RunInt(string code, int actual)
         {
             Interpreter interpreter = new Interpreter();

@@ -42,6 +42,7 @@
             {
                 case TokenType.Inc:
                 case TokenType.Dec:
+                case TokenType.LParen:
                     return Precedence.Dot;
 
                 case TokenType.Mul:

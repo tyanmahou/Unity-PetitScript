@@ -1,4 +1,5 @@
 ﻿using Petit.Core.AST;
+using System.Linq;
 using System.Text;
 
 namespace Petit.Core.Executor
@@ -166,6 +167,10 @@ namespace Petit.Core.Executor
             else if (expr is TernaryExpression ternary)
             {
                 return ExecExpr(ternary);
+            }
+            else if (expr is FunctionCallExpression func)
+            {
+                return ExecExpr(func);
             }
             return (Value.Invalid, null);
         }
@@ -495,7 +500,23 @@ namespace Petit.Core.Executor
             }
             return default;
         }
-
+        (Value, string) ExecExpr(FunctionCallExpression expr)
+        {
+            string ident = string.Empty;
+            if (expr.Function is VariableExpression v)
+            {
+                ident = v.Ident;
+            }
+            else
+            {
+                throw new Exception.RuntimeErrorException("Not impliment function object");
+            }
+            Function func = _env.Variables.GetFunc(ident);
+            var args = expr.Args
+                .Select(arg => new Argument(arg.Name, ExecExpr(arg.Expression).Item1))
+                .ToList();
+            return (func.Invoke(args), null);
+        }
         Enviroment _env;
     }
 }

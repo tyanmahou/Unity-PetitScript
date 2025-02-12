@@ -114,7 +114,7 @@ namespace Petit.Core.Parser
                     continue;
                 }
             }
-            TryErrorCheckType("Not Found '}'", TokenType.RBrace);
+            TryErrorCheckType("Not found '}'", TokenType.RBrace);
             ++_pos; // }
             return block;
         }
@@ -126,13 +126,13 @@ namespace Petit.Core.Parser
             IfParam ParseParam()
             {
                 IfParam param = new IfParam();
-                TryErrorCheckType("Not Found if (", TokenType.LParen);
+                TryErrorCheckType("Not found if '('", TokenType.LParen);
                 // (
                 ++_pos;
 
                 param.Cond = ParseExpression();
 
-                TryErrorCheckType("Not Found if )", TokenType.RParen);
+                TryErrorCheckType("Not found if ')'", TokenType.RParen);
                 // )
                 ++_pos;
                 param.Statement = ParseStatement();
@@ -156,13 +156,13 @@ namespace Petit.Core.Parser
         {
             ++_pos; // while
             WhileStatement statement = new WhileStatement();
-            TryErrorCheckType("Not Found while (", TokenType.LParen);
+            TryErrorCheckType("Not Found while '('", TokenType.LParen);
             // (
             ++_pos;
 
             statement.Cond = ParseExpression();
 
-            TryErrorCheckType("Not Found while )", TokenType.RParen);
+            TryErrorCheckType("Not Found while ')'", TokenType.RParen);
             // )
             ++_pos;
             statement.Statement = ParseStatement();
@@ -172,7 +172,7 @@ namespace Petit.Core.Parser
         {
             ++_pos; // for
             ForStatement statement = new ForStatement();
-            TryErrorCheckType("Not Found for (", TokenType.LParen);
+            TryErrorCheckType("Not found for (", TokenType.LParen);
             // (
             ++_pos;
 
@@ -181,14 +181,14 @@ namespace Petit.Core.Parser
                 statement.Init = ParseExpression();
             }
 
-            TryErrorCheckType("Not Found for ';'", TokenType.Semicolon);
+            TryErrorCheckType("Not found for ';'", TokenType.Semicolon);
             // ;
             ++_pos;
             if (_pos < _tokens.Count && _tokens[_pos].Type != TokenType.Semicolon)
             {
                 statement.Cond = ParseExpression();
             }
-            TryErrorCheckType("Not Found for ';'", TokenType.Semicolon);
+            TryErrorCheckType("Not found for ';'", TokenType.Semicolon);
             // ;
             ++_pos;
 
@@ -196,7 +196,7 @@ namespace Petit.Core.Parser
             {
                 statement.Loop = ParseExpression();
             }
-            TryErrorCheckType("Not Found for )", TokenType.RParen);
+            TryErrorCheckType("Not found for ')'", TokenType.RParen);
             // )
             ++_pos;
             statement.Statement = ParseStatement();
@@ -288,6 +288,9 @@ namespace Petit.Core.Parser
                     case TokenType.Inc:
                     case TokenType.Dec:
                         return ParsePostfixUnaryExpression;
+                    case TokenType.LParen:
+                        return ParseFunctionCallExpression;
+
                     case TokenType.Add:
                     case TokenType.Sub:
 
@@ -399,7 +402,7 @@ namespace Petit.Core.Parser
                     {
                         expr.Expressions.Add(inner);
                     }
-                    TryErrorCheckType("Not Found }", TokenType.RBrace);
+                    TryErrorCheckType("Not found '}' by string interpolation", TokenType.RBrace);
                     ++_pos; // }
                 }
                 else if (_tokens[_pos].Type == TokenType.DoubleQuote)
@@ -411,7 +414,7 @@ namespace Petit.Core.Parser
                     ++_pos;
                 }
             }
-            TryErrorCheckType("Not Found \"", TokenType.DoubleQuote);
+            TryErrorCheckType("Not found string '\"'", TokenType.DoubleQuote);
             ++_pos; // }
             return expr;
         }
@@ -470,7 +473,7 @@ namespace Petit.Core.Parser
             IExpression mid = ParseExpression(precedence, rightToLeft: true);
             if (_pos >= _tokens.Count)
             {
-                Error("Not Found ternary operator");
+                Error($"Not found infix operator with '{op}'");
                 return null;
             }
             string op2 = _tokens[_pos].Value;
@@ -486,16 +489,69 @@ namespace Petit.Core.Parser
                 Right = right,
             };
         }
+        FunctionCallExpression ParseFunctionCallExpression(IExpression left)
+        {
+            var expr = new FunctionCallExpression();
+            expr.Function = left;
+            string op = _tokens[_pos].Value;
+            ++_pos; // (
+
+            // Argument
+            do
+            {
+                AST.Argument arg = default;
+                bool useName = false;
+                if (TryCheckNextType(TokenType.Ident, TokenType.Colon))
+                {
+                    // 名前付き引数
+                    arg.Name = _tokens[_pos].Value;
+                    _pos += 2; // name:
+                    useName = true;
+                }
+                var value = ParseExpression();
+                if (value is null)
+                {
+                    if (useName)
+                    {
+                        // 名前付きなのに式がない
+                        Error($"Not found function argument with {arg.Name}");
+                    }
+                    break;
+                }
+                arg.Expression = value;
+                expr.Args.Add(arg);
+
+                if (TryCheckType(TokenType.Comma))
+                {
+                    ++_pos; // ,
+                }
+                else
+                {
+                    break; // 引数終わり
+                }
+            } while (true);
+            TryErrorCheckType("Not found function call')'", TokenType.RParen);
+            ++_pos; // )
+            return expr;
+        }
         IExpression ParseParen()
         {
             // (
             ++_pos;
             IExpression expr = ParseExpression();
 
-            TryErrorCheckType("Not Found ')'", TokenType.RParen);
+            TryErrorCheckType("Not found ')'", TokenType.RParen);
             // )
             ++_pos;
             return expr;
+        }
+        bool TryCheckType(TokenType type)
+        {
+            return _pos < _tokens.Count && _tokens[_pos].Type == type;
+        }
+        bool TryCheckNextType(TokenType type, TokenType typeNext)
+        {
+            return _pos + 1 < _tokens.Count && _tokens[_pos].Type == type && _tokens[_pos + 1].Type == typeNext;
         }
         bool TryErrorCheckType(string message, TokenType type)
         {

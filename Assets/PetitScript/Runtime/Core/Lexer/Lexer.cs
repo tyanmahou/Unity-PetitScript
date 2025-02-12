@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Petit.Core.Exception;
+using System;
 using System.Collections.Generic;
 
 namespace Petit.Core.Lexer
@@ -229,6 +230,11 @@ namespace Petit.Core.Lexer
                 else if (line[pos] == '\\')
                 {
                     _tokens.Add(new Token(TokenType.BackSlash, "\\", lineNum, pos + 1));
+                    ++pos;
+                }
+                else if (line[pos] == ',')
+                {
+                    _tokens.Add(new Token(TokenType.Comma, "n", lineNum, pos + 1));
                     ++pos;
                 }
                 else if (line[pos] == '.')
@@ -481,6 +487,11 @@ namespace Petit.Core.Lexer
                 {
                     _tokens.Add(new Token(TokenType.Question, "?", lineNum, pos + 1));
                     ++pos;
+                }
+                else
+                {
+                    // 不明な文字
+                    throw new SyntaxErrorException($"Unknown token '{line[pos]}'", lineNum, pos + 1);
                 }
             }
 
