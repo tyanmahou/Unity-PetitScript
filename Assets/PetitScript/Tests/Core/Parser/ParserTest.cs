@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using System.Collections.Generic;
 using Petit.Core.AST;
+using Petit.Core.Exception;
 
 namespace Petit.Core.Parser
 {
@@ -10,7 +10,7 @@ namespace Petit.Core.Parser
         public void TestGloabalStatement()
         {
             string code = @"a";
-            var (root, errors) = Parse(code);
+            var root = Parse(code);
             Assert.AreEqual(root.Statements.Count, 1);
 
             var e = As<ExpressionStatement>(root?.Statements?[0]);
@@ -130,15 +130,18 @@ namespace Petit.Core.Parser
         public void TestParenError()
         {
             string code = @"(a || b && c";
-            var (root, errors) = Parse(code);
-            Assert.AreEqual(errors.Count, 1);
-            Assert.AreEqual(errors[0].Line, 1);
+            var exception = Assert.Catch<SyntaxErrorException>(() =>
+            {
+                Parse(code);
+            });
+            Assert.AreEqual(exception.Line, 1);
+            Assert.AreEqual(exception.Column, 12);
         }
         [Test]
         public void TestMultiStatement()
         {
             string code = @"a=10;a+=2;";
-            var (root, errors) = Parse(code);
+            var root = Parse(code);
             Assert.AreEqual(root.Statements.Count, 2);
         }
         [Test]
@@ -158,7 +161,7 @@ else
    ""minus"";
 }
 ";
-            var (root, errors) = Parse(code);
+            var root = Parse(code);
             var ifState = As<IfStatement>(root?.Statements?[0]);
             Assert.True(ifState != null);
             Assert.True(ifState.IfStatements.Count == 2);
@@ -172,7 +175,7 @@ else
             Assert.True(v is U);
             return v as U;
         }
-        private (AST.GlobalStatement, IReadOnlyList<SyntaxError>) Parse(string code)
+        private AST.GlobalStatement Parse(string code)
         {
             Lexer.Lexer lexer = new();
             var tokens = lexer.Tokenize(code);
@@ -181,7 +184,7 @@ else
         }
         private IExpression GetExpr(string code)
         {
-            var (root, errors) = Parse(code);
+            var root = Parse(code);
             var e = As<ExpressionStatement>(root?.Statements?[0]);
             return e?.Expression;
         }

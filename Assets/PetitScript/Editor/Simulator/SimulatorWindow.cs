@@ -36,13 +36,13 @@ namespace Petit
                 var code = (_scriptFile != null) ? _scriptFile.Code : _scriptCode;
                 var interpreter = new Core.Interpreter();
                 interpreter
-                    .SetOnResult((string v) =>
+                    .Then((string v) =>
                     {
                         _result = v;
                         _error = false;
                     })
-                    .SetOnSyntaxError(e => {
-                        _result = e;
+                    .Catch(e => {
+                        _result = e.Message;
                         _error = true;
                     })
                     .Run(code)

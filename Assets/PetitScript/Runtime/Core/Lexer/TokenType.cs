@@ -130,22 +130,22 @@
         /// <summary>
         /// &
         /// </summary>
-        BitAnd,
+        BitwiseAnd,
 
         /// <summary>
         /// |
         /// </summary>
-        BitOr,
+        BitwiseOr,
 
         /// <summary>
         /// ^
         /// </summary>
-        BitXor,
+        BitwiseXor,
 
         /// <summary>
         /// ~
         /// </summary>
-        BitComplement,
+        BitwiseNot,
 
         /// <summary>
         /// <<
@@ -235,22 +235,17 @@
         /// <summary>
         /// &=
         /// </summary>
-        BitAndAssign,
+        BitwiseAndAssign,
 
         /// <summary>
         /// |=
         /// </summary>
-        BitOrAssign,
+        BitwiseOrAssign,
 
         /// <summary>
         /// ^=
         /// </summary>
-        BitXorAssign,
-
-        /// <summary>
-        /// ~=
-        /// </summary>
-        BitComplementAssign,
+        BitwiseXorAssign,
 
         /// <summary>
         /// if

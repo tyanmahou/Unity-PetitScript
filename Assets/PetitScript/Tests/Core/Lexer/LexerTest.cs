@@ -239,9 +239,20 @@ namespace Petit.Core.Lexer
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }
+            {
+                var tokens = lexer.Tokenize("true && true");
+
+                Assert.AreEqual(tokens.Count, 3);
+                Assert.AreEqual(tokens[0].Value, "true");
+                Assert.AreEqual(tokens[0].Type, TokenType.Value);
+                Assert.AreEqual(tokens[1].Value, "&&");
+                Assert.AreEqual(tokens[1].Type, TokenType.LogicalAnd);
+                Assert.AreEqual(tokens[2].Value, "true");
+                Assert.AreEqual(tokens[2].Type, TokenType.Value);
+            }
         }
         [Test]
-        public void TestBit()
+        public void TestBitwise()
         {
             var lexer = new Lexer();
             {
@@ -249,7 +260,7 @@ namespace Petit.Core.Lexer
 
                 Assert.AreEqual(tokens.Count, 2);
                 Assert.AreEqual(tokens[0].Value, "~");
-                Assert.AreEqual(tokens[0].Type, TokenType.BitComplement);
+                Assert.AreEqual(tokens[0].Type, TokenType.BitwiseNot);
                 Assert.AreEqual(tokens[1].Value, "a");
                 Assert.AreEqual(tokens[1].Type, TokenType.Ident);
             }
@@ -260,7 +271,7 @@ namespace Petit.Core.Lexer
                 Assert.AreEqual(tokens[0].Value, "a");
                 Assert.AreEqual(tokens[0].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[1].Value, "|");
-                Assert.AreEqual(tokens[1].Type, TokenType.BitOr);
+                Assert.AreEqual(tokens[1].Type, TokenType.BitwiseOr);
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }
@@ -272,7 +283,7 @@ namespace Petit.Core.Lexer
                 Assert.AreEqual(tokens[0].Value, "a");
                 Assert.AreEqual(tokens[0].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[1].Value, "&");
-                Assert.AreEqual(tokens[1].Type, TokenType.BitAnd);
+                Assert.AreEqual(tokens[1].Type, TokenType.BitwiseAnd);
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }
@@ -283,7 +294,7 @@ namespace Petit.Core.Lexer
                 Assert.AreEqual(tokens[0].Value, "a");
                 Assert.AreEqual(tokens[0].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[1].Value, "^");
-                Assert.AreEqual(tokens[1].Type, TokenType.BitXor);
+                Assert.AreEqual(tokens[1].Type, TokenType.BitwiseXor);
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }
@@ -317,7 +328,7 @@ namespace Petit.Core.Lexer
                 Assert.AreEqual(tokens[0].Value, "a");
                 Assert.AreEqual(tokens[0].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[1].Value, "|=");
-                Assert.AreEqual(tokens[1].Type, TokenType.BitOrAssign);
+                Assert.AreEqual(tokens[1].Type, TokenType.BitwiseOrAssign);
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }
@@ -329,7 +340,7 @@ namespace Petit.Core.Lexer
                 Assert.AreEqual(tokens[0].Value, "a");
                 Assert.AreEqual(tokens[0].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[1].Value, "&=");
-                Assert.AreEqual(tokens[1].Type, TokenType.BitAndAssign);
+                Assert.AreEqual(tokens[1].Type, TokenType.BitwiseAndAssign);
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }
@@ -340,7 +351,7 @@ namespace Petit.Core.Lexer
                 Assert.AreEqual(tokens[0].Value, "a");
                 Assert.AreEqual(tokens[0].Type, TokenType.Ident);
                 Assert.AreEqual(tokens[1].Value, "^=");
-                Assert.AreEqual(tokens[1].Type, TokenType.BitXorAssign);
+                Assert.AreEqual(tokens[1].Type, TokenType.BitwiseXorAssign);
                 Assert.AreEqual(tokens[2].Value, "b");
                 Assert.AreEqual(tokens[2].Type, TokenType.Ident);
             }

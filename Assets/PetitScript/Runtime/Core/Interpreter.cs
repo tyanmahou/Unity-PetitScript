@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Petit.Core
 {
@@ -19,82 +18,102 @@ namespace Petit.Core
         }
 
         /// <summary>
-        /// リザルト
+        /// リザルト処理
         /// </summary>
-        public Action<Value> OnResult { get; set; }
-        public Interpreter SetOnResult(Action<Value> action)
+        public Interpreter Then(Action<Value> action)
         {
-            OnResult = action;
+            _onResult += action;
             return this;
         }
-        public Interpreter SetOnResult(Action<int> action)
+        public Interpreter Then(Action<int> action)
         {
-            OnResult = v => action?.Invoke(v.ToInt());
+            _onResult += v => action?.Invoke(v.ToInt());
             return this;
         }
-        public Interpreter SetOnResult(Action<float> action)
+        public Interpreter Then(Action<float> action)
         {
-            OnResult = v => action?.Invoke(v.ToFloat());
+            _onResult += v => action?.Invoke(v.ToFloat());
             return this;
         }
-        public Interpreter SetOnResult(Action<string> action)
+        public Interpreter Then(Action<string> action)
         {
-            OnResult = v => action?.Invoke(v.ToString());
+            _onResult += v => action?.Invoke(v.ToString());
             return this;
         }
-        public Interpreter SetOnResult(Action<bool> action)
+        public Interpreter Then(Action<bool> action)
         {
-            OnResult = v => action?.Invoke(v.ToBool());
+            _onResult += v => action?.Invoke(v.ToBool());
             return this;
         }
         /// <summary>
-        /// シンタックスエラー時処理
+        /// エラー時処理
         /// </summary>
-        public Action<string> OnSyntaxError {  get; set; }
-        public Interpreter SetOnSyntaxError(Action<string> action)
+        public Interpreter Catch(Action<System.Exception> action)
         {
-            OnSyntaxError = action;
+            _onCatchError += ex =>
+            {
+                action?.Invoke(ex);
+                return false;
+            };
+            return this;
+        }
+        public Interpreter Catch<T>(Action<T> action)
+            where T : System.Exception
+        {
+            _onCatchError += ex =>
+            {
+                if (ex is T exT)
+                {
+                    action?.Invoke(exT);
+                    return true;
+                }
+                return false;
+            };
+            return this;
+        }
+        public Interpreter Catch(Action<string> action)
+        {
+            _onCatchError += ex =>
+            {
+                action?.Invoke(ex.Message);
+                return false;
+            };
             return this;
         }
         public Value Run(string code)
         {
-            var lexer = new Lexer.Lexer();
-            var tokens = lexer.Tokenize(code);
-
-            var parser = new Parser.Parser();
-            var (ast, errors) = parser.Parse(tokens);
-
-            if (SyntaxError(errors))
+            Value result;
+            try
             {
-                // 構文エラー
-                return Value.Invalid;
-            }
+                var lexer = new Lexer.Lexer();
+                var tokens = lexer.Tokenize(code);
 
-            var executer = new Executor.Executor(_env);
-            var result = executer.Exec(ast);
-            OnResult?.Invoke(result);
+                var parser = new Parser.Parser();
+                var ast = parser.Parse(tokens);
+                var executer = new Executor.Executor(_env);
+                result = executer.Exec(ast);
+            }
+            catch (System.Exception ex)
+            {
+                if (_onCatchError != null)
+                {
+                    bool catched = false;
+                    foreach (var catchAction in _onCatchError.GetInvocationList().Cast<Func<System.Exception, bool>>())
+                    {
+                        catched |= catchAction.Invoke(ex);
+                    }
+                    if (catched)
+                    {
+                        return Value.Invalid;
+                    }
+                }
+                throw;
+            }
+            _onResult?.Invoke(result);
             return result;
         }
-
-        bool SyntaxError(IReadOnlyList<Parser.SyntaxError> errors)
-        {
-            if (errors is null || errors.Count == 0)
-            {
-                return false;
-            }
-            if (OnSyntaxError is null)
-            {
-                return true;
-            }
-            StringBuilder errorBuilder = new StringBuilder();
-            errorBuilder.AppendLine("[Petit] SyntaxError");
-            for (int i = 0; i < errors.Count; ++i) 
-            {
-                errorBuilder.AppendLine(errors[i].ToString());
-            }
-            OnSyntaxError?.Invoke(errorBuilder.ToString());
-            return true;
-        }
         Enviroment _env = new();
+        Func<System.Exception, bool> _onCatchError;
+        Action<Value> _onResult;
     }
 }

@@ -199,21 +199,21 @@ namespace Petit.Core.Executor
         }
         (Value, string) ExecExpr(PrefixUnaryExpression expr)
         {
-            var eval = ExecExpr(expr.Right);
             if (expr.Op == "!")
             {
-                return (!eval.Item1, null);
+                return (!ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "+")
             {
-                return (+eval.Item1, null);
+                return (+ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "-")
             {
-                return (-eval.Item1, null);
+                return (-ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "++")
             {
+                var eval = ExecExpr(expr.Right);
                 var result = eval.Item1 + new Value(1);
                 if (eval.Item2 != null)
                 {
@@ -223,6 +223,7 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "--")
             {
+                var eval = ExecExpr(expr.Right);
                 var result = eval.Item1 - new Value(1);
                 if (eval.Item2 != null)
                 {
@@ -232,15 +233,15 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "~")
             {
-                return (~eval.Item1, null);
+                return (Value.BitwiseNot(ExecExpr(expr.Right).Item1), null);
             }
-            return eval;
+            return ExecExpr(expr.Right);
         }
         (Value, string) ExecExpr(PostfixUnaryExpression expr)
         {
-            var eval = ExecExpr(expr.Left);
             if (expr.Op == "++")
             {
+                var eval = ExecExpr(expr.Left);
                 var result = eval.Item1 + new Value(1);
                 if (eval.Item2 != null)
                 {
@@ -250,6 +251,7 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "--")
             {
+                var eval = ExecExpr(expr.Left);
                 var result = eval.Item1 - new Value(1);
                 if (eval.Item2 != null)
                 {
@@ -257,98 +259,99 @@ namespace Petit.Core.Executor
                 }
                 return (eval.Item1, null);
             }
-            return eval;
+            return ExecExpr(expr.Left);
         }
         (Value, string) ExecExpr(BinaryExpression expr)
         {
-            var left = ExecExpr(expr.Left);
-            var right = ExecExpr(expr.Right);
+            // 短絡評価
             if (expr.Op == "&&")
             {
-                return (left.Item1 && right.Item1, null);
+                return (ExecExpr(expr.Left).Item1 && ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "||")
             {
-                return (left.Item1 || right.Item1, null);
+                return (ExecExpr(expr.Left).Item1 || ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "==")
             {
-                return (new Value(left.Item1 ==  right.Item1), null);
+                return (new Value(ExecExpr(expr.Left).Item1 == ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == "===")
             {
-                return (new Value(Value.Identical(left.Item1, right.Item1)), null);
+                return (new Value(Value.Identical(ExecExpr(expr.Left).Item1, ExecExpr(expr.Right).Item1)), null);
             }
             else if (expr.Op == "!=")
             {
-                return (new Value(left.Item1 != right.Item1), null);
+                return (new Value(ExecExpr(expr.Left).Item1 != ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == "!==")
             {
-                return (new Value(Value.NotIdentical(left.Item1, right.Item1)), null);
+                return (new Value(Value.NotIdentical(ExecExpr(expr.Left).Item1, ExecExpr(expr.Right).Item1)), null);
             }
             else if (expr.Op == ">")
             {
-                return (new Value(left.Item1 > right.Item1), null);
+                return (new Value(ExecExpr(expr.Left).Item1 > ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == "<")
             {
-                return (new Value(left.Item1 < right.Item1), null);
+                return (new Value(ExecExpr(expr.Left).Item1 < ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == ">=")
             {
-                return (new Value(left.Item1 >= right.Item1), null);
+                return (new Value(ExecExpr(expr.Left).Item1 >= ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == "<=")
             {
-                return (new Value(left.Item1 <= right.Item1), null);
+                return (new Value(ExecExpr(expr.Left).Item1 <= ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == "<=>")
             {
-                return (new Value(Value.Compare(left.Item1, right.Item1)), null);
+                return (new Value(Value.Compare(ExecExpr(expr.Left).Item1, ExecExpr(expr.Right).Item1)), null);
             }
             else if (expr.Op == "&")
             {
-                return (left.Item1 & right.Item1, null);
+                return (Value.BitwiseAnd(ExecExpr(expr.Left).Item1, ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == "|")
             {
-                return (left.Item1 | right.Item1, null);
+                return (Value.BitwiseOr(ExecExpr(expr.Left).Item1, ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == "^")
             {
-                return (left.Item1 ^ right.Item1, null);
+                return (Value.BitwiseXor(ExecExpr(expr.Left).Item1, ExecExpr(expr.Right).Item1), null);
             }
             else if (expr.Op == "<<")
             {
-                return (left.Item1 << right.Item1.ToInt(), null);
+                return (ExecExpr(expr.Left).Item1 << ExecExpr(expr.Right).Item1.ToInt(), null);
             }
             else if (expr.Op == ">>")
             {
-                return (left.Item1 >> right.Item1.ToInt(), null);
+                return (ExecExpr(expr.Left).Item1 >> ExecExpr(expr.Right).Item1.ToInt(), null);
             }
             else if (expr.Op == "+")
             {
-                return (left.Item1 + right.Item1, null);
+                return (ExecExpr(expr.Left).Item1 + ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "-")
             {
-                return (left.Item1 - right.Item1, null);
+                return (ExecExpr(expr.Left).Item1 - ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "*")
             {
-                return (left.Item1 * right.Item1, null);
+                return (ExecExpr(expr.Left).Item1 * ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "/")
             {
-                return (left.Item1 / right.Item1, null);
+                return (ExecExpr(expr.Left).Item1 / ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "%")
             {
-                return (left.Item1 % right.Item1, null);
+                return (ExecExpr(expr.Left).Item1 % ExecExpr(expr.Right).Item1, null);
             }
             else if (expr.Op == "=")
             {
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
                 if (left.Item2 != null)
                 {
                     _env.Variables.Set(left.Item2, right.Item1);
@@ -357,6 +360,9 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "+=")
             {
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
                 var eval = left.Item1 + right.Item1;
                 if (left.Item2 != null)
                 {
@@ -366,6 +372,9 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "-=")
             {
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
                 var eval = left.Item1 - right.Item1;
                 if (left.Item2 != null)
                 {
@@ -375,6 +384,9 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "*=")
             {
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
                 var eval = left.Item1 * right.Item1;
                 if (left.Item2 != null)
                 {
@@ -384,6 +396,9 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "/=")
             {
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
                 var eval = left.Item1 / right.Item1;
                 if (left.Item2 != null)
                 {
@@ -393,6 +408,9 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "%=")
             {
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
                 var eval = left.Item1 % right.Item1;
                 if (left.Item2 != null)
                 {
@@ -402,7 +420,10 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "&=")
             {
-                var eval = left.Item1 & right.Item1;
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
+                var eval = Value.BitwiseAnd(left.Item1, right.Item1);
                 if (left.Item2 != null)
                 {
                     _env.Variables.Set(left.Item2, eval);
@@ -411,7 +432,10 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "|=")
             {
-                var eval = left.Item1 | right.Item1;
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
+                var eval = Value.BitwiseOr(left.Item1, right.Item1);
                 if (left.Item2 != null)
                 {
                     _env.Variables.Set(left.Item2, eval);
@@ -420,7 +444,10 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "^=")
             {
-                var eval = left.Item1 ^ right.Item1;
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
+                var eval = Value.BitwiseXor(left.Item1, right.Item1);
                 if (left.Item2 != null)
                 {
                     _env.Variables.Set(left.Item2, eval);
@@ -429,6 +456,9 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == "<<=")
             {
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
                 var eval = left.Item1 << right.Item1.ToInt();
                 if (left.Item2 != null)
                 {
@@ -438,6 +468,9 @@ namespace Petit.Core.Executor
             }
             else if (expr.Op == ">>=")
             {
+                var left = ExecExpr(expr.Left);
+                var right = ExecExpr(expr.Right);
+
                 var eval = left.Item1 >> right.Item1.ToInt();
                 if (left.Item2 != null)
                 {
@@ -445,16 +478,20 @@ namespace Petit.Core.Executor
                 }
                 return (eval, left.Item2);
             }
-            return default;
+            return ExecExpr(expr.Left);
         }
         (Value, string) ExecExpr(TernaryExpression expr)
         {
-            var left = ExecExpr(expr.Left);
-            var mid = ExecExpr(expr.Mid);
-            var right = ExecExpr(expr.Right);
             if (expr.Op == "?" && expr.Op2 == ":")
             {
-                return ((left.Item1 ? mid.Item1 : right.Item1), (left.Item1 ? mid.Item2 : right.Item2));
+                var cond = ExecExpr(expr.Left).Item1.ToBool();
+
+                (Value, string) mid = default;
+                (Value, string) right = default;
+                return (
+                    (cond ? (mid = ExecExpr(expr.Mid)).Item1 : (right = ExecExpr(expr.Right)).Item1),
+                    (cond ? mid.Item2 : right.Item2)
+                    );
             }
             return default;
         }

@@ -34,7 +34,7 @@
                     case TokenType.Minus:
                     case TokenType.Inc:
                     case TokenType.Dec:
-                    case TokenType.BitComplement:
+                    case TokenType.BitwiseNot:
                         return Precedence.Not;
                 }
             }
@@ -72,13 +72,13 @@
                 case TokenType.NotIdentical:
                     return Precedence.Equals;
 
-                case TokenType.BitAnd:
+                case TokenType.BitwiseAnd:
                     return Precedence.BitAnd;
 
-                case TokenType.BitXor:
+                case TokenType.BitwiseXor:
                     return Precedence.BitXor;
 
-                case TokenType.BitOr:
+                case TokenType.BitwiseOr:
                     return Precedence.BitOr;
 
                 case TokenType.LogicalAnd:
@@ -94,10 +94,9 @@
                 case TokenType.MulAssign:
                 case TokenType.DivAssign:
                 case TokenType.ModAssign:
-                case TokenType.BitAndAssign:
-                case TokenType.BitOrAssign:
-                case TokenType.BitXorAssign:
-                case TokenType.BitComplementAssign:
+                case TokenType.BitwiseAndAssign:
+                case TokenType.BitwiseOrAssign:
+                case TokenType.BitwiseXorAssign:
                 case TokenType.ShiftLeftAssign:
                 case TokenType.ShiftRightAssign:
                     return Precedence.Assign;

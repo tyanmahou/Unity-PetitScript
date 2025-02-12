@@ -622,19 +622,38 @@ namespace Petit.Core
             }
             return Value.Invalid;
         }
-        public static Value operator ~(in Value a)
+        // &&, || のためにビット演算は別で定義する
+        [Obsolete("Use BitwiseAnd")]
+        public static Value operator &(in Value a, in Value b)
+        {
+            if (!a.ToBool())
+            {
+                return a;
+            }
+            return b;
+        }
+        [Obsolete("Use BitwiseOr")]
+        public static Value operator |(in Value a, in Value b)
+        {
+            if (a.ToBool())
+            {
+                return a;
+            }
+            return b;
+        }
+        public static Value BitwiseNot(in Value a)
         {
             return new Value(~a.ToInt());
         }
-        public static Value operator &(in Value a, in Value b)
+        public static Value BitwiseAnd(in Value a, in Value b)
         {
             return new Value(a.ToInt() & b.ToInt());
         }
-        public static Value operator |(in Value a, in Value b)
+        public static Value BitwiseOr(in Value a, in Value b)
         {
             return new Value(a.ToInt() | b.ToInt());
         }
-        public static Value operator ^(in Value a, in Value b)
+        public static Value BitwiseXor(in Value a, in Value b)
         {
             return new Value(a.ToInt() ^ b.ToInt());
         }

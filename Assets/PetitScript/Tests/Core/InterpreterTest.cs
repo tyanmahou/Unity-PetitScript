@@ -42,6 +42,18 @@ namespace Petit.Core
             RunBool("false || false", false);
 
             RunBool("!false && !!true", true);
+
+            RunInt("true && 1", 1);
+            RunInt("true && 0", 0);
+            RunBool("false && 1", false);
+            RunBool("false && 0", false);
+            RunString("true && \"a\"", "a");
+
+            RunInt("1 || true", 1);
+            RunInt("1 || false", 1);
+            RunBool("0 || true", true);
+            RunBool("false || false", false);
+            RunString("\"a\" || truew", "a");
         }
         [Test]
         public void TestAssign()

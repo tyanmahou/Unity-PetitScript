@@ -11,16 +11,15 @@ namespace Petit.Core.Parser
         {
         }
 
-        public (GlobalStatement, IReadOnlyList<SyntaxError>) Parse(IReadOnlyList<Token> tokens)
+        public GlobalStatement Parse(IReadOnlyList<Token> tokens)
         {
             if (_tokens != tokens)
             {
                 this._tokens = tokens;
-                this._errors.Clear();
                 this._pos = 0;
                 _cache = ParseGlobalStatement();
             }
-            return (_cache, _errors);
+            return (_cache);
         }
         GlobalStatement ParseGlobalStatement()
         {
@@ -269,7 +268,7 @@ namespace Petit.Core.Parser
                     case TokenType.Minus:
                     case TokenType.Inc:
                     case TokenType.Dec:
-                    case TokenType.BitComplement:
+                    case TokenType.BitwiseNot:
                         return ParsePrefixUnaryExpression;
                     case TokenType.LParen:
                         return ParseParen;
@@ -311,11 +310,11 @@ namespace Petit.Core.Parser
                     case TokenType.NotEquals:
                     case TokenType.NotIdentical:
 
-                    case TokenType.BitAnd:
+                    case TokenType.BitwiseAnd:
 
-                    case TokenType.BitXor:
+                    case TokenType.BitwiseXor:
 
-                    case TokenType.BitOr:
+                    case TokenType.BitwiseOr:
 
                     case TokenType.LogicalAnd:
 
@@ -327,10 +326,9 @@ namespace Petit.Core.Parser
                     case TokenType.MulAssign:
                     case TokenType.DivAssign:
                     case TokenType.ModAssign:
-                    case TokenType.BitAndAssign:
-                    case TokenType.BitOrAssign:
-                    case TokenType.BitXorAssign:
-                    case TokenType.BitComplementAssign:
+                    case TokenType.BitwiseAndAssign:
+                    case TokenType.BitwiseOrAssign:
+                    case TokenType.BitwiseXorAssign:
                     case TokenType.ShiftLeftAssign:
                     case TokenType.ShiftRightAssign:
                         return ParseBinaryExpression;
@@ -511,15 +509,14 @@ namespace Petit.Core.Parser
                 return true;
             }
         }
-        void Error(string message) => Error(message, _pos - 1, head: false);
-        void Error(string message, int pos, bool head = true)
+        void Error(string message) => Error(message, _pos - 1);
+        void Error(string message, int pos)
         {
             Token errorToken = pos >= _tokens.Count ? _tokens[_tokens.Count - 1] : _tokens[pos];
-            _errors.Add(new SyntaxError(message, errorToken.Line, errorToken.Column + (head ? 0 : errorToken.Value.Length)));
+            throw new Core.Exception.SyntaxErrorException(message, errorToken.Line, errorToken.Column);
         }
         IReadOnlyList<Token> _tokens;
         int _pos;
         GlobalStatement _cache;
-        List<SyntaxError> _errors = new List<SyntaxError>();
     }
 }
