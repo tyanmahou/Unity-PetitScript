@@ -255,6 +255,24 @@ return text;
                 }
             }
         }
+        [Test]
+        public void TestFuncRecursion()
+        {
+            string code = @"
+fn fib(n) {
+    if (n <= 1) {
+        return n;
+    }
+    return fib(n - 1) + fib(n - 2);
+}
+return fib(10);
+";
+            {
+                Interpreter interpreter = new();
+                var result = interpreter.Run(code);
+                Assert.AreEqual(result, 55);
+            }
+        }
         Interpreter RunInt(string code, int actual)
         {
             Interpreter interpreter = new Interpreter();
