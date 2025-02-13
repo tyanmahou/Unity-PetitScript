@@ -93,7 +93,7 @@ namespace Petit.Core.Executor
         {
             foreach (IfParam param in ifStatement.IfStatements)
             {
-                if (ExecExpr(param.Cond).Item1)
+                if (ExecExpr(param.Condition).Item1)
                 {
                     return ExecStatement(param.Statement);
                 }
@@ -236,7 +236,7 @@ namespace Petit.Core.Executor
             {
                 return ExecExpr(ternary);
             }
-            else if (expr is FunctionCallExpression func)
+            else if (expr is InvocationExpression func)
             {
                 return ExecExpr(func);
             }
@@ -568,7 +568,7 @@ namespace Petit.Core.Executor
             }
             return default;
         }
-        (Value, string) ExecExpr(FunctionCallExpression expr)
+        (Value, string) ExecExpr(InvocationExpression expr)
         {
             string ident = string.Empty;
             if (expr.Function is VariableExpression v)

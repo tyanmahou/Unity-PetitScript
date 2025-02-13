@@ -7,7 +7,7 @@ namespace Petit.Core.AST
         public string Name;
         public IExpression Expression;
     }
-    class FunctionCallExpression : IExpression
+    class InvocationExpression : IExpression
     {
         public IExpression Function;
         public List<Argument> Args = new();

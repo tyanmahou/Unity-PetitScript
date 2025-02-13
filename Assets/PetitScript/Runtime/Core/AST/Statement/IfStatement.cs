@@ -4,7 +4,7 @@ namespace Petit.Core.AST
 {
     struct IfParam
     {
-        public IExpression Cond;
+        public IExpression Condition;
         public IStatement Statement;
     }
 

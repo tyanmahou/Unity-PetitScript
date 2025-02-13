@@ -134,7 +134,7 @@ namespace Petit.Core.Parser
                 // (
                 ++_pos;
 
-                param.Cond = ParseExpression();
+                param.Condition = ParseExpression();
 
                 TryErrorCheckType("Not found if ')'", TokenType.RParen);
                 // )
@@ -409,7 +409,7 @@ namespace Petit.Core.Parser
                     case TokenType.Dec:
                         return ParsePostfixUnaryExpression;
                     case TokenType.LParen:
-                        return ParseFunctionCallExpression;
+                        return ParseInvocationExpression;
 
                     case TokenType.Add:
                     case TokenType.Sub:
@@ -609,9 +609,9 @@ namespace Petit.Core.Parser
                 Right = right,
             };
         }
-        FunctionCallExpression ParseFunctionCallExpression(IExpression left)
+        InvocationExpression ParseInvocationExpression(IExpression left)
         {
-            var expr = new FunctionCallExpression();
+            var expr = new InvocationExpression();
             expr.Function = left;
             string op = _tokens[_pos].Value;
             ++_pos; // (
