@@ -11,6 +11,24 @@ namespace Petit.Core
             Name = name;
             Value = value;
         }
+        public Argument(string name, bool value)
+            : this(name, new Value(value))
+        {
+        }
+        public Argument(string name, int value)
+            :this(name, new Value(value))
+        {
+        }
+        public Argument(string name, float value)
+            : this(name, new Value(value))
+        {
+        }
+
+        public Argument(string name,string value)
+            : this(name, new Value(value))
+        {
+        }
+
         public readonly string Name;
         public readonly Value Value;
     }
@@ -27,10 +45,10 @@ namespace Petit.Core
         public Value Invoke(IReadOnlyList<Argument> args)
         {
             List<Value> values;
-            if (_params != null && _params.Count > 0)
+            if (_params != null && _params.Length > 0)
             {
                 // 名前付き引数を考慮して引数をソートする
-                values = new List<Value>(_params.Count);
+                values = new List<Value>(_params.Length);
 
                 Dictionary<string, int> nameIndexMap = args
                     .Select((a, i) => (a.Name, i))
@@ -39,7 +57,7 @@ namespace Petit.Core
                 if (nameIndexMap.Count <= 0)
                 {
                     // 名前付き引数なしなので順番にれるだけ
-                    for (int i = 0; i < _params.Count; ++i)
+                    for (int i = 0; i < _params.Length; ++i)
                     {
                         if (i < args.Count)
                         {
@@ -59,7 +77,7 @@ namespace Petit.Core
                         .Select((a, i) => i)
                         .ToHashSet();
 
-                    for (int i = 0; i < _params.Count; ++i)
+                    for (int i = 0; i < _params.Length; ++i)
                     {
                         int useIndex = -1;
                         if (nameIndexMap.TryGetValue(_params[i].Name ?? string.Empty, out int argIndex))
@@ -101,7 +119,39 @@ namespace Petit.Core
         {
             return _func?.Invoke(values) ?? default;
         }
+        public Function SetArgument(int index, Argument arg)
+        {
+            _params[index] = arg;
+            return this;
+        }
+
+        public Function SetArgument(int index, string name, in Value defaultValue = default)
+        {
+            return SetArgument(index, new Argument(name, defaultValue));
+        }
+        public Function SetDefaultValue(int index, in Value value)
+        {
+            return SetArgument(index, new Argument(_params[index].Name, value));
+        }
+        public Function SetDefaultValue(int index, bool value)
+        {
+            return SetArgument(index, new Argument(_params[index].Name, value));
+        }
+        public Function SetDefaultValue(int index, int value)
+        {
+            return SetArgument(index, new Argument(_params[index].Name, value));
+        }
+        public Function SetDefaultValue(int index, float value)
+        {
+            return SetArgument(index, new Argument(_params[index].Name, value));
+        }
+        public Function SetDefaultValue(int index, string value)
+        {
+            return SetArgument(index, new Argument(_params[index].Name, value));
+        }
+
+        internal IReadOnlyList<Argument> Parameters => _params;
         readonly Func<IReadOnlyList<Value>, Value> _func;
-        readonly IReadOnlyList<Argument> _params;
+        readonly Argument[] _params;
     }
 }

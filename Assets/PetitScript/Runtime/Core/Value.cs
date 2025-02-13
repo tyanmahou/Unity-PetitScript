@@ -73,6 +73,47 @@ namespace Petit.Core
             _value = new ValueVariant();
             _value.StringValue = s;
         }
+        internal Value(object o)
+        {
+            if (o is bool b)
+            {
+                _type = ValueType.Bool;
+                _value = new ValueVariant();
+                _value.BoolValue = b;
+            }
+            else if (o is int i)
+            {
+                _type = ValueType.Int;
+                _value = new ValueVariant();
+                _value.IntValue = i;
+            }
+            else if (o is float f)
+            {
+                if (!float.IsNaN(f))
+                {
+                    _type = ValueType.Float;
+                    _value = new ValueVariant();
+                    _value.FloatValue = f;
+                }
+                else
+                {
+                    _type = ValueType.NaN;
+                    _value = new ValueVariant();
+                    _value.FloatValue = float.NaN;
+                }
+            }
+            else if (o is string s)
+            {
+                _type = ValueType.String;
+                _value = new ValueVariant();
+                _value.StringValue = s;
+            }
+            else
+            {
+                _type = ValueType.Invalid;
+                _value = default;
+            }
+        }
         /// <summary>
         /// 無効値か
         /// </summary>

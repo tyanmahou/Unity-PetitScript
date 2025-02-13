@@ -146,10 +146,8 @@ else
             {
                 Interpreter interpreter = new();
                 interpreter.Variables.SetFunc("Sub", Function.Bind(
-                    (a, b) => a - b,
-                    new Argument("a"),
-                    new Argument("b")
-                    ));
+                    (a, b) => a - b)
+                    );
                 {
                     var result = interpreter.Run("Sub(a: 1, b: 2)");
                     Assert.AreEqual(result, -1);
@@ -185,11 +183,11 @@ else
             }
             {
                 Interpreter interpreter = new();
-                interpreter.Variables.SetFunc("Add", Function.Bind(
-                    (a, b) => a + b,
-                    new Argument("a", new(1)),
-                    new Argument("b", new(2))
-                    ));
+                interpreter.Variables.SetFunc("Add", 
+                    Function.Bind((a, b) => a + b)
+                    .SetDefaultValue(0, 1)
+                    .SetDefaultValue(1, 2)
+                    );
                 {
                     var result = interpreter.Run("Add()");
                     Assert.AreEqual(result, 3);
