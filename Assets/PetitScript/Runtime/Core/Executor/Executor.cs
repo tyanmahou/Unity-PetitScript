@@ -59,6 +59,10 @@ namespace Petit.Core.Executor
             {
                 return (ExecExpr(expression.Expression).Item1, StatementCommand.None);
             }
+            else if (statement is FunctionStatement function)
+            {
+                return ExecFunctionStatement(function);
+            }
             return (Value.Invalid, StatementCommand.None);
         }
         Value ExecGlobalStatement(GlobalStatement global)
@@ -201,6 +205,20 @@ namespace Petit.Core.Executor
                 }
             }
             return result;
+        }
+        (Value, StatementCommand) ExecFunctionStatement(FunctionStatement function)
+        {
+            Argument[] parameters = function.Paramerters.Select(p => new Argument(p.Name, () => ExecExpr(p.DefaultValue).Item1)).ToArray();
+            Function func = new(args =>
+            {
+                for (int i = 0; i < parameters.Length; ++i)
+                {
+                    _env.Variables.Set(parameters[i].Name, args[i]);
+                }
+                return ExecStatement(function.Statement).Item1;
+            }, parameters);
+            _env.Variables.SetFunc(function.Ident, func);
+            return (Value.Invalid, StatementCommand.None);
         }
         (Value, string) ExecExpr(IExpression expr)
         {

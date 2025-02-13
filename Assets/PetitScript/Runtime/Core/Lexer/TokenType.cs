@@ -303,6 +303,11 @@
         Return,
 
         /// <summary>
+        /// fn (function)
+        /// </summary>
+        Fn,
+
+        /// <summary>
         /// 改行
         /// </summary>
         NewLine,

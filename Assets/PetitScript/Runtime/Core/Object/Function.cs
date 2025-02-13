@@ -6,10 +6,15 @@ namespace Petit.Core
 {
     public readonly struct Argument
     {
-        public Argument(string name, Value value = default)
+        public Argument(string name, Func<Value> value = default)
         {
             Name = name;
             Value = value;
+        }
+        public Argument(string name, Value value = default)
+        {
+            Name = name;
+            Value = () => value;
         }
         public Argument(string name, bool value)
             : this(name, new Value(value))
@@ -30,7 +35,7 @@ namespace Petit.Core
         }
 
         public readonly string Name;
-        public readonly Value Value;
+        public readonly Func<Value> Value;
     }
     /// <summary>
     /// 関数
@@ -61,12 +66,12 @@ namespace Petit.Core
                     {
                         if (i < args.Count)
                         {
-                            values.Add(args[i].Value);
+                            values.Add(args[i].Value?.Invoke() ?? default);
                         }
                         else
                         {
                             // デフォルト引数
-                            values.Add(_params[i].Value);
+                            values.Add(_params[i].Value?.Invoke() ?? default);
                         }
                     }
                 }
@@ -82,7 +87,7 @@ namespace Petit.Core
                         int useIndex = -1;
                         if (nameIndexMap.TryGetValue(_params[i].Name ?? string.Empty, out int argIndex))
                         {
-                            values.Add(args[argIndex].Value);
+                            values.Add(args[argIndex].Value?.Invoke() ?? default);
                             useIndex = argIndex;
                         }
                         else
@@ -91,7 +96,7 @@ namespace Petit.Core
                             {
                                 if (string.IsNullOrEmpty(args[argIndex2].Name) || args[argIndex2].Name == _params[i].Name)
                                 {
-                                    values.Add(args[argIndex2].Value);
+                                    values.Add(args[argIndex2].Value?.Invoke() ?? default);
                                     useIndex = argIndex2;
                                     break;
                                 }
@@ -104,7 +109,7 @@ namespace Petit.Core
                         else
                         {
                             // デフォルト引数
-                            values.Add(_params[i].Value);
+                            values.Add(_params[i].Value?.Invoke() ?? default);
                         }
                     }
                 }

@@ -28,6 +28,7 @@ namespace Petit.Core.Lexer
             {"continue", TokenType.Continue },
             {"for", TokenType.For },
             {"return", TokenType.Return },
+            {"fn", TokenType.Fn },
         };
     }
 }

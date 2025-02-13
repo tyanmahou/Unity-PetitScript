@@ -85,6 +85,10 @@ namespace Petit.Core.Parser
                 {
                     return ParseReturnStatement();
                 }
+                else if (_tokens[_pos].Type == TokenType.Fn)
+                {
+                    return ParseFunctionStatement();
+                }
                 else
                 {
                     return ParseExpressionStatement();
@@ -353,9 +357,66 @@ namespace Petit.Core.Parser
             {
                 statement.Expression = ParseExpression();
             }
-            if (_pos < _tokens.Count && _tokens[_pos].Type == TokenType.Semicolon)
+            if (TryCheckType(TokenType.Semicolon))
             {
                 ++_pos;
+            }
+            return statement;
+        }
+        FunctionStatement ParseFunctionStatement()
+        {
+            var statement = new FunctionStatement();
+            ++_pos; // fn
+            
+            TryErrorCheckType("Not found function name.", TokenType.Ident);
+            statement.Ident = _tokens[_pos].Value;
+            ++_pos;
+
+            TryErrorCheckType("Not found function name.", TokenType.LParen);
+            ++_pos; // (
+
+            // Argument
+            while (true)
+            {
+                if (TryCheckType(TokenType.Ident))
+                {
+                    AST.FunctionParamerter paramerter = default;
+                    paramerter.Name = _tokens[_pos].Value;
+                    ++_pos;
+                    if (TryCheckType(TokenType.Assign))
+                    {
+                        // default value
+                        ++_pos;
+
+                        paramerter.DefaultValue = ParseExpression();
+                        if (paramerter.DefaultValue is null)
+                        {
+                            Error($"Not found fn {statement.Ident} {paramerter.Name} default value");
+                        }
+                    }
+                    statement.Paramerters.Add(paramerter);
+                    if (TryCheckType(TokenType.Comma))
+                    {
+                        ++_pos; // ,
+                        continue;
+                    }
+                }
+                if (TryCheckType(TokenType.Comma))
+                {
+                    ++_pos; // ,
+                }
+                else
+                {
+                    break; // 引数終わり
+                }
+            }
+            TryErrorCheckType($"Not found fn {statement.Ident}')'", TokenType.RParen);
+            ++_pos; // )
+
+            statement.Statement = ParseStatement();
+            if (statement.Statement is null)
+            {
+                Error($"Not found fn {statement.Ident} statement");
             }
             return statement;
         }
@@ -366,7 +427,7 @@ namespace Petit.Core.Parser
             {
                 statement.Expression = ParseExpression();
             }
-            if (_pos < _tokens.Count && _tokens[_pos].Type == TokenType.Semicolon)
+            if (TryCheckType(TokenType.Semicolon))
             {
                 ++_pos;
             }
