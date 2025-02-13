@@ -61,6 +61,10 @@ namespace Petit.Core.Parser
                 {
                     return ParseIfStatement();
                 }
+                else if (_tokens[_pos].Type == TokenType.Switch)
+                {
+                    return ParseSwitchStatement();
+                }
                 else if (_tokens[_pos].Type == TokenType.While)
                 {
                     return ParseWhileStatement();
@@ -152,17 +156,133 @@ namespace Petit.Core.Parser
             }
             return statement;
         }
+        SwitchStatement ParseSwitchStatement()
+        {
+            ++_pos; // switch
+            SwitchStatement switchStatement = new SwitchStatement();
+            TryErrorCheckType("Not Found while '('", TokenType.LParen);
+            ++_pos; // (
+            switchStatement.Condition = ParseExpression();
+
+            TryErrorCheckType("Not Found while ')'", TokenType.RParen);
+            ++_pos; // )
+
+            if (TryCheckType(TokenType.LBrace))
+            {
+                _pos++; // {
+
+                while (true)
+                {
+                    var section = ParseSwitchSection();
+                    if (section is null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        switchStatement.Sections.Add(section);
+                    }
+                }
+
+                TryErrorCheckType("Not Found switch '}'", TokenType.RBrace);
+                ++_pos; // }
+            }
+            else
+            {
+                var section = ParseSwitchSection(block: false);
+                if (section != null)
+                {
+                    switchStatement.Sections.Add(section);
+                }
+            }
+            return switchStatement;
+        }
+        SwitchSection ParseSwitchSection(bool block = true)
+        {
+            var section = new SwitchSection();
+            while (_pos < _tokens.Count)
+            {
+                var label = ParseSwitchLabel();
+                if (label is null)
+                {
+                    break;
+                }
+                section.Labels.Add(label);
+            }
+            if (section.Labels.Count <= 0)
+            {
+                // ラベル無し
+                return null;
+            }
+            if (TryCheckType(TokenType.RBrace))
+            {
+                return section;
+            }
+            do
+            {
+                int prevPos = _pos;
+                IStatement statement = ParseStatement();
+                if (statement != null)
+                {
+                    section.Statements.Add(statement);
+                }
+                if (!block)
+                {
+                    // ブロックになってない場合は、一個まで
+                    break;
+                }
+                if (TryCheckType(TokenType.Case) || TryCheckType(TokenType.Default) || TryCheckType(TokenType.RBrace))
+                {
+                    // 
+                    break;
+                }
+                if (prevPos == _pos)
+                {
+                    // 無限ループ防止
+                    ++_pos;
+                }
+            } while (_pos < _tokens.Count);
+            return section;
+        }
+        ISwitchLabel ParseSwitchLabel()
+        {
+            ISwitchLabel label = null;
+            if (TryCheckType(TokenType.Case))
+            {
+                _pos++; // case
+                var expr = ParseExpression();
+                if (expr != null)
+                {
+                    label = new SwitchCase()
+                    {
+                        Expression = expr
+                    };
+                }
+            } 
+            else if (TryCheckType(TokenType.Default))
+            {
+                _pos++; // default;
+                label = new SwitchDefault();
+            }
+            else
+            {
+                return null;
+            }
+
+            TryErrorCheckType("Not found switch label ':'", TokenType.Colon);
+            ++_pos; // :
+            return label;
+        }
         WhileStatement ParseWhileStatement()
         {
             ++_pos; // while
             WhileStatement statement = new WhileStatement();
-            TryErrorCheckType("Not Found while '('", TokenType.LParen);
-            // (
-            ++_pos;
+            TryErrorCheckType("Not found while '('", TokenType.LParen);
+            ++_pos; // (
 
             statement.Cond = ParseExpression();
 
-            TryErrorCheckType("Not Found while ')'", TokenType.RParen);
+            TryErrorCheckType("Not found while ')'", TokenType.RParen);
             // )
             ++_pos;
             statement.Statement = ParseStatement();

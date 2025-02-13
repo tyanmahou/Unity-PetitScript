@@ -31,6 +31,10 @@ namespace Petit.Core.Executor
             {
                 return ExecIfStatement(ifStatement);
             }
+            else if (statement is SwitchStatement switchStatement)
+            {
+                return ExecSwitchStatement(switchStatement);
+            }
             else if (statement is WhileStatement whileStatement)
             {
                 return ExecWhileStatement(whileStatement);
@@ -100,15 +104,75 @@ namespace Petit.Core.Executor
             }
             return (Value.Invalid, StatementCommand.None);
         }
+        (Value, StatementCommand) ExecSwitchStatement(SwitchStatement switchStatement)
+        {
+            var condition = ExecExpr(switchStatement.Condition).Item1;
+
+            // どのセクションを使用するか確定する
+            bool IsMatch(ISwitchLabel label, in Value v)
+            {
+                if (label is SwitchCase caseLabel)
+                {
+                    return ExecExpr(caseLabel.Expression).Item1 == v;
+                }
+                return false;
+            }
+            int selectSection = -1;
+            int defaultSection = -1;
+            for (int s = 0; s < switchStatement.Sections.Count; ++s)
+            {
+                var section = switchStatement.Sections[s];
+                if (section.Labels.Any(l => IsMatch(l, condition)))
+                {
+                    selectSection = s;
+                    break;
+                }
+                if (defaultSection < 0 && section.Labels.Any(l => l is SwitchDefault))
+                {
+                    defaultSection = s;
+                }
+            }
+            if (selectSection < 0)
+            {
+                // デフォルト
+                selectSection = defaultSection;
+            }
+            var result = (Value.Invalid, StatementCommand.None);
+            if (selectSection >= 0)
+            {
+                // それ以降のセクションを実行
+                for (int s = selectSection; s < switchStatement.Sections.Count; ++s)
+                {
+                    var section = switchStatement.Sections[s];
+                    foreach (var statement in section.Statements)
+                    {
+                        result = ExecStatement(statement);
+                        if (result.Item2 == StatementCommand.Reutrn)
+                        {
+                            return result;
+                        }
+                        else if (result.Item2 == StatementCommand.Break)
+                        {
+                            return (result.Item1, StatementCommand.None);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
         (Value, StatementCommand) ExecWhileStatement(WhileStatement whileStatement)
         {
             (Value, StatementCommand) result = default;
             while (ExecExpr(whileStatement.Cond).Item1)
             {
                 result = ExecStatement(whileStatement.Statement);
-                if (result.Item2 == StatementCommand.Reutrn || result.Item2 == StatementCommand.Break)
+                if (result.Item2 == StatementCommand.Reutrn)
                 {
                     return result;
+                }
+                else if (result.Item2 == StatementCommand.Break)
+                {
+                    return (result.Item1, StatementCommand.None);
                 }
                 else if (result.Item2 == StatementCommand.Continue)
                 {
@@ -123,9 +187,13 @@ namespace Petit.Core.Executor
             for(ExecExpr(forStatement.Init);  ExecExpr(forStatement.Cond).Item1; ExecExpr(forStatement.Loop))
             {
                 result = ExecStatement(forStatement.Statement);
-                if (result.Item2 == StatementCommand.Reutrn || result.Item2 == StatementCommand.Break)
+                if (result.Item2 == StatementCommand.Reutrn)
                 {
                     return result;
+                }
+                else if (result.Item2 == StatementCommand.Break)
+                {
+                    return (result.Item1, StatementCommand.None);
                 }
                 else if (result.Item2 == StatementCommand.Continue)
                 {
