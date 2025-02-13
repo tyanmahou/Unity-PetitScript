@@ -8,14 +8,7 @@ namespace Petit.Core
     /// </summary>
     public class Interpreter
     {
-        /// <summary>
-        /// 変数
-        /// </summary>
-        public Variables Variables
-        {
-            get => _env.Variables;
-            set => _env.Variables = value;
-        }
+        public Enviroment Enviroment => _env;
 
         /// <summary>
         /// リザルト処理
@@ -82,6 +75,10 @@ namespace Petit.Core
         }
         public Value Run(string code)
         {
+            return Run(code, _env);
+        }
+        public Value Run(string code, Enviroment env)
+        {
             Value result;
             try
             {
@@ -90,8 +87,8 @@ namespace Petit.Core
 
                 var parser = new Parser.Parser();
                 var ast = parser.Parse(tokens);
-                var executer = new Executor.Executor(_env);
-                result = executer.Exec(ast);
+                var executer = new Executor.Executor();
+                result = executer.Exec(ast, env ?? _env);
             }
             catch (System.Exception ex)
             {
@@ -112,7 +109,7 @@ namespace Petit.Core
             _onResult?.Invoke(result);
             return result;
         }
-        Enviroment _env = new();
+        Enviroment _env = new(Enviroment.Global);
         Func<System.Exception, bool> _onCatchError;
         Action<Value> _onResult;
     }

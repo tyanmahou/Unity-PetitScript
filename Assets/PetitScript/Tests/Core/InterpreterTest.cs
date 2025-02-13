@@ -60,26 +60,26 @@ namespace Petit.Core
         {
             {
                 Interpreter interpreter = RunInt("a = 10", 10);
-                Assert.AreEqual(interpreter.Variables.Get("a"), 10);
+                Assert.AreEqual(interpreter.Enviroment.Get("a"), 10);
             }
             {
                 Interpreter interpreter = RunInt("a = b = 10", 10);
-                Assert.AreEqual(interpreter.Variables.Get("a"), 10);
-                Assert.AreEqual(interpreter.Variables.Get("b"), 10);
+                Assert.AreEqual(interpreter.Enviroment.Get("a"), 10);
+                Assert.AreEqual(interpreter.Enviroment.Get("b"), 10);
             }
             {
                 Interpreter interpreter = RunInt("a = b = 1 + 2 * 3", 7);
-                Assert.AreEqual(interpreter.Variables.Get("a"), 7);
-                Assert.AreEqual(interpreter.Variables.Get("b"), 7);
+                Assert.AreEqual(interpreter.Enviroment.Get("a"), 7);
+                Assert.AreEqual(interpreter.Enviroment.Get("b"), 7);
             }
             {
                 Interpreter interpreter = RunInt("a=10; a+=2", 12);
-                Assert.AreEqual(interpreter.Variables.Get("a"), 12);
+                Assert.AreEqual(interpreter.Enviroment.Get("a"), 12);
             }
             {
                 Interpreter interpreter = RunInt("a=10; b=2; b+=a+a;", 22);
-                Assert.AreEqual(interpreter.Variables.Get("a"), 10);
-                Assert.AreEqual(interpreter.Variables.Get("b"), 22);
+                Assert.AreEqual(interpreter.Enviroment.Get("a"), 10);
+                Assert.AreEqual(interpreter.Enviroment.Get("b"), 22);
             }
         }
         [Test]
@@ -89,13 +89,13 @@ namespace Petit.Core
             RunInt("false ? 1 : 2", 2);
             {
                 Interpreter interpreter = RunInt("(true ? a : b) = 10", 10);
-                Assert.AreEqual(interpreter.Variables.Get("a"), 10);
-                Assert.AreEqual(interpreter.Variables.Get("b"), Value.Invalid);
+                Assert.AreEqual(interpreter.Enviroment.Get("a"), 10);
+                Assert.AreEqual(interpreter.Enviroment.Get("b"), Value.Invalid);
             }
             {
                 Interpreter interpreter = RunInt("(false ? a : b) = 10", 10);
-                Assert.AreEqual(interpreter.Variables.Get("a"), Value.Invalid);
-                Assert.AreEqual(interpreter.Variables.Get("b"), 10);
+                Assert.AreEqual(interpreter.Enviroment.Get("a"), Value.Invalid);
+                Assert.AreEqual(interpreter.Enviroment.Get("b"), 10);
             }
         }
         [Test]
@@ -116,17 +116,17 @@ else
 }
 ";
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", 1);
                 RunString(code, "plus", vars);
             }
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", 0);
                 RunString(code, "zero", vars);
             }
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", -1);
                 RunString(code, "minus", vars);
             }
@@ -154,32 +154,32 @@ case  4:
 return text;
 ";
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", 0);
                 RunString(code, "0123", vars);
             }
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", 1);
                 RunString(code, "123", vars);
             }
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", 2);
                 RunString(code, "23", vars);
             }
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", 3);
                 RunString(code, "23", vars);
             }
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", 4);
                 RunString(code, "4", vars);
             }
             {
-                var vars = new Variables();
+                var vars = new Enviroment(null);
                 vars.Set("a", 5);
                 RunString(code, "d4", vars);
             }
@@ -189,7 +189,7 @@ return text;
         {
             {
                 Interpreter interpreter = new();
-                interpreter.Variables.SetFunc("Add", Function.Bind((a1, a2) =>
+                interpreter.Enviroment.SetFunc("Add", Function.Bind((a1, a2) =>
                 {
                     return a1 + a2;
                 }));
@@ -198,7 +198,7 @@ return text;
             }
             {
                 Interpreter interpreter = new();
-                interpreter.Variables.SetFunc("Sub", Function.Bind(
+                interpreter.Enviroment.SetFunc("Sub", Function.Bind(
                     (a, b) => a - b)
                     );
                 {
@@ -236,7 +236,7 @@ return text;
             }
             {
                 Interpreter interpreter = new();
-                interpreter.Variables.SetFunc("Add", 
+                interpreter.Enviroment.SetFunc("Add", 
                     Function.Bind((a, b) => a + b)
                     .SetDefaultValue(0, 1)
                     .SetDefaultValue(1, 2)
@@ -279,14 +279,10 @@ return text;
             Assert.AreEqual(result.ToBool(), actual);
             return interpreter;
         }
-        Interpreter RunString(string code, string actual, Variables vars = null)
+        Interpreter RunString(string code, string actual, Enviroment env = null)
         {
             Interpreter interpreter = new Interpreter();
-            if (vars != null)
-            {
-                interpreter.Variables = vars;
-            }
-            var result = interpreter.Run(code);
+            var result = interpreter.Run(code, env);
             Assert.True(result.IsString);
             Assert.AreEqual(result.ToString(), actual);
             return interpreter;
