@@ -113,37 +113,10 @@ namespace Petit.Core.Lexer
                     }
                     TokenType tokenType = TokenType.Ident;
                     string ident = line.Substring(start, pos - start);
-                    if (ident == "true" || ident == "false")
+
+                    if (Keyword.TryGetTokenType(ident, out var keywordType))
                     {
-                        tokenType = TokenType.Value;
-                    }
-                    else if (ident == "if")
-                    {
-                        tokenType = TokenType.If;
-                    }
-                    else if (ident == "else")
-                    {
-                        tokenType = TokenType.Else;
-                    }
-                    else if (ident == "while")
-                    {
-                        tokenType = TokenType.While;
-                    }
-                    else if (ident == "break")
-                    {
-                        tokenType = TokenType.Break;
-                    }
-                    else if (ident == "continue")
-                    {
-                        tokenType = TokenType.Continue;
-                    }
-                    else if (ident == "for")
-                    {
-                        tokenType = TokenType.For;
-                    }
-                    else if (ident == "return")
-                    {
-                        tokenType = TokenType.Return;
+                        tokenType = keywordType;
                     }
                     _tokens.Add(new Token(tokenType, line.Substring(start, pos - start), lineNum, start + 1));
                 }

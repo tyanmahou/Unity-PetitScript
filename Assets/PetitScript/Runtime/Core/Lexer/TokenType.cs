@@ -263,6 +263,21 @@
         Else,
 
         /// <summary>
+        /// switch
+        /// </summary>
+        Switch,
+
+        /// <summary>
+        /// case
+        /// </summary>
+        Case,
+
+        /// <summary>
+        /// default
+        /// </summary>
+        Default,
+
+        /// <summary>
         /// while
         /// </summary>
         While,
