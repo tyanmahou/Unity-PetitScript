@@ -1,4 +1,5 @@
 ﻿using Petit.Core.AST;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -207,16 +208,21 @@ namespace Petit.Core.Executor
         }
         (Value, StatementCommand) ExecFunctionStatement(FunctionStatement function, Enviroment env)
         {
-            Argument[] parameters = function.Paramerters.Select(p => new Argument(p.Name, () => ExecExpr(p.DefaultValue, env).Item1)).ToArray();
             Function func = new(args =>
             {
+                var parameters = function.Paramerters;
                 var newEnv = env.Stack();
-                for (int i = 0; i < parameters.Length; ++i)
+                for (int i = 0; i < parameters.Count; ++i)
                 {
-                    newEnv.Set(parameters[i].Name, args[i]);
+                    Value arg = args[i];
+                    if (arg.IsInvalid)
+                    {
+                        arg = ExecExpr(parameters[i].DefaultValue, newEnv).Item1;
+                    }
+                    newEnv.Set(parameters[i].Name, arg);
                 }
                 return ExecStatement(function.Statement, newEnv).Item1;
-            }, parameters);
+            }, function.Paramerters.Select(p => new Argument(p.Name, (Func<Value>)null)).ToArray());
             env.SetFunc(function.Ident, func);
             return (Value.Invalid, StatementCommand.None);
         }
