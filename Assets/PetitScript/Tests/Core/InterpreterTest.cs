@@ -273,6 +273,27 @@ return fib(10);
                 Assert.AreEqual(result, 55);
             }
         }
+        [Test]
+        public void TestFuncDefaultArg()
+        {
+            string code = @"
+fn myfunc(a = 2,  b = a * a) {
+    return a + b;
+}
+myfunc(a);
+";
+            {
+                Interpreter interpreter = new();
+                var result = interpreter.Run(code);
+                Assert.AreEqual(result, 6);
+            }
+            {
+                Interpreter interpreter = new();
+                interpreter.Enviroment.Set("a", 5);
+                var result = interpreter.Run(code);
+                Assert.AreEqual(result, 30);
+            }
+        }
         Interpreter RunInt(string code, int actual)
         {
             Interpreter interpreter = new Interpreter();
