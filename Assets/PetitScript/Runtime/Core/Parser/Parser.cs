@@ -444,6 +444,8 @@ namespace Petit.Core.Parser
             {
                 switch (tokenType)
                 {
+                    case TokenType.LBracket:
+                        return ParseListExpression;
                     case TokenType.Not:
                     case TokenType.Plus:
                     case TokenType.Minus:
@@ -726,6 +728,34 @@ namespace Petit.Core.Parser
             expr.Index = ParseExpression();
 
             TryErrorCheckType("Not found subscript ']'", TokenType.RBracket);
+            ++_pos; // ]
+            return expr;
+        }
+        ListExpression ParseListExpression()
+        {
+            var expr = new ListExpression();
+            ++_pos; // [
+
+            do
+            {
+                var element = ParseExpression();
+                if (element is null)
+                {
+                    break;
+                }
+                expr.Elements.Add(element);
+
+                if (TryCheckType(TokenType.Comma))
+                {
+                    ++_pos; // ,
+                }
+                else
+                {
+                    break; // 引数終わり
+                }
+            } while (true);
+
+            TryErrorCheckType("Not found list ']'", TokenType.RBracket);
             ++_pos; // ]
             return expr;
         }
