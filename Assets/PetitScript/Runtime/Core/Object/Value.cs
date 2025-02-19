@@ -1,5 +1,9 @@
-﻿using System.Runtime.InteropServices;
-using System;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Linq;
+using System.Text;
 
 namespace Petit.Core
 {
@@ -45,12 +49,14 @@ namespace Petit.Core
             _type = ValueType.Bool;
             _value = new ValueVariant();
             _value.BoolValue = b;
+            _list = null;
         }
         public Value(int i)
         {
             _type = ValueType.Int;
             _value = new ValueVariant();
             _value.IntValue = i;
+            _list = null;
         }
         public Value(float f)
         {
@@ -66,12 +72,38 @@ namespace Petit.Core
                 _value = new ValueVariant();
                 _value.FloatValue = float.NaN;
             }
+            _list = null;
         }
         public Value(string s)
         {
             _type = ValueType.String;
             _value = new ValueVariant();
             _value.StringValue = s;
+            _list = null;
+        }
+        public Value(char c)
+        {
+            _type = ValueType.String;
+            _value = new ValueVariant();
+            _value.StringValue = c.ToString();
+            _list = null;
+        }
+        public Value(IEnumerable<Value> collection)
+        {
+            _type = ValueType.List;
+            _value = new ValueVariant();
+            _list = collection.ToList();
+        }
+        public Value(IEnumerable<object> collection)
+        {
+            _type = ValueType.List;
+            _value = new ValueVariant();
+            int count = collection.Count();
+            _list = new List<Value>(count);
+            foreach (var item in collection)
+            {
+                _list.Add(new Value(item));
+            }
         }
         internal Value(object o)
         {
@@ -80,12 +112,14 @@ namespace Petit.Core
                 _type = ValueType.Bool;
                 _value = new ValueVariant();
                 _value.BoolValue = b;
+                _list = null;
             }
             else if (o is int i)
             {
                 _type = ValueType.Int;
                 _value = new ValueVariant();
                 _value.IntValue = i;
+                _list = null;
             }
             else if (o is float f)
             {
@@ -101,17 +135,37 @@ namespace Petit.Core
                     _value = new ValueVariant();
                     _value.FloatValue = float.NaN;
                 }
+                _list = null;
             }
             else if (o is string s)
             {
                 _type = ValueType.String;
                 _value = new ValueVariant();
                 _value.StringValue = s;
+                _list = null;
+            }
+            else if (o is char c)
+            {
+                _type = ValueType.String;
+                _value = new ValueVariant();
+                _value.StringValue = c.ToString();
+                _list = null;
+            }
+            else if (o is IEnumerable enumerable)
+            {
+                _type = ValueType.List;
+                _value = new ValueVariant();
+                _list = new List<Value>();
+                foreach (var item in enumerable)
+                {
+                    _list.Add(new Value(item));
+                }
             }
             else
             {
                 _type = ValueType.Invalid;
                 _value = default;
+                _list = null;
             }
         }
         /// <summary>
@@ -140,6 +194,11 @@ namespace Petit.Core
         public bool IsString => _type == ValueType.String;
 
         /// <summary>
+        /// List型か
+        /// </summary>
+        public bool IsList => _type == ValueType.List;
+
+        /// <summary>
         /// NaNか
         /// </summary>
         public bool IsNaN => _type == ValueType.NaN;
@@ -155,6 +214,8 @@ namespace Petit.Core
                     return _value.FloatValue != 0;
                 case ValueType.String:
                     return !string.IsNullOrEmpty(_value.StringValue);
+                case ValueType.List:
+                    return true;
             }
             return false;
         }
@@ -174,6 +235,15 @@ namespace Petit.Core
                         return (int)strParseValue;
                     }
                     break;
+                case ValueType.List:
+                    if (_list.Count == 0)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return _list[0].ToInt();
+                    }
             }
             return 0;
         }
@@ -193,6 +263,15 @@ namespace Petit.Core
                         return strParseValue;
                     }
                     break;
+                case ValueType.List:
+                    if (_list.Count == 0)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return _list[0].ToFloat();
+                    }
                 case ValueType.NaN:
                     return float.NaN;
             }
@@ -213,16 +292,52 @@ namespace Petit.Core
                     return _value.FloatValue.ToString();
                 case ValueType.String:
                     return _value.StringValue;
+                case ValueType.List:
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append('[');
+                        bool isFirst = true;
+                        foreach (Value item in _list)
+                        {
+                            if (!isFirst)
+                            {
+                                sb.Append(" ,");
+                            }
+                            sb.Append(item.ToString());
+                            isFirst = false;
+                        }
+                        sb.Append(']');
+                        return sb.ToString();
+                    }
                 case ValueType.NaN:
                     return NaNStr;
             }
             return string.Empty;
         }
-
+        public List<Value> ToList()
+        {
+            switch (_type)
+            {
+                case ValueType.Bool:
+                    return new List<Value>() { this };
+                case ValueType.Int:
+                    return new List<Value>() { this };
+                case ValueType.Float:
+                    return new List<Value>() { this };
+                case ValueType.String:
+                    return _value.StringValue.Select(x => new Value(x)).ToList();
+                case ValueType.List:
+                    return _list;
+                case ValueType.NaN:
+                    return new List<Value>();
+            }
+            return new List<Value>();
+        }
         public static explicit operator bool(in Value v) => v.ToBool();
         public static explicit operator int(in Value v) => v.ToInt();
         public static explicit operator float(in Value v) => v.ToFloat();
         public static explicit operator string(in Value v) => v.ToString();
+
         public static bool operator true(in Value v) => v.ToBool();
         public static bool operator false(in Value v) => !v.ToBool();
 
@@ -246,6 +361,19 @@ namespace Petit.Core
                     return _value.FloatValue == other._value.FloatValue;
                 case ValueType.String:
                     return _value.StringValue == other._value.StringValue;
+                case ValueType.List:
+                    if (_list.Count != other._list.Count)
+                    {
+                        return false;
+                    }
+                    for (int index = 0; index <_list.Count; ++index)
+                    {
+                        if (!_list[index].Equals(other._list[index]))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
             }
             return true;
         }
@@ -270,6 +398,10 @@ namespace Petit.Core
             else if (other is bool b)
             {
                 return Equals(new Value(b));
+            }
+            else if (other is IEnumerable enumrable)
+            {
+                return Equals(new Value(enumrable));
             }
             else if (other is null)
             {
@@ -321,6 +453,20 @@ namespace Petit.Core
                     return _value.FloatValue == other.ToFloat();
                 case ValueType.String:
                     return _value.StringValue == other.ToString();
+                case ValueType.List:
+                    var otherList = other.ToList();
+                    if (_list.Count != otherList.Count)
+                    {
+                        return false;
+                    }
+                    for (int index = 0; index <_list.Count; ++index)
+                    {
+                        if (!_list[index].EqualsLooseSingly(otherList[index]))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
             }
             return _type == other._type;
         }
@@ -384,6 +530,35 @@ namespace Petit.Core
             if (a.IsString && b.IsString)
             {
                 return a._value.StringValue.CompareTo(b._value.StringValue);
+            }
+            if (a.IsList && b.IsList)
+            {
+                int min = Math.Min(a._list.Count, b._list.Count);
+                for (int index = 0; index < min; ++index)
+                {
+                    int comp = a._list[index].CompareTo(b._list[index]);
+                    if (comp != 0)
+                    {
+                        return comp;
+                    }
+                }
+                return a._list.Count.CompareTo(b._list.Count);
+            }
+            if (a.IsList && b.IsString)
+            {
+                return a.ToString().CompareTo(b.ToString());
+            }
+            else if (a.IsString && b.IsList)
+            {
+                return a.ToString().CompareTo(b.ToString());
+            }
+            if (a.IsList) 
+            {
+                return -1;
+            }
+            if (b.IsList)
+            {
+                return 1;
             }
             bool stringCompare = false;
             float aValue = 0.0f;
@@ -499,6 +674,8 @@ namespace Petit.Core
                     {
                         return Value.NaN;
                     }
+                case ValueType.List:
+                    return Value.NaN;
             }
             return a;
         }
@@ -529,6 +706,8 @@ namespace Petit.Core
                     {
                         return Value.NaN;
                     }
+                case ValueType.List:
+                    return Value.NaN;
             }
             return a;
         }
@@ -704,6 +883,39 @@ namespace Petit.Core
         {
             return new Value(a.ToInt() >> b);
         }
+        public Value this [in Value i]
+        {
+            get
+            {
+                int index = i.ToInt();
+                if (IsList)
+                {
+                    if (index <_list.Count)
+                    {
+                        return _list[index];
+                    }
+                }
+                else if (IsString)
+                {
+                    if (index < _value.StringValue.Length)
+                    {
+                        return new Value(_value.StringValue[index]);
+                    }
+                }
+                return Value.Invalid;
+            }
+            set
+            {
+                int index = i.ToInt();
+                if (IsList)
+                {
+                    if (index <_list.Count)
+                    {
+                       _list[index] = value;
+                    }
+                }
+            }
+        }
         public override int GetHashCode()
         {
             switch (_type)
@@ -718,6 +930,8 @@ namespace Petit.Core
                     return _value.StringValue.GetHashCode();
                 case ValueType.NaN:
                     return float.NaN.GetHashCode();
+                case ValueType.List:
+                    return _list.GetHashCode();
             }
             return 0;
         }
@@ -752,6 +966,11 @@ namespace Petit.Core
                 // 文字列優先
                 stringOp = true;
             }
+            if (prioritizeString && (a.IsList || b.IsList))
+            {
+                // 文字列優先
+                stringOp = true;
+            }
             else if (a.IsInvalid && b.IsString)
             {
                 // aだけ無効
@@ -766,6 +985,10 @@ namespace Petit.Core
             {
                 // 既に文字列結合ならパース処理スキップ
                 return ValueType.String;
+            }
+            if (a.IsList || b.IsList)
+            {
+                return ValueType.NaN;
             }
             if (a.IsString)
             {
@@ -849,6 +1072,7 @@ namespace Petit.Core
             Int,
             Float,
             String,
+            List,
 
             NaN
         }
@@ -868,5 +1092,6 @@ namespace Petit.Core
 
         private readonly ValueType _type;
         private readonly ValueVariant _value;
+        private readonly List<Value> _list;
     }
 }

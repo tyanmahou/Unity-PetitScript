@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Petit.Core.Executor
 {
@@ -240,6 +241,10 @@ namespace Petit.Core.Executor
             {
                 return ExecExpr(str, env);
             }
+            else if (expr is ListExpression list)
+            {
+                return ExecExpr(list, env);
+            }
             else if (expr is VariableExpression variable)
             {
                 return ExecExpr(variable, env);
@@ -263,6 +268,10 @@ namespace Petit.Core.Executor
             else if (expr is InvocationExpression func)
             {
                 return ExecExpr(func, env);
+            }
+            else if (expr is SubscriptExpression subscript)
+            {
+                return ExecExpr(subscript, env);
             }
             return (Value.Invalid, null);
         }
@@ -289,6 +298,15 @@ namespace Petit.Core.Executor
                 sb.Append(value);
             }
             return (new Value(sb.ToString()), null);
+        }
+        (Value, string) ExecExpr(ListExpression expr, Enviroment env)
+        {
+            List<Value> values = new List<Value>(expr.Elements.Count);
+            foreach (var e in expr.Elements)
+            {
+                values.Add(ExecExpr(e, env).Item1);
+            }
+            return (new Value(values), null);
         }
         (Value, string) ExecExpr(VariableExpression expr, Enviroment env)
         {
@@ -608,6 +626,12 @@ namespace Petit.Core.Executor
                 .Select(arg => new Argument(arg.Name, ExecExpr(arg.Expression, env).Item1))
                 .ToList();
             return (func.Invoke(args), null);
+        }
+        (Value, string) ExecExpr(SubscriptExpression expr, Enviroment env)
+        {
+            var (collection, _) = ExecExpr(expr.Collection, env);
+            var (index, _) = ExecExpr(expr.Index, env);
+            return (collection[index], null);
         }
     }
 }
