@@ -313,11 +313,10 @@ namespace Petit.Core.Executor
             return new ExprResult()
             {
                 Result = env.Get(expr.Ident),
-                Address = new Address()
+                Address = new IdentAddress()
                 {
                     Enviroment = env,
                     Ident = expr.Ident,
-                    Index = null
                 }
             };
         }
@@ -597,12 +596,13 @@ namespace Petit.Core.Executor
             var collection = ExecExpr(expr.Collection, env);
             var index = ExecExpr(expr.Index, env);
 
-            Address? address = null;
+            IAddress address = null;
             if (collection.Address != null)
             {
-                Address a = collection.Address.Value;
-                a.Index = index.Result;
-                address = a;
+                var indexAddress = new IndexAddress();
+                indexAddress.Parent = collection.Address;
+                indexAddress.Index = index.Result;
+                address = indexAddress;
             }
             return new()
             {
@@ -613,9 +613,9 @@ namespace Petit.Core.Executor
         struct ExprResult
         {
             public Value Result;
-            public Address? Address;
+            public IAddress Address;
 
-            public ExprResult(in Value result, in Address? address = null)
+            public ExprResult(in Value result, in IAddress address = null)
             {
                 Result = result;
                 Address = address;
@@ -628,26 +628,37 @@ namespace Petit.Core.Executor
                 Address?.Set(value);
             }
         }
-        struct Address
+        interface IAddress
+        {
+            Value Value{  get; }
+            void Set(in Value value);
+        }
+        struct IdentAddress : IAddress
         {
             public Enviroment Enviroment;
             public string Ident;
-            public Value? Index;
 
+            public Value Value
+            {
+                get => Enviroment.Get(Ident);
+            }
             public void Set(in Value value)
             {
-                if (Enviroment is null)
-                {
-                    return;
-                }
-                if (Index is null)
-                {
-                    Enviroment.Set(Ident, value);
-                }
-                else
-                {
-                    Enviroment.Get(Ident)[Index.Value] = value;
-                }
+                Enviroment.Set(Ident, value);
+            }
+        }
+        struct IndexAddress : IAddress
+        {
+            public IAddress Parent;
+            public Value Index;
+            public Value Value
+            {
+                get => Parent.Value[Index];
+            }
+            public void Set(in Value value)
+            {
+                Value v = Parent.Value;
+                v[Index] = value;
             }
         }
     }
