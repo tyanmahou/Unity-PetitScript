@@ -33,6 +33,16 @@
         RBrace,
 
         /// <summary>
+        /// [
+        /// </summary>
+        LBracket,
+
+        /// <summary>
+        /// ]
+        /// </summary>
+        RBracket,
+
+        /// <summary>
         /// "
         /// </summary>
         DoubleQuote,

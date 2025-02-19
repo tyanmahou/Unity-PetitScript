@@ -160,16 +160,16 @@ namespace Petit.Core.Lexer
                     _tokens.Add(new Token(TokenType.RParen, ")", lineNum, pos + 1));
                     ++pos;
                 }
-                //else if (line[pos] == '[')
-                //{
-                //    _tokens.Add(new Token(TokenType.LBracket, "[", lineNum, pos + 1));
-                //    ++pos;
-                //}
-                //else if (line[pos] == ']')
-                //{
-                //    _tokens.Add(new Token(TokenType.RBracket, "]", lineNum, pos + 1));
-                //    ++pos;
-                //}
+                else if (line[pos] == '[')
+                {
+                    _tokens.Add(new Token(TokenType.LBracket, "[", lineNum, pos + 1));
+                    ++pos;
+                }
+                else if (line[pos] == ']')
+                {
+                    _tokens.Add(new Token(TokenType.RBracket, "]", lineNum, pos + 1));
+                    ++pos;
+                }
                 else if (line[pos] == '{')
                 {
                     _tokens.Add(new Token(TokenType.LBrace, "{", lineNum, pos + 1));
