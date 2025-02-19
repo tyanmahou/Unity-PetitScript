@@ -42,7 +42,8 @@
             {
                 case TokenType.Inc:
                 case TokenType.Dec:
-                case TokenType.LParen:
+                case TokenType.LParen:   // Function call
+                case TokenType.LBracket: // Subscript
                     return Precedence.Dot;
 
                 case TokenType.Mul:

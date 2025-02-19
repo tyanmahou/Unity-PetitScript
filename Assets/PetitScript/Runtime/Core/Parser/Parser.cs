@@ -471,6 +471,8 @@ namespace Petit.Core.Parser
                         return ParsePostfixUnaryExpression;
                     case TokenType.LParen:
                         return ParseInvocationExpression;
+                    case TokenType.LBracket:
+                        return ParseSubscriptExpression;
 
                     case TokenType.Add:
                     case TokenType.Sub:
@@ -713,6 +715,18 @@ namespace Petit.Core.Parser
             } while (true);
             TryErrorCheckType("Not found function call')'", TokenType.RParen);
             ++_pos; // )
+            return expr;
+        }
+        SubscriptExpression ParseSubscriptExpression(IExpression left)
+        {
+            var expr = new SubscriptExpression();
+            expr.Collection = left;
+            ++_pos; // [
+
+            expr.Index = ParseExpression();
+
+            TryErrorCheckType("Not found subscript ']'", TokenType.RBracket);
+            ++_pos; // ]
             return expr;
         }
         IExpression ParseParen()

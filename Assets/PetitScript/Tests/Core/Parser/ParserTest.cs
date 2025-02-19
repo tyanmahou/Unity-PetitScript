@@ -127,6 +127,18 @@ namespace Petit.Core.Parser
             Assert.AreEqual(r.Ident, "c");
         }
         [Test]
+        public void TestSubscript()
+        {
+            string code = @"a[0]";
+            var expr = GetExpr(code);
+
+            var s = As<AST.SubscriptExpression>(expr);
+            var c = As<AST.VariableExpression>(s.Collection);
+            Assert.AreEqual(c.Ident, "a");
+            var i = As<AST.LiteralExpression>(s.Index);
+            Assert.AreEqual(i.Value, "0");
+        }
+        [Test]
         public void TestParenError()
         {
             string code = @"(a || b && c";
