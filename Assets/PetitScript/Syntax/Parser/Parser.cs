@@ -136,30 +136,19 @@ namespace Petit.Syntax.Parser
         {
             ++_pos; // if
             IfStatement statement = new IfStatement();
+            TryErrorCheckType("Not found if '('", TokenType.LParen);
+            // (
+            ++_pos;
 
-            IfParam ParseParam()
-            {
-                IfParam param = new IfParam();
-                TryErrorCheckType("Not found if '('", TokenType.LParen);
-                // (
-                ++_pos;
+            statement.Condition = ParseExpression();
 
-                param.Condition = ParseExpression();
+            TryErrorCheckType("Not found if ')'", TokenType.RParen);
+            // )
+            ++_pos;
 
-                TryErrorCheckType("Not found if ')'", TokenType.RParen);
-                // )
-                ++_pos;
-                param.Statement = ParseStatement();
-                return param;
-            }
-            statement.IfStatements.Add(ParseParam());
-            while ((_pos + 1 < _tokens.Count) && _tokens[_pos].Type == TokenType.Else && _tokens[_pos + 1].Type == TokenType.If)
-            {
-                _pos += 2; // else if
+            statement.Statement = ParseStatement();
 
-                statement.IfStatements.Add(ParseParam());
-            }
-            if ((_pos < _tokens.Count) && _tokens[_pos].Type == TokenType.Else)
+            if (TryCheckType(TokenType.Else))
             {
                 ++_pos; // else
                 statement.ElseStatement = ParseStatement();

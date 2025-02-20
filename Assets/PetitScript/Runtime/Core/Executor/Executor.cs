@@ -96,12 +96,9 @@ namespace Petit.Core.Executor
         }
         (Value, StatementCommand) ExecIfStatement(IfStatement ifStatement, Enviroment env)
         {
-            foreach (IfParam param in ifStatement.IfStatements)
+            if (ExecExpr(ifStatement.Condition, env))
             {
-                if (ExecExpr(param.Condition, env))
-                {
-                    return ExecStatement(param.Statement, env);
-                }
+                return ExecStatement(ifStatement.Statement, env);
             }
             if (ifStatement.ElseStatement != null)
             {

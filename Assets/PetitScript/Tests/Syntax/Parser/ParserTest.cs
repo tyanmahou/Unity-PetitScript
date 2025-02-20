@@ -214,10 +214,11 @@ else
             var root = Parse(code);
             var ifState = As<IfStatement>(root?.Statements?[0]);
             Assert.True(ifState != null);
-            Assert.True(ifState.IfStatements.Count == 2);
-            Assert.True(ifState.IfStatements[0].Statement is BlockStatement);
-            Assert.True(ifState.IfStatements[1].Statement is BlockStatement);
-            Assert.True(ifState.ElseStatement is BlockStatement);
+            Assert.True(ifState.Statement is BlockStatement);
+            Assert.True(ifState.ElseStatement is IfStatement);
+            var else1 = ifState.ElseStatement as IfStatement;
+            Assert.True(else1.Statement is BlockStatement);
+            Assert.True(else1.ElseStatement is BlockStatement);
         }
         static U As<U>(object v)
             where U : class
