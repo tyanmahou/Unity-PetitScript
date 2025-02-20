@@ -2,7 +2,7 @@
 
 namespace Petit.Runtime
 {
-    class ValueTest
+    class TestValue
     {
         [Test]
         public void TestIdentical()

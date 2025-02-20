@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Petit.Runtime
 {
-    class TestInterpreter_Function : TestInterpreterBase
+    class TestRun_Function : TestRunBase
     {
         [Test]
         public void TestFunc()

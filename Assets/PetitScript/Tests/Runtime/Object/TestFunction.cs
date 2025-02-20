@@ -1,9 +1,8 @@
 ﻿using NUnit.Framework;
-using System;
 
 namespace Petit.Runtime
 {
-    class FunctionTest
+    class TestFunction
     {
         Value Add(Value a1, Value b1)
         {

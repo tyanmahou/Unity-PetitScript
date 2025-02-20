@@ -2,7 +2,7 @@
 
 namespace Petit.Syntax.Lexer
 {
-    class LexerTest
+    class TestLexer
     {
         [Test]
         public void TestBool()

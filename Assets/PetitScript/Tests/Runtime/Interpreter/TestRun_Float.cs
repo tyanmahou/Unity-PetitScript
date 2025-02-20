@@ -2,7 +2,7 @@
 
 namespace Petit.Runtime
 {
-    class TestInterpreter_Float : TestInterpreterBase
+    class TestRun_Float : TestRunBase
     {
         [Test]
         public void TestFloat()

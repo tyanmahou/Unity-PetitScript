@@ -2,7 +2,7 @@
 
 namespace Petit.Runtime
 {
-    class TestInterpreter_String : TestInterpreterBase
+    class TestRun_String : TestRunBase
     {
         [Test]
         public void TestStringLiteral()

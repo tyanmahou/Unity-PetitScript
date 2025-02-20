@@ -2,7 +2,7 @@
 
 namespace Petit.Runtime
 {
-    class TestInterpreter_Int : TestInterpreterBase
+    class TestRun_Int : TestRunBase
     {
         [Test]
         public void TestInt()

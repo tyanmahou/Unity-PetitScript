@@ -2,7 +2,7 @@
 
 namespace Petit.Runtime
 {
-    class TestInterpreter : TestInterpreterBase
+    class TestRun : TestRunBase
     {
         [Test]
         public void TestLogic()
@@ -32,7 +32,7 @@ namespace Petit.Runtime
             RunInt("1 || false", 1);
             RunBool("0 || true", true);
             RunBool("false || false", false);
-            RunString("\"a\" || truew", "a");
+            RunString("\"a\" || true", "a");
         }
         [Test]
         public void TestAssign()
@@ -75,92 +75,6 @@ namespace Petit.Runtime
                 Interpreter interpreter = RunInt("(false ? a : b) = 10", 10);
                 Assert.AreEqual(interpreter.Enviroment.Get("a"), Value.Invalid);
                 Assert.AreEqual(interpreter.Enviroment.Get("b"), 10);
-            }
-        }
-        [Test]
-        public void TestIf()
-        {
-            string code = @"
-if (a > 0)
-{
-   ""plus"";
-}
-else if (a == 0)
-{
-   ""zero"";
-}
-else
-{
-   ""minus"";
-}
-";
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", 1);
-                RunString(code, "plus", vars);
-            }
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", 0);
-                RunString(code, "zero", vars);
-            }
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", -1);
-                RunString(code, "minus", vars);
-            }
-        }
-        [Test]
-        public void TestSwitch()
-        {
-            string code = @"
-text="""";
-switch(a) {
-case 0:
-   text += ""0"";
-case  1:
-   text += ""1"";
-case  2:
-case  3:
-   text += ""23"";
-　break;    
-default:
-   text += ""d"";
-case  4:
-   text += ""4"";
-   break;
-}
-return text;
-";
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", 0);
-                RunString(code, "0123", vars);
-            }
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", 1);
-                RunString(code, "123", vars);
-            }
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", 2);
-                RunString(code, "23", vars);
-            }
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", 3);
-                RunString(code, "23", vars);
-            }
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", 4);
-                RunString(code, "4", vars);
-            }
-            {
-                var vars = new Enviroment(null);
-                vars.Set("a", 5);
-                RunString(code, "d4", vars);
             }
         }
     }

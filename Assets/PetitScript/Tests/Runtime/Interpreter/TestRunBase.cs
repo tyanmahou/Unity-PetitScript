@@ -2,7 +2,7 @@
 
 namespace Petit.Runtime
 {
-    class TestInterpreterBase
+    class TestRunBase
     {
         protected static Interpreter RunInt(string code, int actual, Enviroment env = null)
         {
