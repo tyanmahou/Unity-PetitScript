@@ -800,6 +800,10 @@ namespace Petit.Runtime
                 );
             if (opType == ValueType.Int)
             {
+                if (biValue == 0)
+                {
+                    return new Value(aiValue / (float)biValue);
+                }
                 return new Value(aiValue / biValue);
             }
             else if (opType == ValueType.Float)
@@ -826,6 +830,11 @@ namespace Petit.Runtime
                 );
             if (opType == ValueType.Int)
             {
+                if (biValue == 0)
+                {
+                    return new Value(aiValue / (float)biValue);
+                }
+
                 return new Value(aiValue % biValue);
             }
             else if (opType == ValueType.Float)

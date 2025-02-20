@@ -20,5 +20,13 @@ namespace Petit.Runtime
             RunInt("7 % 5", 2);
             RunInt("(12 + 3) * 3 / 4 - 20 % 18", 9);
         }
+        [Test]
+        public void TestZeroDivide()
+        {
+            //RunFloat("1 / 0", float.PositiveInfinity);
+            //RunFloat("0 / 0", float.NaN);
+            //RunFloat("-1 / 0", float.NegativeInfinity);
+            //RunNaN("1 % 0");
+        }
     }
 }

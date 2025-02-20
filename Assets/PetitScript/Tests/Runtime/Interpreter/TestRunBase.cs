@@ -36,5 +36,12 @@ namespace Petit.Runtime
             Assert.AreEqual(result.ToString(), actual);
             return interpreter;
         }
+        protected static Interpreter RunNaN(string code, Enviroment env = null)
+        {
+            Interpreter interpreter = new Interpreter();
+            var result = interpreter.Run(code, env);
+            Assert.True(result.IsNaN);
+            return interpreter;
+        }
     }
 }
