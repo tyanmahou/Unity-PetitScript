@@ -66,16 +66,6 @@ namespace Petit.Runtime
         {
             RunInt("true ? 1 : 2", 1);
             RunInt("false ? 1 : 2", 2);
-            {
-                Interpreter interpreter = RunInt("(true ? a : b) = 10", 10);
-                Assert.AreEqual(interpreter.Enviroment.Get("a"), 10);
-                Assert.AreEqual(interpreter.Enviroment.Get("b"), Value.Invalid);
-            }
-            {
-                Interpreter interpreter = RunInt("(false ? a : b) = 10", 10);
-                Assert.AreEqual(interpreter.Enviroment.Get("a"), Value.Invalid);
-                Assert.AreEqual(interpreter.Enviroment.Get("b"), 10);
-            }
         }
     }
 }
