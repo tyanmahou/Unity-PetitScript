@@ -4,7 +4,7 @@ using Petit.Syntax.Exception;
 
 namespace Petit.Syntax.Parser
 {
-    class ParserTest
+    class TestParser : TestParserBase
     {
         [Test]
         public void TestGloabalStatement()
@@ -219,25 +219,6 @@ else
             var else1 = ifState.ElseStatement as IfStatement;
             Assert.True(else1.Statement is BlockStatement);
             Assert.True(else1.ElseStatement is BlockStatement);
-        }
-        static U As<U>(object v)
-            where U : class
-        {
-            Assert.True(v is U);
-            return v as U;
-        }
-        private GlobalStatement Parse(string code)
-        {
-            Lexer.Lexer lexer = new();
-            var tokens = lexer.Tokenize(code);
-            Parser parser = new();
-            return parser.Parse(tokens).GlobalStatement;
-        }
-        private IExpression GetExpr(string code)
-        {
-            var root = Parse(code);
-            var e = As<ExpressionStatement>(root?.Statements?[0]);
-            return e?.Expression;
         }
     }
 }

@@ -8,6 +8,16 @@ namespace Petit.Runtime
     /// </summary>
     public class Interpreter
     {
+        /// <summary>
+        /// スクリプト実行
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static Value RunScript(string code)
+        {
+            return new Interpreter().Run(code);
+        }
+
         public Enviroment Enviroment => _env;
 
         /// <summary>
