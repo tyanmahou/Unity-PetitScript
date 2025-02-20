@@ -9,7 +9,7 @@ namespace Petit.Syntax.AST
     }
     public class FunctionDeclaration : IDeclaration
     {
-        public string Ident;
+        public string Identifier;
         public List<FunctionParamerter> Paramerters = new List<FunctionParamerter>();
         public IStatement Statement;
     }

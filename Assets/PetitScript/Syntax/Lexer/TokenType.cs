@@ -50,7 +50,7 @@
         /// <summary>
         /// 識別子
         /// </summary>
-        Ident,
+        Identifier,
 
         /// <summary>
         /// 値

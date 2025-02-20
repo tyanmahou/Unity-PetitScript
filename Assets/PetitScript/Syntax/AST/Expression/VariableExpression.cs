@@ -2,6 +2,6 @@
 {
     public class VariableExpression : IExpression
     {
-        public string Ident;
+        public string Identifier;
     }
 }

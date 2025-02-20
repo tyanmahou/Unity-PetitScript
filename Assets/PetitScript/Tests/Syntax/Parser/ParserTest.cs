@@ -33,7 +33,7 @@ namespace Petit.Syntax.Parser
             var expr = GetExpr(code);
             var binary = As<AST.BinaryExpression>(expr);
             var left = As<AST.VariableExpression>(binary.Left);
-            Assert.AreEqual(left.Ident, "a");
+            Assert.AreEqual(left.Identifier, "a");
             Assert.AreEqual(binary.Op, ">=");
 
             var right = As<AST.LiteralExpression>(binary.Right);
@@ -46,7 +46,7 @@ namespace Petit.Syntax.Parser
             var expr = GetExpr(code);
             var terrnary = As<AST.TernaryExpression>(expr);
             var left = As<AST.VariableExpression>(terrnary.Left);
-            Assert.AreEqual(left.Ident, "a");
+            Assert.AreEqual(left.Identifier, "a");
             Assert.AreEqual(terrnary.Op, "?");
             var mid = As<AST.LiteralExpression>(terrnary.Mid);
             Assert.AreEqual(mid.Value, "true");
@@ -63,15 +63,15 @@ namespace Petit.Syntax.Parser
             var b = As<AST.BinaryExpression>(expr);
             Assert.AreEqual(b.Op, "||");
             var l = As<AST.VariableExpression>(b.Left);
-            Assert.AreEqual(l.Ident, "a");
+            Assert.AreEqual(l.Identifier, "a");
 
             var r = As<AST.BinaryExpression>(b.Right);
             Assert.AreEqual(r.Op, "&&");
 
             var l2 = As<AST.VariableExpression>(r.Left);
-            Assert.AreEqual(l2.Ident, "b");
+            Assert.AreEqual(l2.Identifier, "b");
             var r2 = As<AST.VariableExpression>(r.Right);
-            Assert.AreEqual(r2.Ident, "c");
+            Assert.AreEqual(r2.Identifier, "c");
         }
         [Test]
         public void TestCalc()
@@ -119,12 +119,12 @@ namespace Petit.Syntax.Parser
             var l = As<AST.BinaryExpression>(b.Left);
             Assert.AreEqual(l.Op, "||");
             var l2 = As<AST.VariableExpression>(l.Left);
-            Assert.AreEqual(l2.Ident, "a");
+            Assert.AreEqual(l2.Identifier, "a");
             var r2 = As<AST.VariableExpression>(l.Right);
-            Assert.AreEqual(r2.Ident, "b");
+            Assert.AreEqual(r2.Identifier, "b");
 
             var r = As<AST.VariableExpression>(b.Right);
-            Assert.AreEqual(r.Ident, "c");
+            Assert.AreEqual(r.Identifier, "c");
         }
         [Test]
         public void TestList()
@@ -172,7 +172,7 @@ namespace Petit.Syntax.Parser
 
             var s = As<AST.SubscriptExpression>(expr);
             var c = As<AST.VariableExpression>(s.Collection);
-            Assert.AreEqual(c.Ident, "a");
+            Assert.AreEqual(c.Identifier, "a");
             var i = As<AST.LiteralExpression>(s.Index);
             Assert.AreEqual(i.Value, "0");
         }

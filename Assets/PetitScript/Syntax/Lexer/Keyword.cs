@@ -10,7 +10,7 @@ namespace Petit.Syntax.Lexer
             {
                 return true;
             }
-            tokenType = TokenType.Ident;
+            tokenType = TokenType.Identifier;
             return false;
         }
 

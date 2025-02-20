@@ -363,8 +363,8 @@ namespace Petit.Syntax.Parser
             var statement = new FunctionDeclaration();
             ++_pos; // fn
             
-            TryErrorCheckType("Not found function name.", TokenType.Ident);
-            statement.Ident = _tokens[_pos].Value;
+            TryErrorCheckType("Not found function name.", TokenType.Identifier);
+            statement.Identifier = _tokens[_pos].Value;
             ++_pos;
 
             TryErrorCheckType("Not found function name.", TokenType.LParen);
@@ -373,7 +373,7 @@ namespace Petit.Syntax.Parser
             // Argument
             while (true)
             {
-                if (TryCheckType(TokenType.Ident))
+                if (TryCheckType(TokenType.Identifier))
                 {
                     AST.FunctionParamerter paramerter = default;
                     paramerter.Name = _tokens[_pos].Value;
@@ -386,7 +386,7 @@ namespace Petit.Syntax.Parser
                         paramerter.DefaultValue = ParseExpression();
                         if (paramerter.DefaultValue is null)
                         {
-                            Error($"Not found fn {statement.Ident} {paramerter.Name} default value");
+                            Error($"Not found fn {statement.Identifier} {paramerter.Name} default value");
                         }
                     }
                     statement.Paramerters.Add(paramerter);
@@ -405,13 +405,13 @@ namespace Petit.Syntax.Parser
                     break; // 引数終わり
                 }
             }
-            TryErrorCheckType($"Not found fn {statement.Ident}')'", TokenType.RParen);
+            TryErrorCheckType($"Not found fn {statement.Identifier}')'", TokenType.RParen);
             ++_pos; // )
 
             statement.Statement = ParseStatement();
             if (statement.Statement is null)
             {
-                Error($"Not found fn {statement.Ident} statement");
+                Error($"Not found fn {statement.Identifier} statement");
             }
             return statement;
         }
@@ -454,7 +454,7 @@ namespace Petit.Syntax.Parser
                         return ParseLiteralExpression;
                     case TokenType.DoubleQuote:
                         return ParseStringExpression;
-                    case TokenType.Ident:
+                    case TokenType.Identifier:
                         return ParseVariableExpression;
                 }
                 return null;
@@ -604,7 +604,7 @@ namespace Petit.Syntax.Parser
             ++_pos;
             return new VariableExpression()
             {
-                Ident = ident
+                Identifier = ident
             };
         }
         PrefixUnaryExpression ParsePrefixUnaryExpression()
@@ -681,7 +681,7 @@ namespace Petit.Syntax.Parser
             {
                 AST.Argument arg = default;
                 bool useName = false;
-                if (TryCheckNextType(TokenType.Ident, TokenType.Colon))
+                if (TryCheckNextType(TokenType.Identifier, TokenType.Colon))
                 {
                     // 名前付き引数
                     arg.Name = _tokens[_pos].Value;

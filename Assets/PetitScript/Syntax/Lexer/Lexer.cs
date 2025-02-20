@@ -111,7 +111,7 @@ namespace Petit.Syntax.Lexer
                     {
                         ++pos;
                     }
-                    TokenType tokenType = TokenType.Ident;
+                    TokenType tokenType = TokenType.Identifier;
                     string ident = line.Substring(start, pos - start);
 
                     if (Keyword.TryGetTokenType(ident, out var keywordType))

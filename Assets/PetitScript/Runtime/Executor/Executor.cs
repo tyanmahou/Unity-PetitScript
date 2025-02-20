@@ -221,7 +221,7 @@ namespace Petit.Runtime.Executor
                 }
                 return ExecStatement(function.Statement, newEnv).Item1;
             }, function.Paramerters.Select(p => new Argument(p.Name, (Func<Value>)null)).ToArray());
-            env.SetFunc(function.Ident, func);
+            env.SetFunc(function.Identifier, func);
             return (Value.Invalid, StatementCommand.None);
         }
         ExprResult ExecExpr(IExpression expr, Enviroment env)
@@ -309,11 +309,11 @@ namespace Petit.Runtime.Executor
         {
             return new ExprResult()
             {
-                Result = env.Get(expr.Ident),
+                Result = env.Get(expr.Identifier),
                 Address = new IdentAddress()
                 {
                     Enviroment = env,
-                    Ident = expr.Ident,
+                    Identifier = expr.Identifier,
                 }
             };
         }
@@ -576,7 +576,7 @@ namespace Petit.Runtime.Executor
             string ident = string.Empty;
             if (expr.Function is VariableExpression v)
             {
-                ident = v.Ident;
+                ident = v.Identifier;
             }
             else
             {
@@ -633,15 +633,15 @@ namespace Petit.Runtime.Executor
         struct IdentAddress : IAddress
         {
             public Enviroment Enviroment;
-            public string Ident;
+            public string Identifier;
 
             public Value Value
             {
-                get => Enviroment.Get(Ident);
+                get => Enviroment.Get(Identifier);
             }
             public void Set(in Value value)
             {
-                Enviroment.Set(Ident, value);
+                Enviroment.Set(Identifier, value);
             }
         }
         struct IndexAddress : IAddress
