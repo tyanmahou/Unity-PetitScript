@@ -2,7 +2,7 @@
 
 namespace Petit.Syntax.AST
 {
-    public class StringExpression : IExpression
+    public class StringInterpolation : IExpression
     {
         public List<IExpression> Expressions = new();
     }

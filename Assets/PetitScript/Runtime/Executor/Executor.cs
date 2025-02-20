@@ -246,7 +246,7 @@ namespace Petit.Runtime.Executor
             {
                 return ExecExpr(strLiteral);
             }
-            else if (expr is StringExpression str)
+            else if (expr is StringInterpolation str)
             {
                 return ExecExpr(str, env);
             }
@@ -300,7 +300,7 @@ namespace Petit.Runtime.Executor
         {
             return new(new Value(expr.Value));
         }
-        ExprResult ExecExpr(StringExpression expr, Enviroment env)
+        ExprResult ExecExpr(StringInterpolation expr, Enviroment env)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var e in expr.Expressions)

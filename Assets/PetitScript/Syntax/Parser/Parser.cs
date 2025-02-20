@@ -596,10 +596,31 @@ namespace Petit.Syntax.Parser
                 Value = literal
             };
         }
-        StringExpression ParseStringExpression()
+        IExpression ParseStringExpression()
         {
-            var expr = new StringExpression();
             ++_pos; // "
+
+            if (TryCheckType(TokenType.DoubleQuote))
+            {
+                // 空文字列
+                ++_pos; // "
+                return new StringLiteral()
+                {
+                    Value = string.Empty
+                };
+            }
+            else if (TryCheckNextType(TokenType.StringLiteral, TokenType.DoubleQuote))
+            {
+                // 文字列リテラル
+                string value = _tokens[_pos].Value;
+                _pos += 2;
+                return new StringLiteral()
+                {
+                    Value = value
+                };
+            }
+
+            var expr = new StringInterpolation();
             while (_pos < _tokens.Count)
             {
                 if (_tokens[_pos].Type == TokenType.StringLiteral)
