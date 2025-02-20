@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
 
-namespace Petit.Core
+namespace Petit.Runtime
 {
     /// <summary>
     /// 変数

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Petit.Core.Executor
+namespace Petit.Runtime.Executor
 {
     class Executor
     {

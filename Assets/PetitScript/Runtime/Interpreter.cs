@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Petit.Core
+namespace Petit.Runtime
 {
     /// <summary>
     /// インタプリタ

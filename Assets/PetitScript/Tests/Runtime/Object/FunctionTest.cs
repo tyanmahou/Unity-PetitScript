@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 
-namespace Petit.Core
+namespace Petit.Runtime
 {
     class FunctionTest
     {

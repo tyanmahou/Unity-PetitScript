@@ -1,4 +1,4 @@
-﻿namespace Petit.Core.Exception
+﻿namespace Petit.Runtime.Exception
 {
     /// <summary>
     /// 実行エラー

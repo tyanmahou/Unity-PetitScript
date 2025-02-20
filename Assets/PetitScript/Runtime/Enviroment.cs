@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Petit.Core
+namespace Petit.Runtime
 {
     public class Enviroment
     {

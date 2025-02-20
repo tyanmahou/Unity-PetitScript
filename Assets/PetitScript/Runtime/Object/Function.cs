@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Petit.Core
+namespace Petit.Runtime
 {
     public readonly struct Argument
     {

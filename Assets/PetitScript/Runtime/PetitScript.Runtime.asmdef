@@ -1,5 +1,5 @@
 {
-    "name": "PetitScript.Core",
+    "name": "PetitScript.Runtime",
     "rootNamespace": "",
     "references": [
         "GUID:b9e3d85141ac88847a51935a3dcfcf7e"

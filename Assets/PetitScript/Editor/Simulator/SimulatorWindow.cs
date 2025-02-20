@@ -34,7 +34,7 @@ namespace Petit
             if (GUILayout.Button("Run"))
             {
                 var code = (_scriptFile != null) ? _scriptFile.Code : _scriptCode;
-                var interpreter = new Core.Interpreter();
+                var interpreter = new Runtime.Interpreter();
                 interpreter
                     .Then((string v) =>
                     {

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Petit.Core
+namespace Petit.Runtime
 {
     class InterpreterTest
     {
