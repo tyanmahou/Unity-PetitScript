@@ -53,11 +53,6 @@
         Identifier,
 
         /// <summary>
-        /// 値
-        /// </summary>
-        Value,
-
-        /// <summary>
         /// 真偽値リテラル
         /// </summary>
         BoolLiteral,
@@ -71,6 +66,11 @@
         /// 浮動小数点リテラル
         /// </summary>
         FloatLiteral,
+
+        /// <summary>
+        /// 文字列リテラル
+        /// </summary>
+        StringLiteral,
 
         /// <summary>
         /// :

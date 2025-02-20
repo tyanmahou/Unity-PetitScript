@@ -1,6 +1,6 @@
 ﻿namespace Petit.Syntax.AST
 {
-    public class LiteralExpression : IExpression
+    public class StringLiteral : IExpression
     {
         public string Value;
     }

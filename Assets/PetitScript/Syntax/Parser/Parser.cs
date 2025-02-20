@@ -456,8 +456,8 @@ namespace Petit.Syntax.Parser
                         return ParseIntLiteral;
                     case TokenType.FloatLiteral:
                         return ParseFloatLiteral;
-                    case TokenType.Value:
-                        return ParseLiteralExpression;
+                    case TokenType.StringLiteral:
+                        return ParseStringLiteral;
                     case TokenType.DoubleQuote:
                         return ParseStringExpression;
                     case TokenType.Identifier:
@@ -587,11 +587,11 @@ namespace Petit.Syntax.Parser
                 Value = literal
             };
         }
-        LiteralExpression ParseLiteralExpression()
+        StringLiteral ParseStringLiteral()
         {
             string literal = _tokens[_pos].Value;
             ++_pos;
-            return new LiteralExpression()
+            return new StringLiteral()
             {
                 Value = literal
             };
@@ -602,9 +602,9 @@ namespace Petit.Syntax.Parser
             ++_pos; // "
             while (_pos < _tokens.Count)
             {
-                if (_tokens[_pos].Type == TokenType.Value)
+                if (_tokens[_pos].Type == TokenType.StringLiteral)
                 {
-                    expr.Expressions.Add(ParseLiteralExpression());
+                    expr.Expressions.Add(ParseStringLiteral());
                 }
                 else if (_tokens[_pos].Type == TokenType.LBrace)
                 {

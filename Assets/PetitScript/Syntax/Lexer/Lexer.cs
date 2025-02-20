@@ -89,7 +89,7 @@ namespace Petit.Syntax.Lexer
                         .Replace("}}", "}")
                         ;
                     text = System.Text.RegularExpressions.Regex.Unescape(text);
-                    _tokens.Add(new Token(TokenType.Value, text, lineNum, start + 1));
+                    _tokens.Add(new Token(TokenType.StringLiteral, text, lineNum, start + 1));
                     if (!(isInterpolation.Count > 0 && isInterpolation.Peek()))
                     {
                         _tokens.Add(new Token(TokenType.DoubleQuote, "\"", lineNum, pos + 1));

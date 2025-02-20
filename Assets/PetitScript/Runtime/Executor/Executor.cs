@@ -242,9 +242,9 @@ namespace Petit.Runtime.Executor
             {
                 return ExecExpr(floatLiteral);
             }
-            else if (expr is LiteralExpression literal)
+            else if (expr is StringLiteral strLiteral)
             {
-                return ExecExpr(literal);
+                return ExecExpr(strLiteral);
             }
             else if (expr is StringExpression str)
             {
@@ -296,9 +296,9 @@ namespace Petit.Runtime.Executor
         {
             return new(new Value(expr.Value));
         }
-        ExprResult ExecExpr(LiteralExpression expr)
+        ExprResult ExecExpr(StringLiteral expr)
         {
-            return new(Value.Parse(expr.Value));
+            return new(new Value(expr.Value));
         }
         ExprResult ExecExpr(StringExpression expr, Enviroment env)
         {
@@ -306,7 +306,7 @@ namespace Petit.Runtime.Executor
             foreach (var e in expr.Expressions)
             {
                 string value;
-                if (e is LiteralExpression l)
+                if (e is StringLiteral l)
                 {
                     // そのまま流し込む
                     value = l.Value;

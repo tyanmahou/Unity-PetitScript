@@ -71,7 +71,7 @@ namespace Petit.Syntax.Lexer
                 Assert.AreEqual(tokens[0].Value, "\"");
                 Assert.AreEqual(tokens[0].Type, TokenType.DoubleQuote);
                 Assert.AreEqual(tokens[1].Value, "aaaa");
-                Assert.AreEqual(tokens[1].Type, TokenType.Value);
+                Assert.AreEqual(tokens[1].Type, TokenType.StringLiteral);
                 Assert.AreEqual(tokens[2].Value, "\"");
                 Assert.AreEqual(tokens[2].Type, TokenType.DoubleQuote);
             }
