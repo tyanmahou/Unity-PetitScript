@@ -55,5 +55,19 @@ namespace Petit.Runtime
             var result = Interpreter.RunScript("[1, 2, 3, [4, 5]]");
             Assert.AreEqual(result.ToString(), "[1, 2, 3, [4, 5]]");
         }
+
+        [Test]
+        public void TestSubscript()
+        {
+            string code = @"
+a = [1, 2, 3, [4, 5]];
+a[0] = 10;
+a[3][1] = 20;
+return a;
+";
+            var result = Interpreter.RunScript(code);
+            Assert.True(result.IsList);
+            Assert.AreEqual(result.ToString(), "[10, 2, 3, [4, 20]]");
+        }
     }
 }
