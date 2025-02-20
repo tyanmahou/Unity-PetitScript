@@ -1,8 +1,9 @@
 ﻿namespace Petit.Core.AST
 {
-    class PostfixUnaryExpression : IExpression
+    public class BinaryExpression : IExpression
     {
         public IExpression Left;
         public string Op;
+        public IExpression Right;
     }
 }

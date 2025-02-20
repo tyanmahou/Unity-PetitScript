@@ -1,6 +1,6 @@
 ﻿namespace Petit.Core.AST
 {
-    interface IStatement :  INode
+    public interface INode
     {
     }
 }

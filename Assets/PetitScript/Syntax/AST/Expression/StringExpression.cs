@@ -2,7 +2,7 @@
 
 namespace Petit.Core.AST
 {
-    class StringExpression : IExpression
+    public class StringExpression : IExpression
     {
         public List<IExpression> Expressions = new();
     }

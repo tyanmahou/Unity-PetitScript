@@ -82,11 +82,7 @@ namespace Petit.Core
             Value result;
             try
             {
-                var lexer = new Lexer.Lexer();
-                var tokens = lexer.Tokenize(code);
-
-                var parser = new Parser.Parser();
-                var ast = parser.Parse(tokens);
+                var ast = Syntax.Parse(code);
                 var executer = new Executor.Executor();
                 result = executer.Exec(ast, env ?? _env);
             }

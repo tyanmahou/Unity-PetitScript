@@ -1,6 +1,6 @@
 ﻿namespace Petit.Core.AST
 {
-    class VariableExpression : IExpression
+    public class VariableExpression : IExpression
     {
         public string Ident;
     }

@@ -1,7 +1,7 @@
 ﻿
 namespace Petit.Core.AST
 {
-    class ContinueStatement : IStatement
+    public class BreakStatement : IStatement
     {
     }
 }

@@ -1,9 +1,11 @@
 ﻿
 namespace Petit.Core.AST
 {
-    class WhileStatement : IStatement
+    public class ForStatement : IStatement
     {
+        public IExpression Init;
         public IExpression Cond;
+        public IExpression Loop;
         public IStatement Statement;
     }
 }

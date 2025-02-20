@@ -2,12 +2,12 @@
 
 namespace Petit.Core.AST
 {
-    struct FunctionParamerter
+    public struct FunctionParamerter
     {
         public string Name;
         public IExpression DefaultValue;
     }
-    class FunctionStatement : IStatement
+    public class FunctionStatement : IStatement
     {
         public string Ident;
         public List<FunctionParamerter> Paramerters = new List<FunctionParamerter>();

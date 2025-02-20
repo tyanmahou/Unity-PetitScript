@@ -1,6 +1,6 @@
 ﻿namespace Petit.Core.AST
 {
-    class ReturnStatement : IStatement
+    public class ExpressionStatement : IStatement
     {
         public IExpression Expression;
     }

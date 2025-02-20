@@ -1,6 +1,6 @@
 ﻿namespace Petit.Core.AST
 {
-    class TernaryExpression : IExpression
+    public class TernaryExpression : IExpression
     {
         public IExpression Left;
         public string Op;

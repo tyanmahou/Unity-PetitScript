@@ -1,6 +1,6 @@
 ﻿namespace Petit.Core.AST
 {
-    interface IExpression:  INode
+    public interface IExpression:  INode
     {
     }
 }
