@@ -11,15 +11,21 @@ namespace Petit.Core.Parser
         {
         }
 
-        public GlobalStatement Parse(IReadOnlyList<Token> tokens)
+        public Program Parse(IReadOnlyList<Token> tokens)
         {
             if (_tokens != tokens)
             {
                 this._tokens = tokens;
                 this._pos = 0;
-                _cache = ParseGlobalStatement();
+                _cache = ParseProgram();
             }
             return (_cache);
+        }
+        Program ParseProgram()
+        {
+            Program program = new Program();
+            program.GlobalStatement = ParseGlobalStatement();
+            return program;
         }
         GlobalStatement ParseGlobalStatement()
         {
@@ -798,6 +804,6 @@ namespace Petit.Core.Parser
         }
         IReadOnlyList<Token> _tokens;
         int _pos;
-        GlobalStatement _cache;
+        Program _cache;
     }
 }

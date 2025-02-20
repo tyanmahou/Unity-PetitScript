@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace Petit.Core
 {
-    public static class Syntax
+    /// <summary>
+    /// 構文木
+    /// </summary>
+    public static class SyntaxTree
     {
-        public static AST.GlobalStatement Parse(string code)
+        public static AST.Program Parse(string code)
         {
             var lexer = new Lexer.Lexer();
             var tokens = lexer.Tokenize(code);

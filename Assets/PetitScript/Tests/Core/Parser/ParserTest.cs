@@ -230,7 +230,7 @@ else
             Lexer.Lexer lexer = new();
             var tokens = lexer.Tokenize(code);
             Parser parser = new();
-            return parser.Parse(tokens);
+            return parser.Parse(tokens).GlobalStatement;
         }
         private IExpression GetExpr(string code)
         {
