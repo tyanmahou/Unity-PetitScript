@@ -1,4 +1,4 @@
-﻿namespace Petit.Core.Lexer
+﻿namespace Petit.Syntax.Lexer
 {
     class Token
     {

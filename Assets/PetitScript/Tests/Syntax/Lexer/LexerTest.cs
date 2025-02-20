@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Petit.Core.Lexer
+namespace Petit.Syntax.Lexer
 {
     class LexerTest
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Petit.Core.AST
+namespace Petit.Syntax.AST
 {
     public struct Argument
     {

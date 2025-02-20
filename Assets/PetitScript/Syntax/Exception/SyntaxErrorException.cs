@@ -1,4 +1,4 @@
-﻿namespace Petit.Core.Exception
+﻿namespace Petit.Syntax.Exception
 {
     /// <summary>
     /// 構文エラー

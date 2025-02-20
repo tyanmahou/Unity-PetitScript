@@ -1,4 +1,4 @@
-﻿using Petit.Core.AST;
+﻿using Petit.Syntax.AST;
 using System;
 using System.Linq;
 using System.Text;

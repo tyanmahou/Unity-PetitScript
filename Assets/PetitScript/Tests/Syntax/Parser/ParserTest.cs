@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
-using Petit.Core.AST;
-using Petit.Core.Exception;
+using Petit.Syntax.AST;
+using Petit.Syntax.Exception;
 
-namespace Petit.Core.Parser
+namespace Petit.Syntax.Parser
 {
     class ParserTest
     {
@@ -225,7 +225,7 @@ else
             Assert.True(v is U);
             return v as U;
         }
-        private AST.GlobalStatement Parse(string code)
+        private GlobalStatement Parse(string code)
         {
             Lexer.Lexer lexer = new();
             var tokens = lexer.Tokenize(code);

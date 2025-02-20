@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Petit.Core.Lexer
+namespace Petit.Syntax.Lexer
 {
     static class Keyword
     {

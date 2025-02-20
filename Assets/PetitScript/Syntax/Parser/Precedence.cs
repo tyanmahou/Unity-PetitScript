@@ -1,6 +1,6 @@
-﻿namespace Petit.Core.Parser
+﻿namespace Petit.Syntax
 {
-    using TokenType = Petit.Core.Lexer.TokenType;
+    using TokenType = Petit.Syntax.Lexer.TokenType;
 
     enum Precedence
     {

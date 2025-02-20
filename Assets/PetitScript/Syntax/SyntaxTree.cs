@@ -1,5 +1,5 @@
 ﻿
-namespace Petit.Core
+namespace Petit.Syntax
 {
     /// <summary>
     /// 構文木

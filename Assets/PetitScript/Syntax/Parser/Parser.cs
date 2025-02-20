@@ -1,9 +1,9 @@
-﻿using Petit.Core.AST;
-using Petit.Core.Lexer;
+﻿using Petit.Syntax.AST;
+using Petit.Syntax.Lexer;
 using System;
 using System.Collections.Generic;
 
-namespace Petit.Core.Parser
+namespace Petit.Syntax.Parser
 {
     class Parser
     {
@@ -800,7 +800,7 @@ namespace Petit.Core.Parser
         void Error(string message, int pos)
         {
             Token errorToken = pos >= _tokens.Count ? _tokens[_tokens.Count - 1] : _tokens[pos];
-            throw new Core.Exception.SyntaxErrorException(message, errorToken.Line, errorToken.Column);
+            throw new Exception.SyntaxErrorException(message, errorToken.Line, errorToken.Column);
         }
         IReadOnlyList<Token> _tokens;
         int _pos;

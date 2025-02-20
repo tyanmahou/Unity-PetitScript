@@ -1,8 +1,8 @@
-﻿using Petit.Core.Exception;
+﻿using Petit.Syntax.Exception;
 using System;
 using System.Collections.Generic;
 
-namespace Petit.Core.Lexer
+namespace Petit.Syntax.Lexer
 {
     class Lexer
     {

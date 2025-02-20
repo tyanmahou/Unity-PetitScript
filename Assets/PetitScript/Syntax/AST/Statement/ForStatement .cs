@@ -1,5 +1,5 @@
 ﻿
-namespace Petit.Core.AST
+namespace Petit.Syntax.AST
 {
     public class ForStatement : IStatement
     {

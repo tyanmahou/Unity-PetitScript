@@ -82,7 +82,7 @@ namespace Petit.Core
             Value result;
             try
             {
-                var ast = SyntaxTree.Parse(code).GlobalStatement;
+                var ast = Syntax.SyntaxTree.Parse(code).GlobalStatement;
                 var executer = new Executor.Executor();
                 result = executer.Exec(ast, env ?? _env);
             }
