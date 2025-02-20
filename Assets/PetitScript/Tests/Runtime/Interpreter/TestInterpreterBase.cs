@@ -4,10 +4,10 @@ namespace Petit.Runtime
 {
     class TestInterpreterBase
     {
-        protected static Interpreter RunInt(string code, int actual)
+        protected static Interpreter RunInt(string code, int actual, Enviroment env = null)
         {
             Interpreter interpreter = new Interpreter();
-            var result = interpreter.Run(code);
+            var result = interpreter.Run(code, env);
             Assert.True(result.IsInt);
             Assert.AreEqual(result.ToInt(), actual);
             return interpreter;
