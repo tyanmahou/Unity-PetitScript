@@ -59,6 +59,10 @@ namespace Petit.Core
                 Assert.AreEqual(v, new Value(1.1f));
             }
             {
+                Value v = Value.Parse("NaN");
+                Assert.True(v.IsNaN);
+            }
+            {
                 {
                     Value v = Value.Parse("true");
                     Assert.True(v.IsBool);

@@ -215,7 +215,7 @@ namespace Petit.Core
                 case ValueType.String:
                     return !string.IsNullOrEmpty(_value.StringValue);
                 case ValueType.List:
-                    return true;
+                    return _list.Count > 0;
             }
             return false;
         }
@@ -301,7 +301,7 @@ namespace Petit.Core
                         {
                             if (!isFirst)
                             {
-                                sb.Append(" ,");
+                                sb.Append(", ");
                             }
                             sb.Append(item.ToString());
                             isFirst = false;
