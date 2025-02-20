@@ -93,7 +93,7 @@ namespace Petit.Syntax.Parser
                 }
                 else if (_tokens[_pos].Type == TokenType.Fn)
                 {
-                    return ParseFunctionStatement();
+                    return ParseFunctionDeclaration();
                 }
                 else
                 {
@@ -358,9 +358,9 @@ namespace Petit.Syntax.Parser
             }
             return statement;
         }
-        FunctionStatement ParseFunctionStatement()
+        FunctionDeclaration ParseFunctionDeclaration()
         {
-            var statement = new FunctionStatement();
+            var statement = new FunctionDeclaration();
             ++_pos; // fn
             
             TryErrorCheckType("Not found function name.", TokenType.Ident);

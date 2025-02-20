@@ -7,7 +7,7 @@ namespace Petit.Syntax.AST
         public string Name;
         public IExpression DefaultValue;
     }
-    public class FunctionStatement : IStatement
+    public class FunctionDeclaration : IDeclaration
     {
         public string Ident;
         public List<FunctionParamerter> Paramerters = new List<FunctionParamerter>();

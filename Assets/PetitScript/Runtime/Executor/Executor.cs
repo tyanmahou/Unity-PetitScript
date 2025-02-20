@@ -60,7 +60,7 @@ namespace Petit.Runtime.Executor
             {
                 return (ExecExpr(expression.Expression, env), StatementCommand.None);
             }
-            else if (statement is FunctionStatement function)
+            else if (statement is FunctionDeclaration function)
             {
                 return ExecFunctionStatement(function, env);
             }
@@ -204,7 +204,7 @@ namespace Petit.Runtime.Executor
             }
             return result;
         }
-        (Value, StatementCommand) ExecFunctionStatement(FunctionStatement function, Enviroment env)
+        (Value, StatementCommand) ExecFunctionStatement(FunctionDeclaration function, Enviroment env)
         {
             Function func = new(args =>
             {
