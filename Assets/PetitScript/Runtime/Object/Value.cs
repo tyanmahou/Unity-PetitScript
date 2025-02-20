@@ -888,30 +888,41 @@ namespace Petit.Runtime
             get
             {
                 int index = i.ToInt();
+                return this[index];
+            }
+            set
+            {
+                int index = i.ToInt();
+                this[index] = value;
+            }
+        }
+        public Value this[int i]
+        {
+            get
+            {
                 if (IsList)
                 {
-                    if (index <_list.Count)
+                    if (i < _list.Count)
                     {
-                        return _list[index];
+                        return _list[i];
                     }
                 }
                 else if (IsString)
                 {
-                    if (index < _value.StringValue.Length)
+                    if (i < _value.StringValue.Length)
                     {
-                        return new Value(_value.StringValue[index]);
+                        return new Value(_value.StringValue[i]);
                     }
                 }
                 return Value.Invalid;
             }
             set
             {
-                int index = i.ToInt();
                 if (IsList)
                 {
-                    if (index <_list.Count)
+                    if (i < _list.Count)
                     {
-                       _list[index] = value;
+                        _list[i] = value;
                     }
                 }
             }

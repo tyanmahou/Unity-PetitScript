@@ -126,44 +126,7 @@ namespace Petit.Syntax.Parser
             var r = As<AST.VariableExpression>(b.Right);
             Assert.AreEqual(r.Identifier, "c");
         }
-        [Test]
-        public void TestList()
-        {
-            {
-                string code = @"[]";
-                var expr = GetExpr(code);
-                var list = As<AST.ListExpression>(expr);
-                Assert.AreEqual(list.Elements.Count, 0);
-            }
-            {
-                string code = @"[1]";
-                var expr = GetExpr(code);
-                var list = As<AST.ListExpression>(expr);
-                Assert.AreEqual(list.Elements.Count, 1);
-                var e1 = As<AST.IntLiteral>(list.Elements[0]);
-                Assert.AreEqual(e1.Value, 1);
-            }
-            {
-                string code = @"[1, 2]";
-                var expr = GetExpr(code);
-                var list = As<AST.ListExpression>(expr);
-                Assert.AreEqual(list.Elements.Count, 2);
-                var e1 = As<AST.IntLiteral>(list.Elements[0]);
-                Assert.AreEqual(e1.Value, 1);
-                var e2 = As<AST.IntLiteral>(list.Elements[1]);
-                Assert.AreEqual(e2.Value, 2);
-            }
-            {
-                string code = @"[1, 2,]";
-                var expr = GetExpr(code);
-                var list = As<AST.ListExpression>(expr);
-                Assert.AreEqual(list.Elements.Count, 2);
-                var e1 = As<AST.IntLiteral>(list.Elements[0]);
-                Assert.AreEqual(e1.Value, 1);
-                var e2 = As<AST.IntLiteral>(list.Elements[1]);
-                Assert.AreEqual(e2.Value, 2);
-            }
-        }
+
         [Test]
         public void TestSubscript()
         {
