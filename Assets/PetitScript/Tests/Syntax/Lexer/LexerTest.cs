@@ -13,14 +13,14 @@ namespace Petit.Syntax.Lexer
 
                 Assert.AreEqual(tokens.Count, 1);
                 Assert.AreEqual(tokens[0].Value, "true");
-                Assert.AreEqual(tokens[0].Type, TokenType.Value);
+                Assert.AreEqual(tokens[0].Type, TokenType.BoolLiteral);
             }
             {
                 var tokens = lexer.Tokenize("false");
 
                 Assert.AreEqual(tokens.Count, 1);
                 Assert.AreEqual(tokens[0].Value, "false");
-                Assert.AreEqual(tokens[0].Type, TokenType.Value);
+                Assert.AreEqual(tokens[0].Type, TokenType.BoolLiteral);
             }
         }
         [Test]
@@ -32,14 +32,14 @@ namespace Petit.Syntax.Lexer
 
                 Assert.AreEqual(tokens.Count, 1);
                 Assert.AreEqual(tokens[0].Value, "123");
-                Assert.AreEqual(tokens[0].Type, TokenType.Value);
+                Assert.AreEqual(tokens[0].Type, TokenType.IntLiteral);
             }
             {
                 var tokens = lexer.Tokenize("45.06789");
 
                 Assert.AreEqual(tokens.Count, 1);
                 Assert.AreEqual(tokens[0].Value, "45.06789");
-                Assert.AreEqual(tokens[0].Type, TokenType.Value);
+                Assert.AreEqual(tokens[0].Type, TokenType.FloatLiteral);
             }
             {
                 var tokens = lexer.Tokenize("+1");
@@ -48,7 +48,7 @@ namespace Petit.Syntax.Lexer
                 Assert.AreEqual(tokens[0].Value, "+");
                 Assert.AreEqual(tokens[0].Type, TokenType.Plus);
                 Assert.AreEqual(tokens[1].Value, "1");
-                Assert.AreEqual(tokens[1].Type, TokenType.Value);
+                Assert.AreEqual(tokens[1].Type, TokenType.IntLiteral);
             }
             {
                 var tokens = lexer.Tokenize("-1");
@@ -57,7 +57,7 @@ namespace Petit.Syntax.Lexer
                 Assert.AreEqual(tokens[0].Value, "-");
                 Assert.AreEqual(tokens[0].Type, TokenType.Minus);
                 Assert.AreEqual(tokens[1].Value, "1");
-                Assert.AreEqual(tokens[1].Type, TokenType.Value);
+                Assert.AreEqual(tokens[1].Type, TokenType.IntLiteral);
             }
         }
         [Test]
@@ -96,7 +96,7 @@ namespace Petit.Syntax.Lexer
                 Assert.AreEqual(tokens[1].Value, "-");
                 Assert.AreEqual(tokens[1].Type, TokenType.Sub);
                 Assert.AreEqual(tokens[2].Value, "2");
-                Assert.AreEqual(tokens[2].Type, TokenType.Value);
+                Assert.AreEqual(tokens[2].Type, TokenType.IntLiteral);
             }
         }
         [Test]
@@ -244,11 +244,11 @@ namespace Petit.Syntax.Lexer
 
                 Assert.AreEqual(tokens.Count, 3);
                 Assert.AreEqual(tokens[0].Value, "true");
-                Assert.AreEqual(tokens[0].Type, TokenType.Value);
+                Assert.AreEqual(tokens[0].Type, TokenType.BoolLiteral);
                 Assert.AreEqual(tokens[1].Value, "&&");
                 Assert.AreEqual(tokens[1].Type, TokenType.LogicalAnd);
                 Assert.AreEqual(tokens[2].Value, "true");
-                Assert.AreEqual(tokens[2].Type, TokenType.Value);
+                Assert.AreEqual(tokens[2].Type, TokenType.BoolLiteral);
             }
         }
         [Test]
@@ -427,7 +427,7 @@ namespace Petit.Syntax.Lexer
                 Assert.AreEqual(tokens[1].Value, "=");
                 Assert.AreEqual(tokens[1].Type, TokenType.Assign);
                 Assert.AreEqual(tokens[2].Value, "10");
-                Assert.AreEqual(tokens[2].Type, TokenType.Value);
+                Assert.AreEqual(tokens[2].Type, TokenType.IntLiteral);
                 Assert.AreEqual(tokens[3].Value, ";");
                 Assert.AreEqual(tokens[3].Type, TokenType.Semicolon);
                 Assert.AreEqual(tokens[4].Value, "a");
@@ -435,7 +435,7 @@ namespace Petit.Syntax.Lexer
                 Assert.AreEqual(tokens[5].Value, "+=");
                 Assert.AreEqual(tokens[5].Type, TokenType.AddAssign);
                 Assert.AreEqual(tokens[6].Value, "2");
-                Assert.AreEqual(tokens[6].Type, TokenType.Value);
+                Assert.AreEqual(tokens[6].Type, TokenType.IntLiteral);
                 Assert.AreEqual(tokens[7].Value, ";");
                 Assert.AreEqual(tokens[7].Type, TokenType.Semicolon);
             }

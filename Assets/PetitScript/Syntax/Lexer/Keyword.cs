@@ -16,8 +16,8 @@ namespace Petit.Syntax.Lexer
 
         static Dictionary<string, TokenType> _keywords = new()
         {
-            {"true", TokenType.Value},
-            {"false", TokenType.Value},
+            {"true", TokenType.BoolLiteral},
+            {"false", TokenType.BoolLiteral},
             {"if", TokenType.If },
             {"else", TokenType.Else },
             {"switch", TokenType.Switch },

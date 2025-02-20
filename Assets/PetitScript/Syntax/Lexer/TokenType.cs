@@ -58,6 +58,21 @@
         Value,
 
         /// <summary>
+        /// 真偽値リテラル
+        /// </summary>
+        BoolLiteral,
+
+        /// <summary>
+        /// 整数リテラル
+        /// </summary>
+        IntLiteral,
+
+        /// <summary>
+        /// 浮動小数点リテラル
+        /// </summary>
+        FloatLiteral,
+
+        /// <summary>
         /// :
         /// </summary>
         Colon,

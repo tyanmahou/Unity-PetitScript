@@ -23,8 +23,8 @@ namespace Petit.Syntax.Parser
             var expr = GetExpr(code);
             var unary = As<AST.PrefixUnaryExpression>(expr);
             Assert.AreEqual(unary.Op, "-");
-            var right = As<AST.LiteralExpression>(unary.Right);
-            Assert.AreEqual(right.Value, "1");
+            var right = As<AST.IntLiteral>(unary.Right);
+            Assert.AreEqual(right.Value, 1);
         }
         [Test]
         public void TestBinaryExpression()
@@ -36,8 +36,8 @@ namespace Petit.Syntax.Parser
             Assert.AreEqual(left.Identifier, "a");
             Assert.AreEqual(binary.Op, ">=");
 
-            var right = As<AST.LiteralExpression>(binary.Right);
-            Assert.AreEqual(right.Value, "1");
+            var right = As<AST.IntLiteral>(binary.Right);
+            Assert.AreEqual(right.Value, 1);
         }
         [Test]
         public void TestTernaryExpression()
@@ -48,11 +48,11 @@ namespace Petit.Syntax.Parser
             var left = As<AST.VariableExpression>(terrnary.Left);
             Assert.AreEqual(left.Identifier, "a");
             Assert.AreEqual(terrnary.Op, "?");
-            var mid = As<AST.LiteralExpression>(terrnary.Mid);
-            Assert.AreEqual(mid.Value, "true");
+            var mid = As<AST.BoolLiteral>(terrnary.Mid);
+            Assert.AreEqual(mid.Value, true);
             Assert.AreEqual(terrnary.Op2, ":");
-            var right = As<AST.LiteralExpression>(terrnary.Right);
-            Assert.AreEqual(right.Value, "false");
+            var right = As<AST.BoolLiteral>(terrnary.Right);
+            Assert.AreEqual(right.Value, false);
         }
         [Test]
         public void TestLogical()
@@ -87,24 +87,24 @@ namespace Petit.Syntax.Parser
                 {
                     var lbl = As<AST.PrefixUnaryExpression>(lb.Left);
                     Assert.AreEqual(lbl.Op, "-");
-                    var lblr = As<AST.LiteralExpression>(lbl.Right);
-                    Assert.AreEqual(lblr.Value, "1");
+                    var lblr = As<AST.IntLiteral>(lbl.Right);
+                    Assert.AreEqual(lblr.Value, 1);
                 }
                 {
-                    var lbr = As<AST.LiteralExpression>(lb.Right);
-                    Assert.AreEqual(lbr.Value, "2");
+                    var lbr = As<AST.IntLiteral>(lb.Right);
+                    Assert.AreEqual(lbr.Value, 2);
                 }
             }
             {
                 var rb = As<AST.BinaryExpression>(b.Right);
                 Assert.AreEqual(rb.Op, "*");
                 {
-                    var rbl = As<AST.LiteralExpression>(rb.Left);
-                    Assert.AreEqual(rbl.Value, "3");
+                    var rbl = As<AST.IntLiteral>(rb.Left);
+                    Assert.AreEqual(rbl.Value, 3);
                 }
                 {
-                    var rbr = As<AST.LiteralExpression>(rb.Right);
-                    Assert.AreEqual(rbr.Value, "4");
+                    var rbr = As<AST.IntLiteral>(rb.Right);
+                    Assert.AreEqual(rbr.Value, 4);
                 }
             }
         }
@@ -140,28 +140,28 @@ namespace Petit.Syntax.Parser
                 var expr = GetExpr(code);
                 var list = As<AST.ListExpression>(expr);
                 Assert.AreEqual(list.Elements.Count, 1);
-                var e1 = As<AST.LiteralExpression>(list.Elements[0]);
-                Assert.AreEqual(e1.Value, "1");
+                var e1 = As<AST.IntLiteral>(list.Elements[0]);
+                Assert.AreEqual(e1.Value, 1);
             }
             {
                 string code = @"[1, 2]";
                 var expr = GetExpr(code);
                 var list = As<AST.ListExpression>(expr);
                 Assert.AreEqual(list.Elements.Count, 2);
-                var e1 = As<AST.LiteralExpression>(list.Elements[0]);
-                Assert.AreEqual(e1.Value, "1");
-                var e2 = As<AST.LiteralExpression>(list.Elements[1]);
-                Assert.AreEqual(e2.Value, "2");
+                var e1 = As<AST.IntLiteral>(list.Elements[0]);
+                Assert.AreEqual(e1.Value, 1);
+                var e2 = As<AST.IntLiteral>(list.Elements[1]);
+                Assert.AreEqual(e2.Value, 2);
             }
             {
                 string code = @"[1, 2,]";
                 var expr = GetExpr(code);
                 var list = As<AST.ListExpression>(expr);
                 Assert.AreEqual(list.Elements.Count, 2);
-                var e1 = As<AST.LiteralExpression>(list.Elements[0]);
-                Assert.AreEqual(e1.Value, "1");
-                var e2 = As<AST.LiteralExpression>(list.Elements[1]);
-                Assert.AreEqual(e2.Value, "2");
+                var e1 = As<AST.IntLiteral>(list.Elements[0]);
+                Assert.AreEqual(e1.Value, 1);
+                var e2 = As<AST.IntLiteral>(list.Elements[1]);
+                Assert.AreEqual(e2.Value, 2);
             }
         }
         [Test]
@@ -173,8 +173,8 @@ namespace Petit.Syntax.Parser
             var s = As<AST.SubscriptExpression>(expr);
             var c = As<AST.VariableExpression>(s.Collection);
             Assert.AreEqual(c.Identifier, "a");
-            var i = As<AST.LiteralExpression>(s.Index);
-            Assert.AreEqual(i.Value, "0");
+            var i = As<AST.IntLiteral>(s.Index);
+            Assert.AreEqual(i.Value, 0);
         }
         [Test]
         public void TestParenError()

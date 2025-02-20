@@ -143,7 +143,7 @@ namespace Petit.Syntax.Lexer
                             break;
                         }
                     }
-                    _tokens.Add(new Token(TokenType.Value, line.Substring(start, pos - start), lineNum, start + 1));
+                    _tokens.Add(new Token(isFoundDot ? TokenType.FloatLiteral : TokenType.IntLiteral, line.Substring(start, pos - start), lineNum, start + 1));
                 }
                 //else if (line[pos] == '@')
                 //{

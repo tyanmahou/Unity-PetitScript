@@ -230,6 +230,18 @@ namespace Petit.Runtime.Executor
             {
                 return default;
             }
+            else if (expr is BoolLiteral boolLiteral)
+            {
+                return ExecExpr(boolLiteral);
+            }
+            else if (expr is IntLiteral intLiteral)
+            {
+                return ExecExpr(intLiteral);
+            }
+            else if (expr is FloatLiteral floatLiteral)
+            {
+                return ExecExpr(floatLiteral);
+            }
             else if (expr is LiteralExpression literal)
             {
                 return ExecExpr(literal);
@@ -272,7 +284,18 @@ namespace Petit.Runtime.Executor
             }
             return default;
         }
-
+        ExprResult ExecExpr(BoolLiteral expr)
+        {
+            return new(new Value(expr.Value));
+        }
+        ExprResult ExecExpr(IntLiteral expr)
+        {
+            return new(new Value(expr.Value));
+        }
+        ExprResult ExecExpr(FloatLiteral expr)
+        {
+            return new(new Value(expr.Value));
+        }
         ExprResult ExecExpr(LiteralExpression expr)
         {
             return new(Value.Parse(expr.Value));

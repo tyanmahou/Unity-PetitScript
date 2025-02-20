@@ -450,6 +450,12 @@ namespace Petit.Syntax.Parser
                         return ParsePrefixUnaryExpression;
                     case TokenType.LParen:
                         return ParseParen;
+                    case TokenType.BoolLiteral:
+                        return ParseBoolLiteral;
+                    case TokenType.IntLiteral:
+                        return ParseIntLiteral;
+                    case TokenType.FloatLiteral:
+                        return ParseFloatLiteral;
                     case TokenType.Value:
                         return ParseLiteralExpression;
                     case TokenType.DoubleQuote:
@@ -553,6 +559,33 @@ namespace Petit.Syntax.Parser
             }
 
             return left;
+        }
+        BoolLiteral ParseBoolLiteral()
+        {
+            bool literal = bool.Parse(_tokens[_pos].Value);
+            ++_pos;
+            return new BoolLiteral()
+            {
+                Value = literal
+            };
+        }
+        IntLiteral ParseIntLiteral()
+        {
+            int literal = int.Parse(_tokens[_pos].Value);
+            ++_pos;
+            return new IntLiteral()
+            {
+                Value = literal
+            };
+        }
+        FloatLiteral ParseFloatLiteral()
+        {
+            float literal = float.Parse(_tokens[_pos].Value);
+            ++_pos;
+            return new FloatLiteral()
+            {
+                Value = literal
+            };
         }
         LiteralExpression ParseLiteralExpression()
         {
