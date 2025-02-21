@@ -60,18 +60,9 @@ namespace Petit.Runtime
         }
         public Value(float f)
         {
-            if (!float.IsNaN(f))
-            {
-                _type = ValueType.Float;
-                _value = new ValueVariant();
-                _value.FloatValue = f;
-            }
-            else
-            {
-                _type = ValueType.NaN;
-                _value = new ValueVariant();
-                _value.FloatValue = float.NaN;
-            }
+            _type = ValueType.Float;
+            _value = new ValueVariant();
+            _value.FloatValue = f;
             _array = null;
         }
         public Value(string s)
@@ -123,18 +114,9 @@ namespace Petit.Runtime
             }
             else if (o is float f)
             {
-                if (!float.IsNaN(f))
-                {
-                    _type = ValueType.Float;
-                    _value = new ValueVariant();
-                    _value.FloatValue = f;
-                }
-                else
-                {
-                    _type = ValueType.NaN;
-                    _value = new ValueVariant();
-                    _value.FloatValue = float.NaN;
-                }
+                _type = ValueType.Float;
+                _value = new ValueVariant();
+                _value.FloatValue = f;
                 _array = null;
             }
             else if (o is string s)
@@ -201,7 +183,8 @@ namespace Petit.Runtime
         /// <summary>
         /// NaNか
         /// </summary>
-        public bool IsNaN => _type == ValueType.NaN;
+        public bool IsNaN => _type == ValueType.Float && float.IsNaN(_value.FloatValue);
+
         public readonly bool ToBool()
         {
             switch (_type)
@@ -272,8 +255,6 @@ namespace Petit.Runtime
                     {
                         return _array[0].ToFloat();
                     }
-                case ValueType.NaN:
-                    return float.NaN;
             }
             return 0;
         }
@@ -281,7 +262,6 @@ namespace Petit.Runtime
         {
             const string trueStr = "true";
             const string falseStr = "false";
-            const string NaNStr = "NaN";
             switch (_type)
             {
                 case ValueType.Bool:
@@ -309,8 +289,6 @@ namespace Petit.Runtime
                         sb.Append(']');
                         return sb.ToString();
                     }
-                case ValueType.NaN:
-                    return NaNStr;
             }
             return string.Empty;
         }
@@ -328,8 +306,6 @@ namespace Petit.Runtime
                     return _value.StringValue.Select(x => new Value(x)).ToList();
                 case ValueType.Array:
                     return _array;
-                case ValueType.NaN:
-                    return new List<Value>();
             }
             return new List<Value>();
         }
@@ -732,10 +708,6 @@ namespace Petit.Runtime
             {
                 return new Value(a.ToString() + b.ToString());
             }
-            else if (opType == ValueType.NaN)
-            {
-                return Value.NaN;
-            }
             return Value.Invalid;
         }
         public static Value operator -(in Value a, in Value b)
@@ -758,10 +730,6 @@ namespace Petit.Runtime
             {
                 return Value.NaN;
             }
-            else if (opType == ValueType.NaN)
-            {
-                return Value.NaN;
-            }
             return Value.Invalid;
         }
         public static Value operator *(in Value a, in Value b)
@@ -781,10 +749,6 @@ namespace Petit.Runtime
                 return new Value(afValue * bfValue);
             }
             else if (opType == ValueType.String)
-            {
-                return Value.NaN;
-            }
-            else if (opType == ValueType.NaN)
             {
                 return Value.NaN;
             }
@@ -814,10 +778,6 @@ namespace Petit.Runtime
             {
                 return Value.NaN;
             }
-            else if (opType == ValueType.NaN)
-            {
-                return Value.NaN;
-            }
             return Value.Invalid;
         }
         public static Value operator %(in Value a, in Value b)
@@ -842,10 +802,6 @@ namespace Petit.Runtime
                 return new Value(afValue % bfValue);
             }
             else if (opType == ValueType.String)
-            {
-                return Value.NaN;
-            }
-            else if (opType == ValueType.NaN)
             {
                 return Value.NaN;
             }
@@ -948,8 +904,6 @@ namespace Petit.Runtime
                     return _value.FloatValue.GetHashCode();
                 case ValueType.String:
                     return _value.StringValue.GetHashCode();
-                case ValueType.NaN:
-                    return float.NaN.GetHashCode();
                 case ValueType.Array:
                     return ToString().GetHashCode();
             }
@@ -977,10 +931,6 @@ namespace Petit.Runtime
             {
                 return ValueType.Invalid;
             }
-            if (a.IsNaN || b.IsNaN)
-            {
-                return ValueType.NaN;
-            }
             if (prioritizeString && (a.IsString || b.IsString))
             {
                 // 文字列優先
@@ -1005,10 +955,6 @@ namespace Petit.Runtime
             {
                 // 既に文字列結合ならパース処理スキップ
                 return ValueType.String;
-            }
-            if (a.IsList || b.IsList)
-            {
-                return ValueType.NaN;
             }
             if (a.IsString)
             {
@@ -1093,8 +1039,6 @@ namespace Petit.Runtime
             Float,
             String,
             Array,
-
-            NaN
         }
 
         [StructLayout(LayoutKind.Explicit)]
