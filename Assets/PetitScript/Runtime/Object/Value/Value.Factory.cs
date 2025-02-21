@@ -51,6 +51,10 @@ namespace Petit.Runtime
         {
             return new Value(c);
         }
+        public static Value Of(Function func)
+        {
+            return new Value(func);
+        }
         public static Value Of(IEnumerable enumerable)
         {
             return new Value(enumerable);
@@ -105,6 +109,10 @@ namespace Petit.Runtime
             {
                 return Value.Of(c);
             }
+            else if (o is Function func)
+            {
+                return Value.Of(func);
+            }
             else if (o is IEnumerable enumerable)
             {
                 return Value.Of(enumerable);
@@ -118,45 +126,53 @@ namespace Petit.Runtime
         {
             _type = other._type;
             _value = other._value;
-            _array = other._array;
+            _reference = other._reference;
         }
         Value(bool b)
         {
             _type = ValueType.Bool;
-            _value = new Primitive();
+            _value = default;
             _value.BoolValue = b;
-            _array = null;
+            _reference = default;
         }
         Value(int i)
         {
             _type = ValueType.Int;
-            _value = new Primitive();
+            _value = default;
             _value.IntValue = i;
-            _array = null;
+            _reference = default;
         }
         Value(float f)
         {
             _type = ValueType.Float;
-            _value = new Primitive();
+            _value = default;
             _value.FloatValue = f;
-            _array = null;
+            _reference = default;
         }
         Value(string s)
         {
             _type = ValueType.String;
-            _value = new Primitive();
+            _value = default;
             _value.StringValue = s;
-            _array = null;
+            _reference = default;
         }
         Value(char c)
             :this(c.ToString())
         {
         }
+        Value(Function func)
+        {
+            _type = ValueType.Function;
+            _value = default;
+            _reference = default;
+            _reference.FuncValue = func;
+        }
         Value(IEnumerable<Value> collection)
         {
             _type = ValueType.Array;
-            _value = new Primitive();
-            _array = collection.ToList();
+            _value = default;
+            _reference = default;
+            _reference.ArrayValue = collection.ToList();
         }
         Value(IEnumerable<object> collection)
             :this(collection.Select(Value.Of))
@@ -165,11 +181,12 @@ namespace Petit.Runtime
         Value(IEnumerable collection)
         {
             _type = ValueType.Array;
-            _value = new Primitive();
-            _array = new List<Value>();
+            _value = default;
+            _reference = default;
+            _reference.ArrayValue = new List<Value>();
             foreach (object item in collection)
             {
-                _array.Add(Value.Of(item));
+                _reference.ArrayValue.Add(Value.Of(item));
             }
         }
     }

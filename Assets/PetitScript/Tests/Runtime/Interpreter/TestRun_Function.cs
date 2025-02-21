@@ -21,7 +21,7 @@ Add(1, 2 * 2)
         public void TestFuncBind()
         {
             Enviroment env = Enviroment.New;
-            env.SetFunc("Add", Function.Bind((a1, a2) =>
+            env.Set("Add", Function.Bind((a1, a2) =>
             {
                 return a1 + a2;
             }));
@@ -31,7 +31,7 @@ Add(1, 2 * 2)
         public void TestNamedArgs()
         {
             Interpreter interpreter = new();
-            interpreter.Enviroment.SetFunc("Sub", Function.Bind(
+            interpreter.Enviroment.Set("Sub", Function.Bind(
                 (a, b) => a - b)
                 );
             {
@@ -85,7 +85,7 @@ return fib(10);
         public void TestDefaultArgBind()
         {
             Interpreter interpreter = new();
-            interpreter.Enviroment.SetFunc("Add",
+            interpreter.Enviroment.Set("Add",
                 Function.Bind((a, b) => a + b)
                 .SetDefaultValue(0, 1)
                 .SetDefaultValue(1, 2)

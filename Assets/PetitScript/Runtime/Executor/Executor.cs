@@ -221,7 +221,7 @@ namespace Petit.Runtime.Executor
                 }
                 return ExecStatement(function.Statement, newEnv).Item1;
             }, function.Paramerters.Select(p => new Argument(p.Name, (Func<Value>)null)).ToArray());
-            env.SetFunc(function.Identifier, func);
+            env.Set(function.Identifier, func);
             return (Value.Invalid, StatementCommand.None);
         }
         ExprResult ExecExpr(IExpression expr, Enviroment env)
@@ -605,7 +605,7 @@ namespace Petit.Runtime.Executor
             {
                 throw new Exception.RuntimeErrorException("Not impliment function object");
             }
-            Function func = env.GetFunc(ident);
+            Function func = env.Get(ident).ToFunction();
             var args = expr.Args
                 .Select(arg => new Argument(arg.Name, ExecExpr(arg.Expression, env).Result))
                 .ToList();

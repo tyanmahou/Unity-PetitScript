@@ -54,21 +54,11 @@ namespace Petit.Runtime
             return _parent?.Get(key) ?? Value.Invalid;
         }
 
-        public void SetFunc(string key, Function func)
+        public void Set(string key, Function func)
         {
-            _functions.TryAdd(key, func);
-        }
-
-        public Function GetFunc(string key)
-        {
-            if (_functions.TryGetValue(key, out Function func))
-            {
-                return func;
-            }
-            return _parent?.GetFunc(key);
+            _variables[key] = Value.Of(func);
         }
         Dictionary<string, Value> _variables = new();
-        Dictionary<string, Function> _functions = new();
         readonly Enviroment _parent = null;
     }
 }

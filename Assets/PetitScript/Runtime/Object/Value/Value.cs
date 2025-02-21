@@ -50,6 +50,11 @@ namespace Petit.Runtime
         public bool IsArray => _type == ValueType.Array;
 
         /// <summary>
+        /// 関数型か
+        /// </summary>
+        public bool IsFunction => _type == ValueType.Function;
+
+        /// <summary>
         /// NaNか
         /// </summary>
         public bool IsNaN => _type == ValueType.Float && float.IsNaN(_value.FloatValue);
@@ -72,7 +77,7 @@ namespace Petit.Runtime
                 case ValueType.String:
                     return !string.IsNullOrEmpty(_value.StringValue);
                 case ValueType.Array:
-                    return _array.Count > 0;
+                    return _reference.ArrayValue.Count > 0;
             }
             return false;
         }
@@ -93,13 +98,13 @@ namespace Petit.Runtime
                     }
                     break;
                 case ValueType.Array:
-                    if (_array.Count == 0)
+                    if (_reference.ArrayValue.Count == 0)
                     {
                         return 0;
                     }
                     else
                     {
-                        return _array[0].ToInt();
+                        return _reference.ArrayValue[0].ToInt();
                     }
             }
             return 0;
@@ -121,13 +126,13 @@ namespace Petit.Runtime
                     }
                     break;
                 case ValueType.Array:
-                    if (_array.Count == 0)
+                    if (_reference.ArrayValue.Count == 0)
                     {
                         return 0;
                     }
                     else
                     {
-                        return _array[0].ToFloat();
+                        return _reference.ArrayValue[0].ToFloat();
                     }
             }
             return 0;
@@ -151,7 +156,7 @@ namespace Petit.Runtime
                         StringBuilder sb = new StringBuilder();
                         sb.Append('[');
                         bool isFirst = true;
-                        foreach (Value item in _array)
+                        foreach (Value item in _reference.ArrayValue)
                         {
                             if (!isFirst)
                             {
@@ -179,9 +184,19 @@ namespace Petit.Runtime
                 case ValueType.String:
                     return _value.StringValue.Select(x => Value.Of(x)).ToList();
                 case ValueType.Array:
-                    return _array;
+                    return _reference.ArrayValue;
             }
             return new List<Value>();
+        }
+
+        public Function ToFunction()
+        {
+            switch (_type)
+            {
+                case ValueType.Function:
+                    return _reference.FuncValue;
+            }
+            return Function.Bind(() => Value.Invalid);
         }
         public static explicit operator bool(in Value v) => v.ToBool();
         public static explicit operator int(in Value v) => v.ToInt();
@@ -203,6 +218,8 @@ namespace Petit.Runtime
             }
             switch (_type)
             {
+                case ValueType.Invalid:
+                    return true;
                 case ValueType.Bool:
                     return _value.BoolValue == other._value.BoolValue;
                 case ValueType.Int:
@@ -212,20 +229,22 @@ namespace Petit.Runtime
                 case ValueType.String:
                     return _value.StringValue == other._value.StringValue;
                 case ValueType.Array:
-                    if (_array.Count != other._array.Count)
+                    if (_reference.ArrayValue.Count != other._reference.ArrayValue.Count)
                     {
                         return false;
                     }
-                    for (int index = 0; index <_array.Count; ++index)
+                    for (int index = 0; index <_reference.ArrayValue.Count; ++index)
                     {
-                        if (!_array[index].Equals(other._array[index]))
+                        if (!_reference.ArrayValue[index].Equals(other._reference.ArrayValue[index]))
                         {
                             return false;
                         }
                     }
                     return true;
+                case ValueType.Function:
+                    return _reference.FuncValue == other._reference.FuncValue;
             }
-            return true;
+            return false;
         }
         public override bool Equals(object other)
         {
@@ -252,6 +271,10 @@ namespace Petit.Runtime
             else if (other is IEnumerable enumrable)
             {
                 return Equals(Value.Of(enumrable));
+            }
+            else if (other is Function func)
+            {
+                return Equals(Value.Of(func));
             }
             else if (other is null)
             {
@@ -305,18 +328,20 @@ namespace Petit.Runtime
                     return _value.StringValue == other.ToString();
                 case ValueType.Array:
                     var otherList = other.ToArray();
-                    if (_array.Count != otherList.Count)
+                    if (_reference.ArrayValue.Count != otherList.Count)
                     {
                         return false;
                     }
-                    for (int index = 0; index <_array.Count; ++index)
+                    for (int index = 0; index <_reference.ArrayValue.Count; ++index)
                     {
-                        if (!_array[index].EqualsLooseSingly(otherList[index]))
+                        if (!_reference.ArrayValue[index].EqualsLooseSingly(otherList[index]))
                         {
                             return false;
                         }
                     }
                     return true;
+                case ValueType.Function:
+                    return _reference.FuncValue == other.ToFunction();
             }
             return _type == other._type;
         }
@@ -616,9 +641,9 @@ namespace Petit.Runtime
             {
                 if (IsArray)
                 {
-                    if (i < _array.Count)
+                    if (i < _reference.ArrayValue.Count)
                     {
-                        return _array[i];
+                        return _reference.ArrayValue[i];
                     }
                 }
                 else if (IsString)
@@ -634,9 +659,9 @@ namespace Petit.Runtime
             {
                 if (IsArray)
                 {
-                    if (i < _array.Count)
+                    if (i < _reference.ArrayValue.Count)
                     {
-                        _array[i] = value;
+                        _reference.ArrayValue[i] = value;
                     }
                 }
             }
@@ -788,6 +813,7 @@ namespace Petit.Runtime
             Float,
             String,
             Array,
+            Function,
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -802,9 +828,17 @@ namespace Petit.Runtime
             [FieldOffset(0)]
             public string StringValue;
         }
+        [StructLayout(LayoutKind.Explicit)]
+        struct Reference
+        {
+            [FieldOffset(0)]
+            public List<Value> ArrayValue;
 
+            [FieldOffset(0)]
+            public Function FuncValue;
+        }
         private readonly ValueType _type;
         private readonly Primitive _value;
-        private readonly List<Value> _array;
+        private readonly Reference _reference;
     }
 }
