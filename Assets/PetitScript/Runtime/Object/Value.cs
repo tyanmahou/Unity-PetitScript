@@ -178,7 +178,7 @@ namespace Petit.Runtime
         /// <summary>
         /// Array型か
         /// </summary>
-        public bool IsList => _type == ValueType.Array;
+        public bool IsArray => _type == ValueType.Array;
 
         /// <summary>
         /// NaNか
@@ -292,7 +292,8 @@ namespace Petit.Runtime
             }
             return string.Empty;
         }
-        public List<Value> ToList()
+        public List<Value> ToList()=> ToArray();
+        public List<Value> ToArray()
         {
             switch (_type)
             {
@@ -430,7 +431,7 @@ namespace Petit.Runtime
                 case ValueType.String:
                     return _value.StringValue == other.ToString();
                 case ValueType.Array:
-                    var otherList = other.ToList();
+                    var otherList = other.ToArray();
                     if (_array.Count != otherList.Count)
                     {
                         return false;
@@ -507,7 +508,7 @@ namespace Petit.Runtime
             {
                 return a._value.StringValue.CompareTo(b._value.StringValue);
             }
-            if (a.IsList && b.IsList)
+            if (a.IsArray && b.IsArray)
             {
                 int min = Math.Min(a._array.Count, b._array.Count);
                 for (int index = 0; index < min; ++index)
@@ -520,19 +521,19 @@ namespace Petit.Runtime
                 }
                 return a._array.Count.CompareTo(b._array.Count);
             }
-            if (a.IsList && b.IsString)
+            if (a.IsArray && b.IsString)
             {
                 return a.ToString().CompareTo(b.ToString());
             }
-            else if (a.IsString && b.IsList)
+            else if (a.IsString && b.IsArray)
             {
                 return a.ToString().CompareTo(b.ToString());
             }
-            if (a.IsList) 
+            if (a.IsArray) 
             {
                 return -1;
             }
-            if (b.IsList)
+            if (b.IsArray)
             {
                 return 1;
             }
@@ -865,7 +866,7 @@ namespace Petit.Runtime
         {
             get
             {
-                if (IsList)
+                if (IsArray)
                 {
                     if (i < _array.Count)
                     {
@@ -883,7 +884,7 @@ namespace Petit.Runtime
             }
             set
             {
-                if (IsList)
+                if (IsArray)
                 {
                     if (i < _array.Count)
                     {
@@ -936,7 +937,7 @@ namespace Petit.Runtime
                 // 文字列優先
                 stringOp = true;
             }
-            if (prioritizeString && (a.IsList || b.IsList))
+            if (prioritizeString && (a.IsArray || b.IsArray))
             {
                 // 文字列優先
                 stringOp = true;

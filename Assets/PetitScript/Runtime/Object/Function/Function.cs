@@ -4,39 +4,6 @@ using System.Linq;
 
 namespace Petit.Runtime
 {
-    public readonly struct Argument
-    {
-        public Argument(string name, Func<Value> value = default)
-        {
-            Name = name;
-            Value = value;
-        }
-        public Argument(string name, Value value = default)
-        {
-            Name = name;
-            Value = () => value;
-        }
-        public Argument(string name, bool value)
-            : this(name, new Value(value))
-        {
-        }
-        public Argument(string name, int value)
-            :this(name, new Value(value))
-        {
-        }
-        public Argument(string name, float value)
-            : this(name, new Value(value))
-        {
-        }
-
-        public Argument(string name,string value)
-            : this(name, new Value(value))
-        {
-        }
-
-        public readonly string Name;
-        public readonly Func<Value> Value;
-    }
     /// <summary>
     /// 関数
     /// </summary>

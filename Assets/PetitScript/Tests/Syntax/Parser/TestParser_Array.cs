@@ -2,7 +2,7 @@
 
 namespace Petit.Syntax.Parser
 {
-    class TestParser_List : TestParserBase
+    class TestParser_Array : TestParserBase
     {
         [Test]
         public void TestEmpty()
