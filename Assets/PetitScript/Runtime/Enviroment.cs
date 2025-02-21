@@ -41,6 +41,10 @@ namespace Petit.Runtime
         {
             _variables[key] = Value.Of(value);
         }
+        public void Set(string key, Function func)
+        {
+            _variables[key] = Value.Of(func);
+        }
         public void Set(string key, in Value value)
         {
             _variables[key] = value;
@@ -54,10 +58,6 @@ namespace Petit.Runtime
             return _parent?.Get(key) ?? Value.Invalid;
         }
 
-        public void Set(string key, Function func)
-        {
-            _variables[key] = Value.Of(func);
-        }
         Dictionary<string, Value> _variables = new();
         readonly Enviroment _parent = null;
     }

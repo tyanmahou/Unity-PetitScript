@@ -78,6 +78,8 @@ namespace Petit.Runtime
                     return !string.IsNullOrEmpty(_value.StringValue);
                 case ValueType.Array:
                     return _reference.ArrayValue.Count > 0;
+                case ValueType.Function:
+                    return _reference.FuncValue != null;
             }
             return false;
         }
@@ -106,6 +108,8 @@ namespace Petit.Runtime
                     {
                         return _reference.ArrayValue[0].ToInt();
                     }
+                case ValueType.Function:
+                    return _reference.FuncValue != null ? 1 : 0;
             }
             return 0;
         }
@@ -134,6 +138,8 @@ namespace Petit.Runtime
                     {
                         return _reference.ArrayValue[0].ToFloat();
                     }
+                case ValueType.Function:
+                    return _reference.FuncValue != null ? 1.0f : 0.0f;
             }
             return 0;
         }
@@ -168,6 +174,8 @@ namespace Petit.Runtime
                         sb.Append(']');
                         return sb.ToString();
                     }
+                case ValueType.Function:
+                    return _reference.FuncValue?.ToString();
             }
             return string.Empty;
         }
@@ -185,6 +193,8 @@ namespace Petit.Runtime
                     return _value.StringValue.Select(x => Value.Of(x)).ToList();
                 case ValueType.Array:
                     return _reference.ArrayValue;
+                case ValueType.Function:
+                    return new List<Value>() { this };
             }
             return new List<Value>();
         }
@@ -441,6 +451,7 @@ namespace Petit.Runtime
                         return Value.NaN;
                     }
                 case ValueType.Array:
+                case ValueType.Function:
                     return Value.NaN;
             }
             return a;
@@ -473,6 +484,7 @@ namespace Petit.Runtime
                         return Value.NaN;
                     }
                 case ValueType.Array:
+                case ValueType.Function:
                     return Value.NaN;
             }
             return a;

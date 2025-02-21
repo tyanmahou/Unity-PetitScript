@@ -596,16 +596,7 @@ namespace Petit.Runtime.Executor
         }
         ExprResult ExecExpr(InvocationExpression expr, Enviroment env)
         {
-            string ident = string.Empty;
-            if (expr.Function is VariableExpression v)
-            {
-                ident = v.Identifier;
-            }
-            else
-            {
-                throw new Exception.RuntimeErrorException("Not impliment function object");
-            }
-            Function func = env.Get(ident).ToFunction();
+            Function func = ExecExpr(expr.Function, env).Result.ToFunction();
             var args = expr.Args
                 .Select(arg => new Argument(arg.Name, ExecExpr(arg.Expression, env).Result))
                 .ToList();
