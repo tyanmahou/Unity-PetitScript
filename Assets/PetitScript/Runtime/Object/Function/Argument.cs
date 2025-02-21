@@ -18,20 +18,20 @@ namespace Petit.Runtime
             Value = () => value;
         }
         public Argument(string name, bool value)
-            : this(name, new Value(value))
+            : this(name, Runtime.Value.Of(value))
         {
         }
         public Argument(string name, int value)
-            : this(name, new Value(value))
+            : this(name, Runtime.Value.Of(value))
         {
         }
         public Argument(string name, float value)
-            : this(name, new Value(value))
+            : this(name, Runtime.Value.Of(value))
         {
         }
 
         public Argument(string name, string value)
-            : this(name, new Value(value))
+            : this(name, Runtime.Value.Of(value))
         {
         }
 

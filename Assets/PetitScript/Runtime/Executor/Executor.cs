@@ -286,19 +286,19 @@ namespace Petit.Runtime.Executor
         }
         ExprResult ExecExpr(BoolLiteral expr)
         {
-            return new(new Value(expr.Value));
+            return new(Value.Of(expr.Value));
         }
         ExprResult ExecExpr(IntLiteral expr)
         {
-            return new(new Value(expr.Value));
+            return new(Value.Of(expr.Value));
         }
         ExprResult ExecExpr(FloatLiteral expr)
         {
-            return new(new Value(expr.Value));
+            return new(Value.Of(expr.Value));
         }
         ExprResult ExecExpr(StringLiteral expr)
         {
-            return new(new Value(expr.Value));
+            return new(Value.Of(expr.Value));
         }
         ExprResult ExecExpr(StringInterpolation expr, Enviroment env)
         {
@@ -317,7 +317,7 @@ namespace Petit.Runtime.Executor
                 }
                 sb.Append(value);
             }
-            return new (new Value(sb.ToString()));
+            return new (Value.Of(sb.ToString()));
         }
         ExprResult ExecExpr(ListExpression expr, Enviroment env)
         {
@@ -326,7 +326,7 @@ namespace Petit.Runtime.Executor
             {
                 values.Add(ExecExpr(e, env));
             }
-            return new(new Value(values));
+            return new(Value.Of(values));
         }
         ExprResult ExecExpr(VariableExpression expr, Enviroment env)
         {
@@ -357,14 +357,14 @@ namespace Petit.Runtime.Executor
             else if (expr.Op == "++")
             {
                 var eval = ExecExpr(expr.Right, env);
-                var result = eval.Result + new Value(1);
+                var result = eval.Result + Value.Of(1);
                 eval.Set(result);
                 return new(result, eval.Address);
             }
             else if (expr.Op == "--")
             {
                 var eval = ExecExpr(expr.Right, env);
-                var result = eval.Result - new Value(1);
+                var result = eval.Result - Value.Of(1);
                 eval.Set(result);
                 return new(result, eval.Address);
 
@@ -380,14 +380,14 @@ namespace Petit.Runtime.Executor
             if (expr.Op == "++")
             {
                 var eval = ExecExpr(expr.Left, env);
-                var result = eval.Result + new Value(1);
+                var result = eval.Result + Value.Of(1);
                 eval.Set(result);
                 return new(eval.Result);
             }
             else if (expr.Op == "--")
             {
                 var eval = ExecExpr(expr.Left, env);
-                var result = eval.Result - new Value(1);
+                var result = eval.Result - Value.Of(1);
                 eval.Set(result);
                 return new(eval.Result);
             }
@@ -406,39 +406,39 @@ namespace Petit.Runtime.Executor
             }
             else if (expr.Op == "==")
             {
-                return new(new Value(ExecExpr(expr.Left, env).Result == ExecExpr(expr.Right, env).Result));
+                return new(Value.Of(ExecExpr(expr.Left, env).Result == ExecExpr(expr.Right, env).Result));
             }
             else if (expr.Op == "===")
             {
-                return new(new Value(Value.Identical(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
+                return new(Value.Of(Value.Identical(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
             }
             else if (expr.Op == "!=")
             {
-                return new(new Value(ExecExpr(expr.Left, env).Result != ExecExpr(expr.Right, env).Result));
+                return new(Value.Of(ExecExpr(expr.Left, env).Result != ExecExpr(expr.Right, env).Result));
             }
             else if (expr.Op == "!==")
             {
-                return new(new Value(Value.NotIdentical(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
+                return new(Value.Of(Value.NotIdentical(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
             }
             else if (expr.Op == ">")
             {
-                return new(new Value(ExecExpr(expr.Left, env).Result > ExecExpr(expr.Right, env).Result));
+                return new(Value.Of(ExecExpr(expr.Left, env).Result > ExecExpr(expr.Right, env).Result));
             }
             else if (expr.Op == "<")
             {
-                return new(new Value(ExecExpr(expr.Left, env).Result < ExecExpr(expr.Right, env).Result));
+                return new(Value.Of(ExecExpr(expr.Left, env).Result < ExecExpr(expr.Right, env).Result));
             }
             else if (expr.Op == ">=")
             {
-                return new(new Value(ExecExpr(expr.Left, env).Result >= ExecExpr(expr.Right, env).Result));
+                return new(Value.Of(ExecExpr(expr.Left, env).Result >= ExecExpr(expr.Right, env).Result));
             }
             else if (expr.Op == "<=")
             {
-                return new(new Value(ExecExpr(expr.Left, env).Result <= ExecExpr(expr.Right, env).Result));
+                return new(Value.Of(ExecExpr(expr.Left, env).Result <= ExecExpr(expr.Right, env).Result));
             }
             else if (expr.Op == "<=>")
             {
-                return new(new Value(Value.Compare(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
+                return new(Value.Of(Value.Compare(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
             }
             else if (expr.Op == "&")
             {

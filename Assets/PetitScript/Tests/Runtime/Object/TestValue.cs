@@ -7,38 +7,38 @@ namespace Petit.Runtime
         [Test]
         public void TestIdentical()
         {
-            Value v = new Value(1);
-            Assert.True(Value.Identical(v, new(1)));
-            Assert.AreEqual(v, new Value(1));
-            Assert.True(v.Equals(new Value(1)));
+            Value v = Value.Of(1);
+            Assert.True(Value.Identical(v, Value.Of(1)));
+            Assert.AreEqual(v, Value.Of(1));
+            Assert.True(v.Equals(Value.Of(1)));
         }
         [Test]
         public void TestNotIdentical()
         {
-            Value v = new Value(1);
-            Assert.True(Value.NotIdentical(v, new("1")));
-            Assert.AreNotEqual(v, new Value("1"));
-            Assert.False(v.Equals(new Value("1")));
+            Value v = Value.Of(1);
+            Assert.True(Value.NotIdentical(v, Value.Of("1")));
+            Assert.AreNotEqual(v, Value.Of("1"));
+            Assert.False(v.Equals(Value.Of("1")));
 
-            Assert.True(Value.NotIdentical(v, new(2)));
-            Assert.AreNotEqual(v, new Value(2));
-            Assert.True(!v.Equals(new Value(2)));
+            Assert.True(Value.NotIdentical(v, Value.Of(2)));
+            Assert.AreNotEqual(v, Value.Of(2));
+            Assert.True(!v.Equals(Value.Of(2)));
         }
         [Test]
         public void TestEquals()
         {
-            Value v = new Value(1);
-            Assert.True(Value.EqualsLoose(v, new(1)));
-            Assert.True(Value.EqualsLoose(v, new("1")));
-            Assert.True(v == new Value(1));
-            Assert.True(v == new Value("1"));
+            Value v = Value.Of(1);
+            Assert.True(Value.EqualsLoose(v, Value.Of(1)));
+            Assert.True(Value.EqualsLoose(v, Value.Of("1")));
+            Assert.True(v == Value.Of(1));
+            Assert.True(v == Value.Of("1"));
         }
         [Test]
         public void TestNotEquals()
         {
-            Value v = new Value(1);
-            Assert.True(!Value.EqualsLoose(v, new(2)));
-            Assert.True(v != new Value(2));
+            Value v = Value.Of(1);
+            Assert.True(!Value.EqualsLoose(v, Value.Of(2)));
+            Assert.True(v != Value.Of(2));
         }
         [Test]
         public void TestParse()
@@ -51,12 +51,12 @@ namespace Petit.Runtime
             {
                 Value v = Value.Parse("1");
                 Assert.True(v.IsInt);
-                Assert.AreEqual(v, new Value(1));
+                Assert.AreEqual(v, Value.Of(1));
             }
             {
                 Value v = Value.Parse("1.1");
                 Assert.True(v.IsFloat);
-                Assert.AreEqual(v, new Value(1.1f));
+                Assert.AreEqual(v, Value.Of(1.1f));
             }
             {
                 Value v = Value.Parse("NaN");
@@ -66,18 +66,18 @@ namespace Petit.Runtime
                 {
                     Value v = Value.Parse("true");
                     Assert.True(v.IsBool);
-                    Assert.AreEqual(v, new Value(true));
+                    Assert.AreEqual(v, Value.Of(true));
                 }
                 {
                     Value v = Value.Parse("false");
                     Assert.True(v.IsBool);
-                    Assert.AreEqual(v, new Value(false));
+                    Assert.AreEqual(v, Value.Of(false));
                 }
             }
             {
                 Value v = Value.Parse("aaa");
                 Assert.True(v.IsString);
-                Assert.AreEqual(v, new Value("aaa"));
+                Assert.AreEqual(v, Value.Of("aaa"));
             }
         }
         [Test]
@@ -85,35 +85,35 @@ namespace Petit.Runtime
         {
             // int
             {
-                Value v = new Value(1);
-                Assert.AreEqual(+v, new Value(1));
+                Value v = Value.Of(1);
+                Assert.AreEqual(+v, Value.Of(1));
             }
             // float
             {
-                Value v = new Value(1.0f);
-                Assert.AreEqual(+v, new Value(1.0f));
+                Value v = Value.Of(1.0f);
+                Assert.AreEqual(+v, Value.Of(1.0f));
             }
             // bool
             {
-                Value v = new Value(true);
-                Assert.AreEqual(+v, new Value(1));
+                Value v = Value.Of(true);
+                Assert.AreEqual(+v, Value.Of(1));
             }
             // string
             {
                 {
-                    Value v = new Value("1");
-                    Assert.AreEqual(+v, new Value(1));
+                    Value v = Value.Of("1");
+                    Assert.AreEqual(+v, Value.Of(1));
                 }
                 {
-                    Value v = new Value("1.1");
-                    Assert.AreEqual(+v, new Value(1.1f));
+                    Value v = Value.Of("1.1");
+                    Assert.AreEqual(+v, Value.Of(1.1f));
                 }
                 {
-                    Value v = new Value("true");
-                    Assert.AreEqual(+v, new Value(1));
+                    Value v = Value.Of("true");
+                    Assert.AreEqual(+v, Value.Of(1));
                 }
                 {
-                    Value v = new Value("aaa");
+                    Value v = Value.Of("aaa");
                     Assert.True((+v).IsNaN);
                 }
             }
@@ -123,35 +123,35 @@ namespace Petit.Runtime
         {
             // int
             {
-                Value v = new Value(1);
-                Assert.AreEqual(-v, new Value(-1));
+                Value v = Value.Of(1);
+                Assert.AreEqual(-v, Value.Of(-1));
             }
             // float
             {
-                Value v = new Value(1.0f);
-                Assert.AreEqual(-v, new Value(-1.0f));
+                Value v = Value.Of(1.0f);
+                Assert.AreEqual(-v, Value.Of(-1.0f));
             }
             // bool
             {
-                Value v = new Value(true);
-                Assert.AreEqual(-v, new Value(-1));
+                Value v = Value.Of(true);
+                Assert.AreEqual(-v, Value.Of(-1));
             }
             // string
             {
                 {
-                    Value v = new Value("1");
-                    Assert.AreEqual(-v, new Value(-1));
+                    Value v = Value.Of("1");
+                    Assert.AreEqual(-v, Value.Of(-1));
                 }
                 {
-                    Value v = new Value("1.1");
-                    Assert.AreEqual(-v, new Value(-1.1f));
+                    Value v = Value.Of("1.1");
+                    Assert.AreEqual(-v, Value.Of(-1.1f));
                 }
                 {
-                    Value v = new Value("true");
-                    Assert.AreEqual(-v, new Value(-1));
+                    Value v = Value.Of("true");
+                    Assert.AreEqual(-v, Value.Of(-1));
                 }
                 {
-                    Value v = new Value("aaa");
+                    Value v = Value.Of("aaa");
                     Assert.True((-v).IsNaN);
                 }
             }
@@ -159,116 +159,116 @@ namespace Petit.Runtime
         [Test]
         public void TestAdd()
         {
-            Assert.AreEqual(new Value(1) + new Value(1), new Value(2));
-            Assert.AreEqual(new Value(1.025f) + new Value(0.5f), new Value(1.525f));
-            Assert.AreEqual(new Value("aa") + new Value("bb"), new Value("aabb"));
-            Assert.AreEqual(new Value(true) + new Value(true), new Value(2));
+            Assert.AreEqual(Value.Of(1) + Value.Of(1), Value.Of(2));
+            Assert.AreEqual(Value.Of(1.025f) + Value.Of(0.5f), Value.Of(1.525f));
+            Assert.AreEqual(Value.Of("aa") + Value.Of("bb"), Value.Of("aabb"));
+            Assert.AreEqual(Value.Of(true) + Value.Of(true), Value.Of(2));
 
-            Assert.AreEqual(new Value(1) + new Value(1.1f), new Value(2.1f));
-            Assert.AreEqual(new Value(10) + new Value("10"), new Value("1010"));
-            Assert.AreEqual(new Value("10") + new Value("10"), new Value("1010"));
-            Assert.AreEqual(new Value(10.0f) + new Value("10"), new Value("1010"));
-            Assert.AreEqual(new Value(10) + new Value("10.0"), new Value("1010.0"));
-            Assert.AreEqual(Value.Invalid + new Value("10"), new Value("10"));
+            Assert.AreEqual(Value.Of(1) + Value.Of(1.1f), Value.Of(2.1f));
+            Assert.AreEqual(Value.Of(10) + Value.Of("10"), Value.Of("1010"));
+            Assert.AreEqual(Value.Of("10") + Value.Of("10"), Value.Of("1010"));
+            Assert.AreEqual(Value.Of(10.0f) + Value.Of("10"), Value.Of("1010"));
+            Assert.AreEqual(Value.Of(10) + Value.Of("10.0"), Value.Of("1010.0"));
+            Assert.AreEqual(Value.Invalid + Value.Of("10"), Value.Of("10"));
 
         }
         [Test]
         public void TestSub()
         {
-            Assert.AreEqual(new Value(1) - new Value(1), new Value(0));
-            Assert.AreEqual(new Value(1.025f) - new Value(0.5f), new Value(1.025f - 0.5f));
-            Assert.True((new Value("aa") - new Value("bb")).IsNaN);
-            Assert.AreEqual(new Value(true) - new Value(true), new Value(0));
+            Assert.AreEqual(Value.Of(1) - Value.Of(1), Value.Of(0));
+            Assert.AreEqual(Value.Of(1.025f) - Value.Of(0.5f), Value.Of(1.025f - 0.5f));
+            Assert.True((Value.Of("aa") - Value.Of("bb")).IsNaN);
+            Assert.AreEqual(Value.Of(true) - Value.Of(true), Value.Of(0));
 
-            Assert.AreEqual(new Value(1) - new Value(1.1f), new Value(1-1.1f));
-            Assert.AreEqual(new Value(10) - new Value("10"), new Value(0));
-            Assert.AreEqual(new Value("10") - new Value("10"), new Value(0));
-            Assert.AreEqual(new Value(10.0f) - new Value("10"), new Value(10.0f - 10));
-            Assert.AreEqual(new Value(10) - new Value("10.0"), new Value(10 -10.0f));
-            Assert.True((Value.Invalid - new Value("10")).IsNaN);
+            Assert.AreEqual(Value.Of(1) - Value.Of(1.1f), Value.Of(1-1.1f));
+            Assert.AreEqual(Value.Of(10) - Value.Of("10"), Value.Of(0));
+            Assert.AreEqual(Value.Of("10") - Value.Of("10"), Value.Of(0));
+            Assert.AreEqual(Value.Of(10.0f) - Value.Of("10"), Value.Of(10.0f - 10));
+            Assert.AreEqual(Value.Of(10) - Value.Of("10.0"), Value.Of(10 -10.0f));
+            Assert.True((Value.Invalid - Value.Of("10")).IsNaN);
         }
         [Test]
         public void TestMul()
         {
-            Assert.AreEqual(new Value(1) *  new Value(1), new Value(1 * 1));
-            Assert.AreEqual(new Value(1.025f) * new Value(0.5f), new Value(1.025f * 0.5f));
-            Assert.True((new Value("aa") * new Value("bb")).IsNaN);
-            Assert.AreEqual(new Value(true) * new Value(true), new Value(1));
+            Assert.AreEqual(Value.Of(1) *  Value.Of(1), Value.Of(1 * 1));
+            Assert.AreEqual(Value.Of(1.025f) * Value.Of(0.5f), Value.Of(1.025f * 0.5f));
+            Assert.True((Value.Of("aa") * Value.Of("bb")).IsNaN);
+            Assert.AreEqual(Value.Of(true) * Value.Of(true), Value.Of(1));
 
-            Assert.AreEqual(new Value(1) * new Value(1.1f), new Value(1 * 1.1f));
-            Assert.AreEqual(new Value(10) * new Value("10"), new Value(10 * 10));
-            Assert.AreEqual(new Value("10") * new Value("10"), new Value(10 * 10));
-            Assert.AreEqual(new Value(10.0f) * new Value("10"), new Value(10.0f *  10));
-            Assert.AreEqual(new Value(10) * new Value("10.0"), new Value(10 * 10.0f));
-            Assert.True((Value.Invalid * new Value("10")).IsNaN);
+            Assert.AreEqual(Value.Of(1) * Value.Of(1.1f), Value.Of(1 * 1.1f));
+            Assert.AreEqual(Value.Of(10) * Value.Of("10"), Value.Of(10 * 10));
+            Assert.AreEqual(Value.Of("10") * Value.Of("10"), Value.Of(10 * 10));
+            Assert.AreEqual(Value.Of(10.0f) * Value.Of("10"), Value.Of(10.0f *  10));
+            Assert.AreEqual(Value.Of(10) * Value.Of("10.0"), Value.Of(10 * 10.0f));
+            Assert.True((Value.Invalid * Value.Of("10")).IsNaN);
         }
         [Test]
         public void TestDiv()
         {
-            Assert.AreEqual(new Value(1) / new Value(1), new Value(1 * 1));
-            Assert.AreEqual(new Value(1.025f) / new Value(0.5f), new Value(1.025f / 0.5f));
-            Assert.True((new Value("aa") / new Value("bb")).IsNaN);
-            Assert.AreEqual(new Value(true) / new Value(true), new Value(1));
+            Assert.AreEqual(Value.Of(1) / Value.Of(1), Value.Of(1 * 1));
+            Assert.AreEqual(Value.Of(1.025f) / Value.Of(0.5f), Value.Of(1.025f / 0.5f));
+            Assert.True((Value.Of("aa") / Value.Of("bb")).IsNaN);
+            Assert.AreEqual(Value.Of(true) / Value.Of(true), Value.Of(1));
 
-            Assert.AreEqual(new Value(1) / new Value(1.1f), new Value(1 / 1.1f));
-            Assert.AreEqual(new Value(10) / new Value("10"), new Value(10 / 10));
-            Assert.AreEqual(new Value("10") / new Value("10"), new Value(10 / 10));
-            Assert.AreEqual(new Value(10.0f) / new Value("10"), new Value(10.0f / 10));
-            Assert.AreEqual(new Value(10) / new Value("10.0"), new Value(10 / 10.0f));
-            Assert.True((Value.Invalid / new Value("10")).IsNaN);
+            Assert.AreEqual(Value.Of(1) / Value.Of(1.1f), Value.Of(1 / 1.1f));
+            Assert.AreEqual(Value.Of(10) / Value.Of("10"), Value.Of(10 / 10));
+            Assert.AreEqual(Value.Of("10") / Value.Of("10"), Value.Of(10 / 10));
+            Assert.AreEqual(Value.Of(10.0f) / Value.Of("10"), Value.Of(10.0f / 10));
+            Assert.AreEqual(Value.Of(10) / Value.Of("10.0"), Value.Of(10 / 10.0f));
+            Assert.True((Value.Invalid / Value.Of("10")).IsNaN);
         }
         [Test]
         public void TestMod()
         {
-            Assert.AreEqual(new Value(1) % new Value(1), new Value(1 % 1));
-            Assert.AreEqual(new Value(1.025f) % new Value(0.5f), new Value(1.025f % 0.5f));
-            Assert.True((new Value("aa") % new Value("bb")).IsNaN);
-            Assert.AreEqual(new Value(true) % new Value(true), new Value(1 % 1));
+            Assert.AreEqual(Value.Of(1) % Value.Of(1), Value.Of(1 % 1));
+            Assert.AreEqual(Value.Of(1.025f) % Value.Of(0.5f), Value.Of(1.025f % 0.5f));
+            Assert.True((Value.Of("aa") % Value.Of("bb")).IsNaN);
+            Assert.AreEqual(Value.Of(true) % Value.Of(true), Value.Of(1 % 1));
 
-            Assert.AreEqual(new Value(1) % new Value(1.1f), new Value(1 % 1.1f));
-            Assert.AreEqual(new Value(10) % new Value("10"), new Value(10 % 10));
-            Assert.AreEqual(new Value("10") % new Value("10"), new Value(10 % 10));
-            Assert.AreEqual(new Value(10.0f) % new Value("10"), new Value(10.0f % 10));
-            Assert.AreEqual(new Value(10) % new Value("10.0"), new Value(10 % 10.0f));
-            Assert.True((Value.Invalid % new Value("10")).IsNaN);
+            Assert.AreEqual(Value.Of(1) % Value.Of(1.1f), Value.Of(1 % 1.1f));
+            Assert.AreEqual(Value.Of(10) % Value.Of("10"), Value.Of(10 % 10));
+            Assert.AreEqual(Value.Of("10") % Value.Of("10"), Value.Of(10 % 10));
+            Assert.AreEqual(Value.Of(10.0f) % Value.Of("10"), Value.Of(10.0f % 10));
+            Assert.AreEqual(Value.Of(10) % Value.Of("10.0"), Value.Of(10 % 10.0f));
+            Assert.True((Value.Invalid % Value.Of("10")).IsNaN);
         }
 
         [Test]
         public void TestCompare()
         {
-            Assert.AreEqual(new Value(-1).CompareTo(new Value(1)), -1);
-            Assert.AreEqual(new Value(0).CompareTo(new Value(0)), 0);
-            Assert.AreEqual(new Value(1).CompareTo(new Value(-1)), 1);
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of(1)), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of(0)), 0);
+            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of(-1)), 1);
 
-            Assert.AreEqual(new Value(-1).CompareTo(new Value(1.0f)), -1);
-            Assert.AreEqual(new Value(0).CompareTo(new Value(0.0f)), 0);
-            Assert.AreEqual(new Value(1).CompareTo(new Value(-1.0f)), 1);
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of(1.0f)), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of(0.0f)), 0);
+            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of(-1.0f)), 1);
 
-            Assert.AreEqual(new Value(-1).CompareTo(new Value("1")), -1);
-            Assert.AreEqual(new Value(0).CompareTo(new Value("0")), 0);
-            Assert.AreEqual(new Value(1).CompareTo(new Value("-1")), 1);
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of("1")), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of("0")), 0);
+            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of("-1")), 1);
 
-            Assert.AreEqual(new Value(-1).CompareTo(new Value("1.0")), -1);
-            Assert.AreEqual(new Value(0).CompareTo(new Value("0.0")), 0);
-            Assert.AreEqual(new Value(1).CompareTo(new Value("-1.0")), 1);
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of("1.0")), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of("0.0")), 0);
+            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of("-1.0")), 1);
 
-            Assert.AreEqual(new Value("0").CompareTo(new Value("0.0")), -1);
-            Assert.AreEqual(new Value("0").CompareTo(new Value("0")), 0);
-            Assert.AreEqual(new Value("0.0").CompareTo(new Value("0")), 1);
+            Assert.AreEqual(Value.Of("0").CompareTo(Value.Of("0.0")), -1);
+            Assert.AreEqual(Value.Of("0").CompareTo(Value.Of("0")), 0);
+            Assert.AreEqual(Value.Of("0.0").CompareTo(Value.Of("0")), 1);
 
-            Assert.AreEqual(new Value("aaa").CompareTo(new Value("bbb")), -1);
-            Assert.AreEqual(new Value("ccc").CompareTo(new Value("ccc")), 0);
-            Assert.AreEqual(new Value("bbb").CompareTo(new Value("aaa")), 1);
+            Assert.AreEqual(Value.Of("aaa").CompareTo(Value.Of("bbb")), -1);
+            Assert.AreEqual(Value.Of("ccc").CompareTo(Value.Of("ccc")), 0);
+            Assert.AreEqual(Value.Of("bbb").CompareTo(Value.Of("aaa")), 1);
 
-            Assert.AreEqual(new Value("111").CompareTo(new Value("aaa")), -1);
-            Assert.AreEqual(new Value("aaa").CompareTo(new Value("111")), 1);
+            Assert.AreEqual(Value.Of("111").CompareTo(Value.Of("aaa")), -1);
+            Assert.AreEqual(Value.Of("aaa").CompareTo(Value.Of("111")), 1);
         }
         [Test]
         public void TestNaN()
         {
             var nan = Value.NaN;
-            Assert.True(new Value(float.NaN).IsNaN);
-            Assert.True((new Value(0.0f) / new Value(0.0f)).IsNaN);
+            Assert.True(Value.Of(float.NaN).IsNaN);
+            Assert.True((Value.Of(0.0f) / Value.Of(0.0f)).IsNaN);
 
             Assert.True((+Value.NaN).IsNaN);
             Assert.True((-Value.NaN).IsNaN);
@@ -281,14 +281,14 @@ namespace Petit.Runtime
             Assert.False(nan > Value.NaN);
             Assert.False(nan <= Value.NaN);
             Assert.False(nan >= Value.NaN);
-            Assert.False(nan < new Value(0));
-            Assert.False(nan > new Value(0));
-            Assert.False(nan <= new Value(0));
-            Assert.False(nan >= new Value(0));
+            Assert.False(nan < Value.Of(0));
+            Assert.False(nan > Value.Of(0));
+            Assert.False(nan <= Value.Of(0));
+            Assert.False(nan >= Value.Of(0));
 
             Assert.AreEqual(Value.NaN.CompareTo(Value.NaN), 0);
-            Assert.AreEqual(Value.NaN.CompareTo(new(0)), -1);
-            Assert.AreEqual(new Value(0).CompareTo(Value.NaN), 1);
+            Assert.AreEqual(Value.NaN.CompareTo(Value.Of(0)), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.NaN), 1);
         }
     }
 }

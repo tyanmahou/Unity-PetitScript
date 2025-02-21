@@ -106,7 +106,7 @@ namespace Petit.Runtime
             System.Reflection.MethodInfo methodInfo = del.Method;
 
             // 引数名を取得
-            return methodInfo.GetParameters().Select(p => new Argument(p.Name, new Value(p.DefaultValue))).ToArray();
+            return methodInfo.GetParameters().Select(p => new Argument(p.Name, Value.Of(p.DefaultValue))).ToArray();
         }
     }
 }

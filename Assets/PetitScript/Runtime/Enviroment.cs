@@ -27,19 +27,19 @@ namespace Petit.Runtime
         /// <param name="value"></param>
         public void Set(string key, bool value)
         {
-            _variables[key] = new Value(value);
+            _variables[key] = Value.Of(value);
         }
         public void Set(string key, int value)
         {
-            _variables[key] = new Value(value);
+            _variables[key] = Value.Of(value);
         }
         public void Set(string key, float value)
         {
-            _variables[key] = new Value(value);
+            _variables[key] = Value.Of(value);
         }
         public void Set(string key, string value)
         {
-            _variables[key] = new Value(value);
+            _variables[key] = Value.Of(value);
         }
         public void Set(string key, in Value value)
         {

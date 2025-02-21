@@ -10,146 +10,16 @@ namespace Petit.Runtime
     /// <summary>
     /// 変数
     /// </summary>
-    public readonly struct Value
+    public readonly partial struct Value
         : IEquatable<Value>
         , IComparable<Value>
     {
         public readonly static Value Invalid = default;
-        public readonly static Value True = new Value(true);
-        public readonly static Value False = new Value(false);
-        public readonly static Value NaN = new Value(float.NaN);
+        public readonly static Value True = Value.Of(true);
+        public readonly static Value False = Value.Of(false);
+        public readonly static Value NaN = Value.Of(float.NaN);
 
-        /// <summary>
-        /// 文字列からパース
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static Value Parse(string str)
-        {
-            if (str is null)
-            {
-                return new Value();
-            }
-            if (bool.TryParse(str, out bool b))
-            {
-                return new Value(b);
-            }
-            if (int.TryParse(str, out int i))
-            {
-                return new Value(i);
-            }
-            if (float.TryParse(str, out float f))
-            {
-                return new Value(f);
-            }
-            return new Value(str);
-        }
-        public Value(bool b)
-        {
-            _type = ValueType.Bool;
-            _value = new ValueVariant();
-            _value.BoolValue = b;
-            _array = null;
-        }
-        public Value(int i)
-        {
-            _type = ValueType.Int;
-            _value = new ValueVariant();
-            _value.IntValue = i;
-            _array = null;
-        }
-        public Value(float f)
-        {
-            _type = ValueType.Float;
-            _value = new ValueVariant();
-            _value.FloatValue = f;
-            _array = null;
-        }
-        public Value(string s)
-        {
-            _type = ValueType.String;
-            _value = new ValueVariant();
-            _value.StringValue = s;
-            _array = null;
-        }
-        public Value(char c)
-        {
-            _type = ValueType.String;
-            _value = new ValueVariant();
-            _value.StringValue = c.ToString();
-            _array = null;
-        }
-        public Value(IEnumerable<Value> collection)
-        {
-            _type = ValueType.Array;
-            _value = new ValueVariant();
-            _array = collection.ToList();
-        }
-        public Value(IEnumerable<object> collection)
-        {
-            _type = ValueType.Array;
-            _value = new ValueVariant();
-            int count = collection.Count();
-            _array = new List<Value>(count);
-            foreach (var item in collection)
-            {
-                _array.Add(new Value(item));
-            }
-        }
-        internal Value(object o)
-        {
-            if (o is bool b)
-            {
-                _type = ValueType.Bool;
-                _value = new ValueVariant();
-                _value.BoolValue = b;
-                _array = null;
-            }
-            else if (o is int i)
-            {
-                _type = ValueType.Int;
-                _value = new ValueVariant();
-                _value.IntValue = i;
-                _array = null;
-            }
-            else if (o is float f)
-            {
-                _type = ValueType.Float;
-                _value = new ValueVariant();
-                _value.FloatValue = f;
-                _array = null;
-            }
-            else if (o is string s)
-            {
-                _type = ValueType.String;
-                _value = new ValueVariant();
-                _value.StringValue = s;
-                _array = null;
-            }
-            else if (o is char c)
-            {
-                _type = ValueType.String;
-                _value = new ValueVariant();
-                _value.StringValue = c.ToString();
-                _array = null;
-            }
-            else if (o is IEnumerable enumerable)
-            {
-                _type = ValueType.Array;
-                _value = new ValueVariant();
-                _array = new List<Value>();
-                foreach (var item in enumerable)
-                {
-                    _array.Add(new Value(item));
-                }
-            }
-            else
-            {
-                _type = ValueType.Invalid;
-                _value = default;
-                _array = null;
-            }
-        }
+       
         /// <summary>
         /// 無効値か
         /// </summary>
@@ -304,7 +174,7 @@ namespace Petit.Runtime
                 case ValueType.Float:
                     return new List<Value>() { this };
                 case ValueType.String:
-                    return _value.StringValue.Select(x => new Value(x)).ToList();
+                    return _value.StringValue.Select(x => Value.Of(x)).ToList();
                 case ValueType.Array:
                     return _array;
             }
@@ -362,23 +232,23 @@ namespace Petit.Runtime
             }
             else if (other is int i)
             {
-                return Equals(new Value(i));
+                return Equals(Value.Of(i));
             }
             else if (other is float f)
             {
-                return Equals(new Value(f));
+                return Equals(Value.Of(f));
             }
             else if (other is string s)
             {
-                return Equals(new Value(s));
+                return Equals(Value.Of(s));
             }
             else if (other is bool b)
             {
-                return Equals(new Value(b));
+                return Equals(Value.Of(b));
             }
             else if (other is IEnumerable enumrable)
             {
-                return Equals(new Value(enumrable));
+                return Equals(Value.Of(enumrable));
             }
             else if (other is null)
             {
@@ -622,14 +492,14 @@ namespace Petit.Runtime
         }
         public static Value operator !(in Value a)
         {
-            return new Value(!a.ToBool());
+            return Value.Of(!a.ToBool());
         }
         public static Value operator +(in Value a)
         {
             switch (a._type)
             {
                 case ValueType.Bool:
-                    return new Value(a.ToInt());
+                    return Value.Of(a.ToInt());
                 case ValueType.Int:
                     return a;
                 case ValueType.Float:
@@ -637,15 +507,15 @@ namespace Petit.Runtime
                 case ValueType.String:
                     if (bool.TryParse(a._value.StringValue, out bool bo))
                     {
-                        return new Value(bo ? 1 : 0);
+                        return Value.Of(bo ? 1 : 0);
                     }
                     else if (int.TryParse(a._value.StringValue, out int i))
                     {
-                        return new Value(i);
+                        return Value.Of(i);
                     }
                     else if (float.TryParse(a._value.StringValue, out float f))
                     {
-                        return new Value(f);
+                        return Value.Of(f);
                     }
                     else
                     {
@@ -661,23 +531,23 @@ namespace Petit.Runtime
             switch (a._type)
             {
                 case ValueType.Bool:
-                    return new Value(-a.ToInt());
+                    return Value.Of(-a.ToInt());
                 case ValueType.Int:
-                    return new Value(-a.ToInt());
+                    return Value.Of(-a.ToInt());
                 case ValueType.Float:
-                    return new Value(-a.ToFloat());
+                    return Value.Of(-a.ToFloat());
                 case ValueType.String:
                     if (bool.TryParse(a._value.StringValue, out bool bo))
                     {
-                        return new Value(bo ? -1 : 0);
+                        return Value.Of(bo ? -1 : 0);
                     }
                     else if (int.TryParse(a._value.StringValue, out int i))
                     {
-                        return new Value(-i);
+                        return Value.Of(-i);
                     }
                     else if (float.TryParse(a._value.StringValue, out float f))
                     {
-                        return new Value(-f);
+                        return Value.Of(-f);
                     }
                     else
                     {
@@ -699,15 +569,15 @@ namespace Petit.Runtime
                 );
             if (opType == ValueType.Int)
             {
-                return new Value(aiValue + biValue);
+                return Value.Of(aiValue + biValue);
             }
             else if (opType == ValueType.Float)
             {
-                return new Value(afValue + bfValue);
+                return Value.Of(afValue + bfValue);
             }
             else if (opType == ValueType.String)
             {
-                return new Value(a.ToString() + b.ToString());
+                return Value.Of(a.ToString() + b.ToString());
             }
             return Value.Invalid;
         }
@@ -721,11 +591,11 @@ namespace Petit.Runtime
                 );
             if (opType == ValueType.Int)
             {
-                return new Value(aiValue - biValue);
+                return Value.Of(aiValue - biValue);
             }
             else if (opType == ValueType.Float)
             {
-                return new Value(afValue - bfValue);
+                return Value.Of(afValue - bfValue);
             }
             else if (opType == ValueType.String)
             {
@@ -743,11 +613,11 @@ namespace Petit.Runtime
                 );
             if (opType == ValueType.Int)
             {
-                return new Value(aiValue * biValue);
+                return Value.Of(aiValue * biValue);
             }
             else if (opType == ValueType.Float)
             {
-                return new Value(afValue * bfValue);
+                return Value.Of(afValue * bfValue);
             }
             else if (opType == ValueType.String)
             {
@@ -767,13 +637,13 @@ namespace Petit.Runtime
             {
                 if (biValue == 0)
                 {
-                    return new Value(aiValue / (float)biValue);
+                    return Value.Of(aiValue / (float)biValue);
                 }
-                return new Value(aiValue / biValue);
+                return Value.Of(aiValue / biValue);
             }
             else if (opType == ValueType.Float)
             {
-                return new Value(afValue / bfValue);
+                return Value.Of(afValue / bfValue);
             }
             else if (opType == ValueType.String)
             {
@@ -793,14 +663,14 @@ namespace Petit.Runtime
             {
                 if (biValue == 0)
                 {
-                    return new Value(aiValue / (float)biValue);
+                    return Value.Of(aiValue / (float)biValue);
                 }
 
-                return new Value(aiValue % biValue);
+                return Value.Of(aiValue % biValue);
             }
             else if (opType == ValueType.Float)
             {
-                return new Value(afValue % bfValue);
+                return Value.Of(afValue % bfValue);
             }
             else if (opType == ValueType.String)
             {
@@ -827,27 +697,27 @@ namespace Petit.Runtime
         }
         public static Value BitwiseNot(in Value a)
         {
-            return new Value(~a.ToInt());
+            return Value.Of(~a.ToInt());
         }
         public static Value BitwiseAnd(in Value a, in Value b)
         {
-            return new Value(a.ToInt() & b.ToInt());
+            return Value.Of(a.ToInt() & b.ToInt());
         }
         public static Value BitwiseOr(in Value a, in Value b)
         {
-            return new Value(a.ToInt() | b.ToInt());
+            return Value.Of(a.ToInt() | b.ToInt());
         }
         public static Value BitwiseXor(in Value a, in Value b)
         {
-            return new Value(a.ToInt() ^ b.ToInt());
+            return Value.Of(a.ToInt() ^ b.ToInt());
         }
         public static Value operator <<(in Value a, int b)
         {
-            return new Value(a.ToInt() << b);
+            return Value.Of(a.ToInt() << b);
         }
         public static Value operator >>(in Value a, int b)
         {
-            return new Value(a.ToInt() >> b);
+            return Value.Of(a.ToInt() >> b);
         }
         public Value this [in Value i]
         {
@@ -877,7 +747,7 @@ namespace Petit.Runtime
                 {
                     if (i < _value.StringValue.Length)
                     {
-                        return new Value(_value.StringValue[i]);
+                        return Value.Of(_value.StringValue[i]);
                     }
                 }
                 return Value.Invalid;
