@@ -18,8 +18,8 @@ namespace Petit.Runtime
         public readonly static Value True = Value.Of(true);
         public readonly static Value False = Value.Of(false);
         public readonly static Value NaN = Value.Of(float.NaN);
+        public readonly static Value Inf = Value.Of(float.PositiveInfinity);
 
-       
         /// <summary>
         /// 無効値か
         /// </summary>
@@ -54,6 +54,11 @@ namespace Petit.Runtime
         /// NaNか
         /// </summary>
         public bool IsNaN => _type == ValueType.Float && float.IsNaN(_value.FloatValue);
+
+        /// <summary>
+        /// Infか
+        /// </summary>
+        public bool IsInf => _type == ValueType.Float && float.IsInfinity(_value.FloatValue);
 
         public readonly bool ToBool()
         {
@@ -694,22 +699,6 @@ namespace Petit.Runtime
                 return a;
             }
             return b;
-        }
-        public static Value BitwiseNot(in Value a)
-        {
-            return Value.Of(~a.ToInt());
-        }
-        public static Value BitwiseAnd(in Value a, in Value b)
-        {
-            return Value.Of(a.ToInt() & b.ToInt());
-        }
-        public static Value BitwiseOr(in Value a, in Value b)
-        {
-            return Value.Of(a.ToInt() | b.ToInt());
-        }
-        public static Value BitwiseXor(in Value a, in Value b)
-        {
-            return Value.Of(a.ToInt() ^ b.ToInt());
         }
         public static Value operator <<(in Value a, int b)
         {
