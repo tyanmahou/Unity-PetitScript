@@ -67,6 +67,18 @@ namespace Petit.Runtime
         {
             return new Value(enumerable);
         }
+        public static Value ArrayOf(params Value[] values)
+        {
+            return Value.Of(values);
+        }
+        public static Value ArrayOf<T>(params T[] values)
+        {
+            return Value.Of(values);
+        }
+        public static Value ArrayOf(params object[] values)
+        {
+            return Value.Of(values);
+        }
         public static Value Of(object o)
         {
             if (o is bool b)

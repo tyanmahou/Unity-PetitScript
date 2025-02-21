@@ -12,17 +12,9 @@ namespace Petit.Runtime
         }
         public static int Compare(in Value a, in Value b)
         {
-            if (a.IsNaN && b.IsNaN)
+            if (a.IsNaN || b.IsNaN)
             {
-                return 0;
-            }
-            else if (a.IsNaN)
-            {
-                return -1;
-            }
-            else if (b.IsNaN)
-            {
-                return 1;
+                return a.ToFloat().CompareTo(b.ToFloat());
             }
             switch ((a._type, b._type))
             {
