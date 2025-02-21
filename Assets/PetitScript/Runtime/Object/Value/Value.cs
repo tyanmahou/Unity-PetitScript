@@ -12,7 +12,6 @@ namespace Petit.Runtime
     /// </summary>
     public readonly partial struct Value
         : IEquatable<Value>
-        , IComparable<Value>
     {
         public readonly static Value Invalid = default;
         public readonly static Value True = Value.Of(true);
@@ -353,116 +352,7 @@ namespace Petit.Runtime
             }
             return Compare(a, b) != 0;
         }
-        public static int Compare(in Value a, in Value b)
-        {
-            if (a.IsNaN && b.IsNaN)
-            {
-                return 0;
-            }
-            else if (a.IsNaN)
-            {
-                return -1;
-            }
-            else if(b.IsNaN)
-            {
-                return 1;
-            }
-            if (a.IsBool && b.IsBool)
-            {
-                return a._value.BoolValue.CompareTo(b._value.BoolValue);
-            }
-            if (a.IsInt && b.IsInt)
-            {
-                return a._value.IntValue.CompareTo(b._value.IntValue);
-            }
-            if (a.IsFloat && b.IsFloat)
-            {
-                return a._value.FloatValue.CompareTo(b._value.FloatValue);
-            }
-            if (a.IsString && b.IsString)
-            {
-                return a._value.StringValue.CompareTo(b._value.StringValue);
-            }
-            if (a.IsArray && b.IsArray)
-            {
-                int min = Math.Min(a._array.Count, b._array.Count);
-                for (int index = 0; index < min; ++index)
-                {
-                    int comp = a._array[index].CompareTo(b._array[index]);
-                    if (comp != 0)
-                    {
-                        return comp;
-                    }
-                }
-                return a._array.Count.CompareTo(b._array.Count);
-            }
-            if (a.IsArray && b.IsString)
-            {
-                return a.ToString().CompareTo(b.ToString());
-            }
-            else if (a.IsString && b.IsArray)
-            {
-                return a.ToString().CompareTo(b.ToString());
-            }
-            if (a.IsArray) 
-            {
-                return -1;
-            }
-            if (b.IsArray)
-            {
-                return 1;
-            }
-            bool stringCompare = false;
-            float aValue = 0.0f;
-            float bValue = 0.0f;
-            if (a.IsString)
-            {
-                if (bool.TryParse(a._value.StringValue, out bool bo))
-                {
-                    aValue = bo ? 1.0f : 0.0f;
-                }
-                else if (float.TryParse(a._value.StringValue, out float f))
-                {
-                    aValue = f;
-                }
-                else
-                {
-                    stringCompare = true;
-                }
-            }
-            else
-            {
-                aValue = a.ToFloat();
-            }
-            if (b.IsString)
-            {
-                if (bool.TryParse(b._value.StringValue, out bool bo))
-                {
-                    bValue = bo ? 1.0f : 0.0f;
-                }
-                else if (float.TryParse(b._value.StringValue, out float f))
-                {
-                    bValue = f;
-                }
-                else
-                {
-                    stringCompare = true;
-                }
-            }
-            else
-            {
-                bValue = b.ToFloat();
-            }
-            if (stringCompare)
-            {
-                return a.ToString().CompareTo(b.ToString());
-            }
-            return aValue.CompareTo(bValue);
-        }
-        public int CompareTo(Value other)
-        {
-            return Compare(this, other);
-        }
+
         public static bool operator >(in Value a, in Value b)
         {
             if (a.IsNaN || b.IsNaN)
