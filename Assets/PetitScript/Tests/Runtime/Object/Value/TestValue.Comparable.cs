@@ -46,6 +46,8 @@ namespace Petit.Runtime
             Assert.AreEqual(Value.Compare(Value.ArrayOf(9), Value.Of("9")), 0);
             Assert.AreEqual(Value.Compare(Value.ArrayOf(9), Value.Of("8")), 1);
 
+            Assert.AreEqual(Value.Compare(Value.ArrayOf(1, 2, 3, 4, 5), Value.Of("1,2,3,4,5")), 0);
+            Assert.AreEqual(Value.Compare(Value.ArrayOf(1, 2, 3, Value.ArrayOf(4, 5)), Value.Of("1,2,3,4,5")), 0);
 
             Assert.AreEqual(Value.Compare(Value.ArrayOf(float.NaN), Value.NaN), 0);
             Assert.AreEqual(Value.Compare(Value.ArrayOf(float.PositiveInfinity), Value.Inf), 0);

@@ -166,7 +166,6 @@ namespace Petit.Runtime
             }
             return string.Empty;
         }
-        public List<Value> ToList()=> ToArray();
         public List<Value> ToArray()
         {
             switch (_type)
@@ -792,7 +791,7 @@ namespace Petit.Runtime
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        struct ValueVariant
+        struct Primitive
         {
             [FieldOffset(0)]
             public bool BoolValue;
@@ -805,7 +804,7 @@ namespace Petit.Runtime
         }
 
         private readonly ValueType _type;
-        private readonly ValueVariant _value;
+        private readonly Primitive _value;
         private readonly List<Value> _array;
     }
 }

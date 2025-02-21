@@ -81,7 +81,11 @@ namespace Petit.Runtime
         }
         public static Value Of(object o)
         {
-            if (o is bool b)
+            if (o is Value v)
+            {
+                return v;
+            }
+            else if(o is bool b)
             {
                 return Value.Of(b);
             }
@@ -110,31 +114,37 @@ namespace Petit.Runtime
                 return default;
             }
         }
+        Value(in Value other)
+        {
+            _type = other._type;
+            _value = other._value;
+            _array = other._array;
+        }
         Value(bool b)
         {
             _type = ValueType.Bool;
-            _value = new ValueVariant();
+            _value = new Primitive();
             _value.BoolValue = b;
             _array = null;
         }
         Value(int i)
         {
             _type = ValueType.Int;
-            _value = new ValueVariant();
+            _value = new Primitive();
             _value.IntValue = i;
             _array = null;
         }
         Value(float f)
         {
             _type = ValueType.Float;
-            _value = new ValueVariant();
+            _value = new Primitive();
             _value.FloatValue = f;
             _array = null;
         }
         Value(string s)
         {
             _type = ValueType.String;
-            _value = new ValueVariant();
+            _value = new Primitive();
             _value.StringValue = s;
             _array = null;
         }
@@ -145,7 +155,7 @@ namespace Petit.Runtime
         Value(IEnumerable<Value> collection)
         {
             _type = ValueType.Array;
-            _value = new ValueVariant();
+            _value = new Primitive();
             _array = collection.ToList();
         }
         Value(IEnumerable<object> collection)
@@ -155,7 +165,7 @@ namespace Petit.Runtime
         Value(IEnumerable collection)
         {
             _type = ValueType.Array;
-            _value = new ValueVariant();
+            _value = new Primitive();
             _array = new List<Value>();
             foreach (object item in collection)
             {

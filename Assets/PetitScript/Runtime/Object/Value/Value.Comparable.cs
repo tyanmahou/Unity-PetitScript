@@ -105,6 +105,14 @@ namespace Petit.Runtime
             }
             return a.Count.CompareTo(b.Count);
         }
+        static string CompareString(in Value v)
+        {
+            if (v.IsArray)
+            {
+                return CompareString(v._array);
+            }
+            return v.ToString();
+        }
         static string CompareString(List<Value> array)
         {
             StringBuilder sb = new StringBuilder();
@@ -115,7 +123,7 @@ namespace Petit.Runtime
                 {
                     sb.Append(",");
                 }
-                sb.Append(item.ToString());
+                sb.Append(CompareString(item));
                 isFirst = false;
             }
             return sb.ToString();

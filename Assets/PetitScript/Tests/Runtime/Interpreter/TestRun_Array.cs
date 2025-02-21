@@ -33,7 +33,7 @@ namespace Petit.Runtime
         {
             var result = Interpreter.RunScript("[1, 2, ]");
             Assert.True(result.IsArray);
-            Assert.AreEqual(result.ToList().Count, 2);
+            Assert.AreEqual(result.ToArray().Count, 2);
             Assert.AreEqual(result[0], 1);
             Assert.AreEqual(result[1], 2);
         }
