@@ -4,6 +4,11 @@ using System.Text;
 
 namespace Petit.Runtime
 {
+    /// <summary>
+    /// Value 
+    /// IComparable<Value>の実装
+    /// 比較系処理
+    /// </summary>
     public readonly partial struct Value : IComparable<Value>
     {
         public int CompareTo(Value other)

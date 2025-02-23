@@ -3,7 +3,7 @@
 namespace Petit.Runtime
 {
     class TestValue_Comparable
-	{
+    {
         [Test]
         public void TestCompareInt()
         {
@@ -43,17 +43,20 @@ namespace Petit.Runtime
             Assert.AreEqual(Value.Of("0").CompareTo(Value.Of("0.0")), -1);
             Assert.AreEqual(Value.Of("0").CompareTo(Value.Of("0")), 0);
             Assert.AreEqual(Value.Of("0.0").CompareTo(Value.Of("0")), 1);
+
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of(true)), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of(false)), 0);
         }
         [Test]
-		public void TestCompareNaN()
-		{
-			Assert.AreEqual(Value.Compare(Value.NaN, Value.NaN), 0);
-			Assert.AreEqual(Value.Compare(Value.NaN, Value.Of(99999)), -1);
-			Assert.AreEqual(Value.Compare(Value.NaN, Value.Of(-99999)), -1);
-			Assert.AreEqual(Value.Compare(Value.NaN, Value.Of("aaaa")), -1);
-			Assert.AreEqual(Value.Compare(Value.Of(99999), Value.NaN), 1);
-			Assert.AreEqual(Value.Compare(Value.Of(-99999), Value.NaN), 1);
-			Assert.AreEqual(Value.Compare(Value.Of("aaaa"), Value.NaN), 1);
+        public void TestCompareNaN()
+        {
+            Assert.AreEqual(Value.Compare(Value.NaN, Value.NaN), 0);
+            Assert.AreEqual(Value.Compare(Value.NaN, Value.Of(99999)), -1);
+            Assert.AreEqual(Value.Compare(Value.NaN, Value.Of(-99999)), -1);
+            Assert.AreEqual(Value.Compare(Value.NaN, Value.Of("aaaa")), -1);
+            Assert.AreEqual(Value.Compare(Value.Of(99999), Value.NaN), 1);
+            Assert.AreEqual(Value.Compare(Value.Of(-99999), Value.NaN), 1);
+            Assert.AreEqual(Value.Compare(Value.Of("aaaa"), Value.NaN), 1);
         }
         [Test]
         public void TestCompareInf()

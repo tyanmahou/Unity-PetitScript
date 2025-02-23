@@ -1,9 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Petit.Runtime
 {
+    /// <summary>
+    /// Value
+    /// 生成に関する処理
+    /// </summary>
     public readonly partial struct Value
     {
         /// <summary>
@@ -21,11 +26,11 @@ namespace Petit.Runtime
             {
                 return Value.Of(b);
             }
-            if (int.TryParse(str, out int i))
+            if (int.TryParse(str, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i))
             {
                 return Value.Of(i);
             }
-            if (float.TryParse(str, out float f))
+            if (float.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out float f))
             {
                 return Value.Of(f);
             }
@@ -70,6 +75,10 @@ namespace Petit.Runtime
         public static Value Of(IEnumerable<object> enumerable)
         {
             return new Value(enumerable);
+        }
+        public static Value ArrayOf()
+        {
+            return Value.Of(new List<Value>());
         }
         public static Value ArrayOf(params Value[] values)
         {
