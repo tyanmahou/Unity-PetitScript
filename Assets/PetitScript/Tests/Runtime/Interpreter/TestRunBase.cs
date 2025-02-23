@@ -4,7 +4,7 @@ namespace Petit.Runtime
 {
     class TestRunBase
     {
-        protected static Interpreter RunInt(string code, int actual, Enviroment env = null)
+        protected static Interpreter RunInt(string code, int actual, Environment env = null)
         {
             Interpreter interpreter = new Interpreter();
             var result = interpreter.Run(code, env);
@@ -28,7 +28,7 @@ namespace Petit.Runtime
             Assert.AreEqual(result.ToBool(), actual);
             return interpreter;
         }
-        protected static Interpreter RunString(string code, string actual, Enviroment env = null)
+        protected static Interpreter RunString(string code, string actual, Environment env = null)
         {
             Interpreter interpreter = new Interpreter();
             var result = interpreter.Run(code, env);
@@ -36,7 +36,7 @@ namespace Petit.Runtime
             Assert.AreEqual(result.ToString(), actual);
             return interpreter;
         }
-        protected static Interpreter RunNaN(string code, Enviroment env = null)
+        protected static Interpreter RunNaN(string code, Environment env = null)
         {
             Interpreter interpreter = new Interpreter();
             var result = interpreter.Run(code, env);

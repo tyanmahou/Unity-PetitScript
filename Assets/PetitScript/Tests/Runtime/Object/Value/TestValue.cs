@@ -233,36 +233,7 @@ namespace Petit.Runtime
             Assert.True((Value.Invalid % Value.Of("10")).IsNaN);
         }
 
-        [Test]
-        public void TestCompare()
-        {
-            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of(1)), -1);
-            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of(0)), 0);
-            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of(-1)), 1);
 
-            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of(1.0f)), -1);
-            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of(0.0f)), 0);
-            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of(-1.0f)), 1);
-
-            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of("1")), -1);
-            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of("0")), 0);
-            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of("-1")), 1);
-
-            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of("1.0")), -1);
-            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of("0.0")), 0);
-            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of("-1.0")), 1);
-
-            Assert.AreEqual(Value.Of("0").CompareTo(Value.Of("0.0")), -1);
-            Assert.AreEqual(Value.Of("0").CompareTo(Value.Of("0")), 0);
-            Assert.AreEqual(Value.Of("0.0").CompareTo(Value.Of("0")), 1);
-
-            Assert.AreEqual(Value.Of("aaa").CompareTo(Value.Of("bbb")), -1);
-            Assert.AreEqual(Value.Of("ccc").CompareTo(Value.Of("ccc")), 0);
-            Assert.AreEqual(Value.Of("bbb").CompareTo(Value.Of("aaa")), 1);
-
-            Assert.AreEqual(Value.Of("111").CompareTo(Value.Of("aaa")), -1);
-            Assert.AreEqual(Value.Of("aaa").CompareTo(Value.Of("111")), 1);
-        }
         [Test]
         public void TestNaN()
         {

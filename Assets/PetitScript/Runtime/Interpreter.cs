@@ -18,7 +18,7 @@ namespace Petit.Runtime
             return new Interpreter().Run(code);
         }
 
-        public Enviroment Enviroment => _env;
+        public Environment Environment => _env;
 
         /// <summary>
         /// リザルト処理
@@ -87,7 +87,7 @@ namespace Petit.Runtime
         {
             return Run(code, _env);
         }
-        public Value Run(string code, Enviroment env)
+        public Value Run(string code, Environment env)
         {
             Value result;
             try
@@ -115,7 +115,7 @@ namespace Petit.Runtime
             _onResult?.Invoke(result);
             return result;
         }
-        Enviroment _env = new(Enviroment.Global);
+        Environment _env = new(Environment.Global);
         Func<System.Exception, bool> _onCatchError;
         Action<Value> _onResult;
     }

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using NUnit;
+using NUnit.Framework;
 
 namespace Petit.Runtime
 {
@@ -22,19 +23,19 @@ else
 }
 ";
             {
-                var vars = new Enviroment(null);
-                vars.Set("a", 1);
-                RunString(code, "plus", vars);
+                var env = Environment.New;
+                env["a"] = 1;
+                RunString(code, "plus", env);
             }
             {
-                var vars = new Enviroment(null);
-                vars.Set("a", 0);
-                RunString(code, "zero", vars);
+                var env = Environment.New;
+                env["a"] = 0;
+                RunString(code, "zero", env);
             }
             {
-                var vars = new Enviroment(null);
-                vars.Set("a", -1);
-                RunString(code, "minus", vars);
+                var env = Environment.New;
+                env["a"] = -1;
+                RunString(code, "minus", env);
             }
         }
     }

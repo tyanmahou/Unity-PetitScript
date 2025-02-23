@@ -18,11 +18,11 @@ namespace Petit.Runtime.Executor
         public Executor()
         {
         }
-        public Value Exec(GlobalStatement global, Enviroment env)
+        public Value Exec(GlobalStatement global, Environment env)
         {
             return ExecGlobalStatement(global, env);
         }
-        (Value, StatementCommand) ExecStatement(IStatement statement, Enviroment env)
+        (Value, StatementCommand) ExecStatement(IStatement statement, Environment env)
         {
             if (statement is BlockStatement block)
             {
@@ -66,7 +66,7 @@ namespace Petit.Runtime.Executor
             }
             return (Value.Invalid, StatementCommand.None);
         }
-        Value ExecGlobalStatement(GlobalStatement global, Enviroment env)
+        Value ExecGlobalStatement(GlobalStatement global, Environment env)
         {
             Value result = Value.Invalid;
             foreach (var s in global.Statements)
@@ -80,7 +80,7 @@ namespace Petit.Runtime.Executor
             }
             return result;
         }
-        (Value, StatementCommand) ExecBlockStatement(BlockStatement statement, Enviroment env)
+        (Value, StatementCommand) ExecBlockStatement(BlockStatement statement, Environment env)
         {
             Value result = Value.Invalid;
             StatementCommand ret = StatementCommand.None;
@@ -94,7 +94,7 @@ namespace Petit.Runtime.Executor
             }
             return (result, ret);
         }
-        (Value, StatementCommand) ExecIfStatement(IfStatement ifStatement, Enviroment env)
+        (Value, StatementCommand) ExecIfStatement(IfStatement ifStatement, Environment env)
         {
             if (ExecExpr(ifStatement.Condition, env))
             {
@@ -106,7 +106,7 @@ namespace Petit.Runtime.Executor
             }
             return (Value.Invalid, StatementCommand.None);
         }
-        (Value, StatementCommand) ExecSwitchStatement(SwitchStatement switchStatement, Enviroment env)
+        (Value, StatementCommand) ExecSwitchStatement(SwitchStatement switchStatement, Environment env)
         {
             var condition = ExecExpr(switchStatement.Condition, env).Result;
 
@@ -162,7 +162,7 @@ namespace Petit.Runtime.Executor
             }
             return result;
         }
-        (Value, StatementCommand) ExecWhileStatement(WhileStatement whileStatement, Enviroment env)
+        (Value, StatementCommand) ExecWhileStatement(WhileStatement whileStatement, Environment env)
         {
             (Value, StatementCommand) result = default;
             while (ExecExpr(whileStatement.Cond, env))
@@ -183,7 +183,7 @@ namespace Petit.Runtime.Executor
             }
             return result;
         }
-        (Value, StatementCommand) ExecForStatement(ForStatement forStatement, Enviroment env)
+        (Value, StatementCommand) ExecForStatement(ForStatement forStatement, Environment env)
         {
             (Value, StatementCommand) result = default;
             for(ExecExpr(forStatement.Init, env);  ExecExpr(forStatement.Cond, env); ExecExpr(forStatement.Loop, env))
@@ -204,7 +204,7 @@ namespace Petit.Runtime.Executor
             }
             return result;
         }
-        (Value, StatementCommand) ExecFunctionStatement(FunctionDeclaration function, Enviroment env)
+        (Value, StatementCommand) ExecFunctionStatement(FunctionDeclaration function, Environment env)
         {
             Function func = new(
                 function.Identifier,
@@ -228,7 +228,7 @@ namespace Petit.Runtime.Executor
             env.Set(function.Identifier, func);
             return (Value.Of(func), StatementCommand.None);
         }
-        ExprResult ExecExpr(IExpression expr, Enviroment env)
+        ExprResult ExecExpr(IExpression expr, Environment env)
         {
             if (expr is null)
             {
@@ -304,7 +304,7 @@ namespace Petit.Runtime.Executor
         {
             return new(Value.Of(expr.Value));
         }
-        ExprResult ExecExpr(StringInterpolation expr, Enviroment env)
+        ExprResult ExecExpr(StringInterpolation expr, Environment env)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var e in expr.Expressions)
@@ -323,7 +323,7 @@ namespace Petit.Runtime.Executor
             }
             return new (Value.Of(sb.ToString()));
         }
-        ExprResult ExecExpr(ListExpression expr, Enviroment env)
+        ExprResult ExecExpr(ListExpression expr, Environment env)
         {
             List<Value> values = new List<Value>(expr.Elements.Count);
             foreach (var e in expr.Elements)
@@ -332,19 +332,19 @@ namespace Petit.Runtime.Executor
             }
             return new(Value.Of(values));
         }
-        ExprResult ExecExpr(VariableExpression expr, Enviroment env)
+        ExprResult ExecExpr(VariableExpression expr, Environment env)
         {
             return new ExprResult()
             {
                 Result = env.Get(expr.Identifier),
                 Address = new IdentAddress()
                 {
-                    Enviroment = env,
+                    Environment = env,
                     Identifier = expr.Identifier,
                 }
             };
         }
-        ExprResult ExecExpr(PrefixUnaryExpression expr, Enviroment env)
+        ExprResult ExecExpr(PrefixUnaryExpression expr, Environment env)
         {
             if (expr.Op == "!")
             {
@@ -379,7 +379,7 @@ namespace Petit.Runtime.Executor
             }
             return ExecExpr(expr.Right, env);
         }
-        ExprResult ExecExpr(PostfixUnaryExpression expr, Enviroment env)
+        ExprResult ExecExpr(PostfixUnaryExpression expr, Environment env)
         {
             if (expr.Op == "++")
             {
@@ -397,7 +397,7 @@ namespace Petit.Runtime.Executor
             }
             return ExecExpr(expr.Left, env);
         }
-        ExprResult ExecExpr(BinaryExpression expr, Enviroment env)
+        ExprResult ExecExpr(BinaryExpression expr, Environment env)
         {
             // 短絡評価
             if (expr.Op == "&&")
@@ -583,7 +583,7 @@ namespace Petit.Runtime.Executor
             }
             return ExecExpr(expr.Left, env);
         }
-        ExprResult ExecExpr(TernaryExpression expr, Enviroment env)
+        ExprResult ExecExpr(TernaryExpression expr, Environment env)
         {
             if (expr.Op == "?" && expr.Op2 == ":")
             {
@@ -598,7 +598,7 @@ namespace Petit.Runtime.Executor
             }
             return default;
         }
-        ExprResult ExecExpr(InvocationExpression expr, Enviroment env)
+        ExprResult ExecExpr(InvocationExpression expr, Environment env)
         {
             Function func = ExecExpr(expr.Function, env).Result.ToFunction();
             var args = expr.Args
@@ -606,7 +606,7 @@ namespace Petit.Runtime.Executor
                 .ToList();
             return new() { Result = func.Invoke(args)};
         }
-        ExprResult ExecExpr(SubscriptExpression expr, Enviroment env)
+        ExprResult ExecExpr(SubscriptExpression expr, Environment env)
         {
             var collection = ExecExpr(expr.Collection, env);
             var index = ExecExpr(expr.Index, env);
@@ -650,16 +650,16 @@ namespace Petit.Runtime.Executor
         }
         struct IdentAddress : IAddress
         {
-            public Enviroment Enviroment;
+            public Environment Environment;
             public string Identifier;
 
             public Value Value
             {
-                get => Enviroment.Get(Identifier);
+                get => Environment.Get(Identifier);
             }
             public void Set(in Value value)
             {
-                Enviroment.Set(Identifier, value);
+                Environment.Set(Identifier, value);
             }
         }
         struct IndexAddress : IAddress

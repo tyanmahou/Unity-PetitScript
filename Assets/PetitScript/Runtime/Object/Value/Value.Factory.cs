@@ -122,12 +122,13 @@ namespace Petit.Runtime
                 return default;
             }
         }
-        Value(in Value other)
-        {
-            _type = other._type;
-            _value = other._value;
-            _reference = other._reference;
-        }
+        public static implicit operator Value(bool v) => Value.Of(v);
+        public static implicit operator Value(int v) => Value.Of(v);
+        public static implicit operator Value(float v) => Value.Of(v);
+        public static implicit operator Value(string v) => Value.Of(v);
+        public static implicit operator Value(char v) => Value.Of(v);
+        public static implicit operator Value(Function v) => Value.Of(v);
+
         Value(bool b)
         {
             _type = ValueType.Bool;

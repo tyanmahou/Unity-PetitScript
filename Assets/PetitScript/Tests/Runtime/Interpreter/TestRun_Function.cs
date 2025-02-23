@@ -1,5 +1,4 @@
-﻿using Mono.Cecil.Cil;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Petit.Runtime
 {
@@ -20,20 +19,15 @@ Add(1, 2 * 2)
         [Test]
         public void TestFuncBind()
         {
-            Enviroment env = Enviroment.New;
-            env.Set("Add", Function.Bind((a1, a2) =>
-            {
-                return a1 + a2;
-            }));
+            Environment env = Environment.New;
+            env["Add"] = Function.Bind((a1, a2) => a1 + a2);
             RunInt("Add(1, 2 * 2)", 5, env);
         }
         [Test]
         public void TestNamedArgs()
         {
             Interpreter interpreter = new();
-            interpreter.Enviroment.Set("Sub", Function.Bind(
-                (a, b) => a - b)
-                );
+            interpreter.Environment["Sub"] = Function.Bind((a, b) => a - b);
             {
                 var result = interpreter.Run("Sub(a: 1, b: 2)");
                 Assert.AreEqual(result, -1);
@@ -85,11 +79,10 @@ return fib(10);
         public void TestDefaultArgBind()
         {
             Interpreter interpreter = new();
-            interpreter.Enviroment.Set("Add",
+            interpreter.Environment["Add"] = 
                 Function.Bind((a, b) => a + b)
                 .SetDefaultValue(0, 1)
-                .SetDefaultValue(1, 2)
-                );
+                .SetDefaultValue(1, 2);
             {
                 var result = interpreter.Run("Add()");
                 Assert.AreEqual(result, 3);
@@ -119,8 +112,8 @@ myfunc(a);
                 Assert.AreEqual(result, 6);
             }
             {
-                Enviroment env = Enviroment.New;
-                env.Set("a", 5);
+                Environment env = Environment.New;
+                env["a"] = 5;
                 RunInt(code, 30, env);
             }
         }
