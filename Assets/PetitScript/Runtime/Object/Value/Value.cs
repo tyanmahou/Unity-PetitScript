@@ -175,7 +175,7 @@ namespace Petit.Runtime
                         return sb.ToString();
                     }
                 case ValueType.Function:
-                    return _reference.FuncValue?.ToString();
+                    return _reference.FuncValue?.ToString() ?? string.Empty;
             }
             return string.Empty;
         }

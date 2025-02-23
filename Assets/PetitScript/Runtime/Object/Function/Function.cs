@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Petit.Runtime
 {
@@ -9,8 +10,13 @@ namespace Petit.Runtime
     /// </summary>
     public partial class Function
     {
-        public Function(Func<IReadOnlyList<Value>, Value> func, params Argument[] parameters)
+        internal Function(
+            string name,
+            Func<IReadOnlyList<Value>, Value> func,
+            params Argument[] parameters
+            )
         {
+            _name = name ?? string.Empty;
             _func = func;
             _params = parameters;
         }
@@ -42,7 +48,7 @@ namespace Petit.Runtime
                         }
                     }
                 }
-                else 
+                else
                 {
                     // 1つでも名前付き引数がある
                     HashSet<int> useMap = args
@@ -122,7 +128,25 @@ namespace Petit.Runtime
             return SetArgument(index, new Argument(_params[index].Name, value));
         }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("fn ");
+            sb.Append(_name);
+            sb.Append('(');
+            for (int i = 0; i < _params.Length; ++i) 
+            {
+                if (i != 0)
+                {
+                    sb.Append(',');
+                }
+                sb.Append(_params[i].Name);
+            }
+            sb.Append(')');
+            return sb.ToString();
+        }
         internal IReadOnlyList<Argument> Parameters => _params;
+        readonly string _name;
         readonly Func<IReadOnlyList<Value>, Value> _func;
         readonly Argument[] _params;
     }

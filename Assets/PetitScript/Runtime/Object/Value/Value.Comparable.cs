@@ -20,77 +20,88 @@ namespace Petit.Runtime
             {
                 case (ValueType.Bool, ValueType.Bool):
                     return a._value.BoolValue.CompareTo(b._value.BoolValue);
+                case (ValueType.Bool, ValueType.Int):
+                    return a.ToInt().CompareTo(b._value.IntValue);
+                case (ValueType.Bool, ValueType.Float):
+                    return a.ToFloat().CompareTo(b._value.FloatValue);
+                case (ValueType.Bool, ValueType.Array):
+                    return Compare(a, CompareValue(b._reference.ArrayValue));
+
+                case (ValueType.Int, ValueType.Bool):
+                    return a._value.IntValue.CompareTo(b.ToInt());
                 case (ValueType.Int, ValueType.Int):
                     return a._value.IntValue.CompareTo(b._value.IntValue);
+                case (ValueType.Int, ValueType.Float):
+                    return a.ToFloat().CompareTo(b._value.FloatValue);
+                case (ValueType.Int, ValueType.Array):
+                    return Compare(a, CompareValue(b._reference.ArrayValue));
+
+                case (ValueType.Float, ValueType.Bool):
+                    return a._value.FloatValue.CompareTo(b.ToFloat());
+                case (ValueType.Float, ValueType.Int):
+                    return a._value.FloatValue.CompareTo(b.ToFloat());
                 case (ValueType.Float, ValueType.Float):
                     return a._value.FloatValue.CompareTo(b._value.FloatValue);
+                case (ValueType.Float, ValueType.Array):
+                    return Compare(a, CompareValue(b._reference.ArrayValue));
+
                 case (ValueType.String, ValueType.String):
                     return a._value.StringValue.CompareTo(b._value.StringValue);
-                case (ValueType.Array, ValueType.Array):
-                    return Compare(a._reference.ArrayValue, b._reference.ArrayValue);
+                case (ValueType.String, ValueType.Array):
+                    return a._value.StringValue.CompareTo(CompareString(b._reference.ArrayValue));
+
+                case (ValueType.Array, ValueType.Bool):
                 case (ValueType.Array, ValueType.Int):
                 case (ValueType.Array, ValueType.Float):
-                case (ValueType.Array, ValueType.Bool):
                     return Compare(CompareValue(a._reference.ArrayValue), b);
                 case (ValueType.Array, ValueType.String):
                     return CompareString(a._reference.ArrayValue).CompareTo(b._value.StringValue);
-                case (ValueType.Int, ValueType.Array):
-                case (ValueType.Float, ValueType.Array):
-                case (ValueType.Bool, ValueType.Array):
-                    return Compare(a, CompareValue(b._reference.ArrayValue));
-                case (ValueType.String, ValueType.Array):
-                    return a._value.StringValue.CompareTo(CompareString(b._reference.ArrayValue));
+                case (ValueType.Array, ValueType.Array):
+                    return Compare(a._reference.ArrayValue, b._reference.ArrayValue);
+
+                case (ValueType.Function, ValueType.Function):
+                    return a.ToString().CompareTo(b.ToString());
             }
-            return CompareNumeric(a, b);
+            if (TryCompareNumeric(a, b, out int comp))
+            {
+                return comp;
+            }
+            return a.ToString().CompareTo(b.ToString());
         }
-        static int CompareNumeric(in Value a, in Value b)
+        static bool TryCompareNumeric(in Value a, in Value b, out int result)
         {
-            bool stringCompare = false;
-            float aValue = 0.0f;
-            float bValue = 0.0f;
-            if (a.IsString)
+            bool isNumricA = a.TryGetNumeric(out float valueA);
+            bool isNumricB = b.TryGetNumeric(out float valueB);
+            if (isNumricA && isNumricB)
             {
-                if (bool.TryParse(a._value.StringValue, out bool bo))
+                result = valueA.CompareTo(valueB);
+                return true;
+            }
+            result = 0;
+            return false;
+        }
+        bool TryGetNumeric(out float num)
+        {
+            if (IsBool || IsInt || IsFloat)
+            {
+                num = ToFloat();
+                return true;
+            }
+            else if (IsString)
+            {
+                if (bool.TryParse(_value.StringValue, out bool b))
                 {
-                    aValue = bo ? 1.0f : 0.0f;
+                    num = b ? 1.0f : 0.0f;
+                    return true;
                 }
-                else if (float.TryParse(a._value.StringValue, out float f))
+                else if (float.TryParse(_value.StringValue, out float f))
                 {
-                    aValue = f;
-                }
-                else
-                {
-                    stringCompare = true;
+                    num = f;
+                    return true;
                 }
             }
-            else
-            {
-                aValue = a.ToFloat();
-            }
-            if (b.IsString)
-            {
-                if (bool.TryParse(b._value.StringValue, out bool bo))
-                {
-                    bValue = bo ? 1.0f : 0.0f;
-                }
-                else if (float.TryParse(b._value.StringValue, out float f))
-                {
-                    bValue = f;
-                }
-                else
-                {
-                    stringCompare = true;
-                }
-            }
-            else
-            {
-                bValue = b.ToFloat();
-            }
-            if (stringCompare)
-            {
-                return a.ToString().CompareTo(b.ToString());
-            }
-            return aValue.CompareTo(bValue);
+            num = 0;
+            return false;
         }
         static int Compare(in List<Value> a, in List<Value> b)
         {

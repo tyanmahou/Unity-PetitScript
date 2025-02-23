@@ -206,23 +206,27 @@ namespace Petit.Runtime.Executor
         }
         (Value, StatementCommand) ExecFunctionStatement(FunctionDeclaration function, Enviroment env)
         {
-            Function func = new(args =>
-            {
-                var parameters = function.Paramerters;
-                var newEnv = env.Stack();
-                for (int i = 0; i < parameters.Count; ++i)
+            Function func = new(
+                function.Identifier,
+                args =>
                 {
-                    Value arg = args[i];
-                    if (arg.IsInvalid)
+                    var parameters = function.Paramerters;
+                    var newEnv = env.Stack();
+                    for (int i = 0; i < parameters.Count; ++i)
                     {
-                        arg = ExecExpr(parameters[i].DefaultValue, newEnv);
+                        Value arg = args[i];
+                        if (arg.IsInvalid)
+                        {
+                            arg = ExecExpr(parameters[i].DefaultValue, newEnv);
+                        }
+                        newEnv.Set(parameters[i].Name, arg);
                     }
-                    newEnv.Set(parameters[i].Name, arg);
-                }
-                return ExecStatement(function.Statement, newEnv).Item1;
-            }, function.Paramerters.Select(p => new Argument(p.Name, (Func<Value>)null)).ToArray());
+                    return ExecStatement(function.Statement, newEnv).Item1;
+                },
+                function.Paramerters.Select(p => new Argument(p.Name, (Func<Value>)null)).ToArray()
+            );
             env.Set(function.Identifier, func);
-            return (Value.Invalid, StatementCommand.None);
+            return (Value.Of(func), StatementCommand.None);
         }
         ExprResult ExecExpr(IExpression expr, Enviroment env)
         {

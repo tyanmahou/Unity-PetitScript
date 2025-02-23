@@ -4,7 +4,47 @@ namespace Petit.Runtime
 {
     class TestValue_Comparable
 	{
-		[Test]
+        [Test]
+        public void TestCompareInt()
+        {
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of(1)), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of(0)), 0);
+            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of(-1)), 1);
+        }
+        [Test]
+        public void TestCompareFloat()
+        {
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of(1.0f)), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of(0.0f)), 0);
+            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of(-1.0f)), 1);
+        }
+        [Test]
+        public void TestCompareString()
+        {
+            Assert.AreEqual(Value.Of("aaa").CompareTo(Value.Of("bbb")), -1);
+            Assert.AreEqual(Value.Of("ccc").CompareTo(Value.Of("ccc")), 0);
+            Assert.AreEqual(Value.Of("bbb").CompareTo(Value.Of("aaa")), 1);
+
+            Assert.AreEqual(Value.Of("111").CompareTo(Value.Of("aaa")), -1);
+            Assert.AreEqual(Value.Of("aaa").CompareTo(Value.Of("111")), 1);
+        }
+
+        [Test]
+        public void TestCompareNumeric()
+        {
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of("1")), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of("0")), 0);
+            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of("-1")), 1);
+
+            Assert.AreEqual(Value.Of(-1).CompareTo(Value.Of("1.0")), -1);
+            Assert.AreEqual(Value.Of(0).CompareTo(Value.Of("0.0")), 0);
+            Assert.AreEqual(Value.Of(1).CompareTo(Value.Of("-1.0")), 1);
+
+            Assert.AreEqual(Value.Of("0").CompareTo(Value.Of("0.0")), -1);
+            Assert.AreEqual(Value.Of("0").CompareTo(Value.Of("0")), 0);
+            Assert.AreEqual(Value.Of("0.0").CompareTo(Value.Of("0")), 1);
+        }
+        [Test]
 		public void TestCompareNaN()
 		{
 			Assert.AreEqual(Value.Compare(Value.NaN, Value.NaN), 0);
@@ -36,7 +76,7 @@ namespace Petit.Runtime
             Assert.AreEqual(Value.Compare(Value.Inf, Value.NaN), 1);
         }
         [Test]
-        public void TestCompareArray_Premitive()
+        public void TestCompareArrayPremitive()
         {
             Assert.AreEqual(Value.Compare(Value.ArrayOf(9), Value.Of(10)), -1);
             Assert.AreEqual(Value.Compare(Value.ArrayOf(9), Value.Of(9)), 0);
@@ -52,6 +92,17 @@ namespace Petit.Runtime
             Assert.AreEqual(Value.Compare(Value.ArrayOf(float.NaN), Value.NaN), 0);
             Assert.AreEqual(Value.Compare(Value.ArrayOf(float.PositiveInfinity), Value.Inf), 0);
             Assert.AreEqual(Value.Compare(Value.ArrayOf(float.NegativeInfinity), -Value.Inf), 0);
+        }
+        static void A() { }
+        static void B() { }
+        [Test]
+        public void TestCompareFunction()
+        {
+            Assert.AreEqual(Value.Compare(Value.Of(Function.Bind(A)), Value.Of(Function.Bind(B))), -1);
+            Assert.AreEqual(Value.Compare(Value.Of(Function.Bind(A)), Value.Of(Function.Bind(A))), 0);
+            Assert.AreEqual(Value.Compare(Value.Of(Function.Bind(B)), Value.Of(Function.Bind(A))), 1);
+
+            Assert.AreEqual(Value.Compare(Value.Of(Function.Bind(A)), Value.Of("fn A()")), 0);
         }
     }
 }

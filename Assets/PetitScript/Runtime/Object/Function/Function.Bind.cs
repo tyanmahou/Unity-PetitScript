@@ -10,95 +10,141 @@ namespace Petit.Runtime
     {
         public static Function Bind(Action action)
         {
-            return new Function(args =>
-            {
-                action?.Invoke();
-                return Value.Invalid;
-            });
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke();
+                    return Value.Invalid;
+                }
+            );
         }
         public static Function Bind(Action<Value> action)
         {
-            return new Function(args =>
-            {
-                action?.Invoke(args[0]);
-                return Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0]);
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         public static Function Bind(Action<Value, Value> action)
         {
-            return new Function(args =>
-            {
-                action?.Invoke(args[0], args[1]);
-                return Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0], args[1]);
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         public static Function Bind(Action<Value, Value, Value> action)
         {
-            return new Function(args =>
-            {
-                action?.Invoke(args[0], args[1], args[2]);
-                return Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0], args[1], args[2]);
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         public static Function Bind(Action<Value, Value, Value, Value> action)
         {
-            return new Function(args =>
-            {
-                action?.Invoke(args[0], args[1], args[2], args[3]);
-                return Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0], args[1], args[2], args[3]);
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         public static Function Bind(Action<Value, Value, Value, Value, Value> action)
         {
-            return new Function(args =>
-            {
-                action?.Invoke(args[0], args[1], args[2], args[3], args[4]);
-                return Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0], args[1], args[2], args[3], args[4]);
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
 
         public static Function Bind(Func<Value> action)
         {
-            return new Function(args =>
-            {
-                return action?.Invoke() ?? Value.Invalid;
-            });
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    return action?.Invoke() ?? Value.Invalid;
+                }
+            );
         }
         public static Function Bind(Func<Value, Value> action)
         {
-            return new Function(args =>
-            {
-                action?.Invoke(args[0]);
-                return Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0]);
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         public static Function Bind(Func<Value, Value, Value> action)
         {
-            return new Function(args =>
-            {
-                return action?.Invoke(args[0], args[1]) ?? Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    return action?.Invoke(args[0], args[1]) ?? Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         public static Function Bind(Func<Value, Value, Value, Value> action)
         {
-            return new Function(args =>
-            {
-                return action?.Invoke(args[0], args[1], args[2]) ?? Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    return action?.Invoke(args[0], args[1], args[2]) ?? Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         public static Function Bind(Func<Value, Value, Value, Value, Value> action)
         {
-            return new Function(args =>
-            {
-                return action?.Invoke(args[0], args[1], args[2], args[3]) ?? Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name, 
+                args =>
+                {
+                    return action?.Invoke(args[0], args[1], args[2], args[3]) ?? Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         public static Function Bind(Func<Value, Value, Value, Value, Value, Value> action)
         {
-            return new Function(args =>
-            {                
-                return action?.Invoke(args[0], args[1], args[2], args[3], args[4]) ?? Value.Invalid;
-            }, GetArgs(action));
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    return action?.Invoke(args[0], args[1], args[2], args[3], args[4]) ?? Value.Invalid;
+                },
+                GetArgs(action)
+            );
         }
         internal static Argument[] GetArgs(Delegate del)
         {
