@@ -27,32 +27,32 @@ case  4:
 return text;
 ";
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = 0;
                 RunString(code, "0123", env);
             }
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = 1;
                 RunString(code, "123", env);
             }
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = 2;
                 RunString(code, "23", env);
             }
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = 3;
                 RunString(code, "23", env);
             }
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = 4;
                 RunString(code, "4", env);
             }
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = 5;
                 RunString(code, "d4", env);
             }

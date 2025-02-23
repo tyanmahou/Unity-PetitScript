@@ -23,17 +23,17 @@ else
 }
 ";
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = 1;
                 RunString(code, "plus", env);
             }
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = 0;
                 RunString(code, "zero", env);
             }
             {
-                var env = Environment.New;
+                var env = Environment.New();
                 env["a"] = -1;
                 RunString(code, "minus", env);
             }

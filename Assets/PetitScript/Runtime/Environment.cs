@@ -5,7 +5,7 @@ namespace Petit.Runtime
     public class Environment
     {
         public static Environment Global => _global;
-        public static Environment New => new(Global);
+        public static Environment New() => new(Global);
 
         static Environment _global = new();
         Environment()

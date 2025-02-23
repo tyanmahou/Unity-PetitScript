@@ -19,7 +19,7 @@ Add(1, 2 * 2)
         [Test]
         public void TestFuncBind()
         {
-            Environment env = Environment.New;
+            Environment env = Environment.New();
             env["Add"] = Function.Bind((a1, a2) => a1 + a2);
             RunInt("Add(1, 2 * 2)", 5, env);
         }
@@ -112,7 +112,7 @@ myfunc(a);
                 Assert.AreEqual(result, 6);
             }
             {
-                Environment env = Environment.New;
+                Environment env = Environment.New();
                 env["a"] = 5;
                 RunInt(code, 30, env);
             }
