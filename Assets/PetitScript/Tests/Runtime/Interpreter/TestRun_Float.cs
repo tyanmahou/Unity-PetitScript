@@ -22,10 +22,10 @@ namespace Petit.Runtime
         [Test]
         public void TestZeroDivide()
         {
-            //RunFloat("1.0 / 0.0", float.PositiveInfinity);
-            //RunFloat("0.0 / 0.0", float.NaN);
-            //RunFloat("-1.0 / 0.0", float.NegativeInfinity);
-            //RunNaN("1.0 % 0.0");
+            RunFloat("1.0 / 0.0", float.PositiveInfinity);
+            RunFloat("0.0 / 0.0", float.NaN);
+            RunFloat("-1.0 / 0.0", float.NegativeInfinity);
+            RunNaN("1.0 % 0.0");
         }
     }
 }

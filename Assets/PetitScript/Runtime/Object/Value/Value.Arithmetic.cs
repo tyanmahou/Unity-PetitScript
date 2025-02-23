@@ -86,244 +86,196 @@ namespace Petit.Runtime
         }
         public static Value operator +(in Value a, in Value b)
         {
-            ValueType opType = OpValueGet(a, b,
+            switch((a._type, b._type))
+            {
+                case (ValueType.String, ValueType.String):
+                    return a._value.StringValue + b._value.StringValue;
+                case (ValueType.String, _):
+                    return a._value.StringValue + b.ToString();
+                case (_, ValueType.String):
+                    return a.ToString() + b._value.StringValue;
+                case (ValueType.Array, ValueType.Array):
+                    return CompareString(a._reference.ArrayValue) + CompareString(b._reference.ArrayValue);
+                case (ValueType.Array, _):
+                    return CompareString(a._reference.ArrayValue) + b.ToString();
+                case (_, ValueType.Array):
+                    return a.ToString() + CompareString(b._reference.ArrayValue);
+            }
+            ValueType opType = TryGetArithmeticType(a, b,
                 out int aiValue,
                 out int biValue,
                 out float afValue,
-                out float bfValue,
-                prioritizeString: true
+                out float bfValue
                 );
-            if (opType == ValueType.Int)
+            switch (opType)
             {
-                return Value.Of(aiValue + biValue);
+                case ValueType.Int:
+                    return aiValue + biValue;
+                case ValueType.Float:
+                    return afValue + bfValue;
             }
-            else if (opType == ValueType.Float)
-            {
-                return Value.Of(afValue + bfValue);
-            }
-            else if (opType == ValueType.String)
-            {
-                return Value.Of(a.ToString() + b.ToString());
-            }
-            return Value.Invalid;
+            return a.ToString() + b.ToString();
         }
         public static Value operator -(in Value a, in Value b)
         {
-            ValueType opType = OpValueGet(a, b,
+            ValueType opType = TryGetArithmeticType(a, b,
                 out int aiValue,
                 out int biValue,
                 out float afValue,
                 out float bfValue
                 );
-            if (opType == ValueType.Int)
+            switch (opType)
             {
-                return Value.Of(aiValue - biValue);
+                case ValueType.Int:
+                    return aiValue - biValue;
+                case ValueType.Float:
+                    return afValue - bfValue;
             }
-            else if (opType == ValueType.Float)
-            {
-                return Value.Of(afValue - bfValue);
-            }
-            else if (opType == ValueType.String)
-            {
-                return Value.NaN;
-            }
-            return Value.Invalid;
+            return Value.NaN;
         }
         public static Value operator *(in Value a, in Value b)
         {
-            ValueType opType = OpValueGet(a, b,
+            ValueType opType = TryGetArithmeticType(a, b,
                 out int aiValue,
                 out int biValue,
                 out float afValue,
                 out float bfValue
                 );
-            if (opType == ValueType.Int)
+            switch (opType)
             {
-                return Value.Of(aiValue * biValue);
+                case ValueType.Int:
+                    return aiValue * biValue;
+                case ValueType.Float:
+                    return afValue * bfValue;
             }
-            else if (opType == ValueType.Float)
-            {
-                return Value.Of(afValue * bfValue);
-            }
-            else if (opType == ValueType.String)
-            {
-                return Value.NaN;
-            }
-            return Value.Invalid;
+            return Value.NaN;
         }
         public static Value operator /(in Value a, in Value b)
         {
-            ValueType opType = OpValueGet(a, b,
+            ValueType opType = TryGetArithmeticType(a, b,
                 out int aiValue,
                 out int biValue,
                 out float afValue,
                 out float bfValue
                 );
-            if (opType == ValueType.Int)
+            switch (opType)
             {
-                if (biValue == 0)
-                {
-                    return Value.Of(aiValue / (float)biValue);
-                }
-                return Value.Of(aiValue / biValue);
+                case ValueType.Int when biValue != 0:
+                    return aiValue / biValue;
+                case ValueType.Int when biValue == 0:
+                case ValueType.Float:
+                    return afValue / bfValue;
             }
-            else if (opType == ValueType.Float)
-            {
-                return Value.Of(afValue / bfValue);
-            }
-            else if (opType == ValueType.String)
-            {
-                return Value.NaN;
-            }
-            return Value.Invalid;
+            return Value.NaN;
         }
         public static Value operator %(in Value a, in Value b)
         {
-            ValueType opType = OpValueGet(a, b,
+            ValueType opType = TryGetArithmeticType(a, b,
                 out int aiValue,
                 out int biValue,
                 out float afValue,
                 out float bfValue
                 );
-            if (opType == ValueType.Int)
+            switch (opType)
             {
-                if (biValue == 0)
-                {
-                    return Value.Of(aiValue / (float)biValue);
-                }
-
-                return Value.Of(aiValue % biValue);
+                case ValueType.Int when biValue != 0:
+                    return aiValue % biValue;
+                case ValueType.Int when biValue == 0:
+                case ValueType.Float:
+                    return afValue % bfValue;
             }
-            else if (opType == ValueType.Float)
-            {
-                return Value.Of(afValue % bfValue);
-            }
-            else if (opType == ValueType.String)
-            {
-                return Value.NaN;
-            }
-            return Value.Invalid;
+            return Value.NaN;
         }
-        private static ValueType OpValueGet(
-           in Value a,
-           in Value b,
-           out int aiValue,
-           out int biValue,
-           out float afValue,
-           out float bfValue,
-           bool prioritizeString = false
-           )
+
+        private static ValueType TryGetArithmeticType(
+            in Value a, 
+            in Value b,
+            out int aiValue,
+            out int biValue,
+            out float afValue,
+            out float bfValue
+            )
         {
-            bool stringOp = false;
-            bool floatOp = false;
-            aiValue = 0;
-            biValue = 0;
-            afValue = 0.0f;
-            bfValue = 0.0f;
-
-            if (a.IsInvalid && b.IsInvalid)
+            ValueType aNumricType = a.TryGetNumericWithType(out aiValue, out afValue);
+            ValueType bNumricType = b.TryGetNumericWithType(out biValue, out bfValue);
+            switch ((aNumricType, bNumricType))
             {
-                return ValueType.Invalid;
+                case (ValueType.Int, ValueType.Int):
+                    return ValueType.Int;
+                case (ValueType.Int, ValueType.Float):
+                    return ValueType.Float;
+                case (ValueType.Float, ValueType.Int):
+                    return ValueType.Float;
+                case (ValueType.Float, ValueType.Float):
+                    return ValueType.Float;
             }
-            if (prioritizeString && (a.IsString || b.IsString))
-            {
-                // 文字列優先
-                stringOp = true;
-            }
-            if (prioritizeString && (a.IsArray || b.IsArray))
-            {
-                // 文字列優先
-                stringOp = true;
-            }
-            else if (a.IsInvalid && b.IsString)
-            {
-                // aだけ無効
-                stringOp = true;
-            }
-            else if (a.IsString && b.IsInvalid)
-            {
-                // bだけ無効
-                stringOp = true;
-            }
-            if (stringOp)
-            {
-                // 既に文字列結合ならパース処理スキップ
-                return ValueType.String;
-            }
-            if (a.IsString)
-            {
-                if (bool.TryParse(a._value.StringValue, out bool bo))
-                {
-                    aiValue = bo ? 1 : 0;
-                    afValue = aiValue;
-                }
-                else if (int.TryParse(a._value.StringValue, out int i))
-                {
-                    aiValue = i;
-                    afValue = aiValue;
-                }
-                else if (float.TryParse(a._value.StringValue, out float f))
-                {
-                    floatOp = true;
-                    afValue = f;
-                }
-                else
-                {
-                    stringOp = true;
-                }
-            }
-            else if (a.IsFloat)
-            {
-                floatOp = true;
-                afValue = a.ToFloat();
-            }
-            else
-            {
-                aiValue = a.ToInt();
-                afValue = aiValue;
-            }
-            if (b.IsString)
-            {
-                if (bool.TryParse(b._value.StringValue, out bool bo))
-                {
-                    biValue = bo ? 1 : 0;
-                    bfValue = biValue;
-                }
-                else if (int.TryParse(b._value.StringValue, out int i))
-                {
-                    biValue = i;
-                    bfValue = biValue;
-                }
-                else if (float.TryParse(b._value.StringValue, out float f))
-                {
-                    floatOp = true;
-                    bfValue = f;
-                }
-                else
-                {
-                    stringOp = true;
-                }
-            }
-            else if (b.IsFloat)
-            {
-                floatOp = true;
-                bfValue = b.ToFloat();
-            }
-            else
-            {
-                biValue = b.ToInt();
-                bfValue = biValue;
-            }
-            if (stringOp)
-            {
-                return ValueType.String;
-            }
-            if (floatOp)
-            {
-                return ValueType.Float;
-            }
-            return ValueType.Int;
+            return ValueType.Invalid;
         }
-
+        bool TryGetNumeric(out float num)
+        {
+            if (IsBool || IsInt || IsFloat)
+            {
+                num = ToFloat();
+                return true;
+            }
+            else if (IsString)
+            {
+                if (bool.TryParse(_value.StringValue, out bool b))
+                {
+                    num = b ? 1.0f : 0.0f;
+                    return true;
+                }
+                else if (float.TryParse(_value.StringValue, out float f))
+                {
+                    num = f;
+                    return true;
+                }
+            }
+            num = 0;
+            return false;
+        }
+        ValueType TryGetNumericWithType(out int intValue, out float floatValue)
+        {
+            intValue = 0;
+            floatValue = 0.0f;
+            switch (_type)
+            {
+                case ValueType.Bool:
+                    intValue = ToInt();
+                    floatValue = (float)intValue;
+                    return ValueType.Int;
+                case ValueType.Int:
+                    intValue = _value.IntValue;
+                    floatValue = (float)intValue;
+                    return ValueType.Int;
+                case ValueType.Float:
+                    floatValue = _value.FloatValue;
+                    intValue = (int)floatValue;
+                    return ValueType.Float;
+                case ValueType.String:
+                    if (bool.TryParse(_value.StringValue, out bool bo))
+                    {
+                        intValue = bo ? 1 : 0;
+                        floatValue = (float)intValue;
+                        return ValueType.Int;
+                    }
+                    else if (int.TryParse(_value.StringValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i))
+                    {
+                        intValue = i;
+                        floatValue = (float)intValue;
+                        return ValueType.Int;
+                    }
+                    else if (float.TryParse(_value.StringValue, NumberStyles.Float, CultureInfo.InvariantCulture, out float f))
+                    {
+                        floatValue = f;
+                        intValue = (int)f;
+                        return ValueType.Float;
+                    }
+                    break;
+                case ValueType.Array:
+                    return CompareValue(_reference.ArrayValue).TryGetNumericWithType(out intValue, out floatValue);
+            }
+            return ValueType.Invalid;
+        }
     }
 }

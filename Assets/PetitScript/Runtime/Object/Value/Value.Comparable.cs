@@ -85,29 +85,6 @@ namespace Petit.Runtime
             result = 0;
             return false;
         }
-        bool TryGetNumeric(out float num)
-        {
-            if (IsBool || IsInt || IsFloat)
-            {
-                num = ToFloat();
-                return true;
-            }
-            else if (IsString)
-            {
-                if (bool.TryParse(_value.StringValue, out bool b))
-                {
-                    num = b ? 1.0f : 0.0f;
-                    return true;
-                }
-                else if (float.TryParse(_value.StringValue, out float f))
-                {
-                    num = f;
-                    return true;
-                }
-            }
-            num = 0;
-            return false;
-        }
         static int Compare(in List<Value> a, in List<Value> b)
         {
             int min = Math.Min(a.Count, b.Count);
