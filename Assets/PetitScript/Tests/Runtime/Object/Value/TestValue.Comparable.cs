@@ -96,8 +96,8 @@ namespace Petit.Runtime
             Assert.AreEqual(Value.Compare(Value.ArrayOf(float.PositiveInfinity), Value.Inf), 0);
             Assert.AreEqual(Value.Compare(Value.ArrayOf(float.NegativeInfinity), -Value.Inf), 0);
         }
-        static void A() { }
-        static void B() { }
+        static Value A() => 1;
+        static Value B() => 2;
         [Test]
         public void TestCompareFunction()
         {
@@ -105,7 +105,7 @@ namespace Petit.Runtime
             Assert.AreEqual(Value.Compare(Value.Of(Function.Bind(A)), Value.Of(Function.Bind(A))), 0);
             Assert.AreEqual(Value.Compare(Value.Of(Function.Bind(B)), Value.Of(Function.Bind(A))), 1);
 
-            Assert.AreEqual(Value.Compare(Value.Of(Function.Bind(A)), Value.Of("fn A()")), 0);
+            Assert.AreEqual(Value.Compare(Value.Of(Function.Bind(A)), Value.Of("1")), 0);
         }
     }
 }

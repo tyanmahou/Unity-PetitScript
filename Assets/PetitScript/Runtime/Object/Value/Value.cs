@@ -109,7 +109,7 @@ namespace Petit.Runtime
                         return _reference.ArrayValue[0].ToInt();
                     }
                 case ValueType.Function:
-                    return _reference.FuncValue != null ? 1 : 0;
+                    return (_reference.FuncValue?.Invoke() ?? Value.Invalid).ToInt();
             }
             return 0;
         }
@@ -139,7 +139,7 @@ namespace Petit.Runtime
                         return _reference.ArrayValue[0].ToFloat();
                     }
                 case ValueType.Function:
-                    return _reference.FuncValue != null ? 1.0f : 0.0f;
+                    return (_reference.FuncValue?.Invoke() ?? Value.Invalid).ToFloat();
             }
             return 0;
         }
@@ -175,7 +175,7 @@ namespace Petit.Runtime
                         return sb.ToString();
                     }
                 case ValueType.Function:
-                    return _reference.FuncValue?.ToString() ?? string.Empty;
+                    return (_reference.FuncValue?.Invoke() ?? Value.Invalid).ToString();
             }
             return string.Empty;
         }
@@ -194,7 +194,7 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return _reference.ArrayValue;
                 case ValueType.Function:
-                    return new List<Value>() { this };
+                    return (_reference.FuncValue?.Invoke() ?? Value.Invalid).ToArray();
             }
             return new List<Value>();
         }

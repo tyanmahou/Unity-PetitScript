@@ -65,7 +65,7 @@ namespace Petit.Runtime
                     return Compare(a._reference.ArrayValue, b._reference.ArrayValue);
 
                 case (ValueType.Function, ValueType.Function):
-                    return a.ToString().CompareTo(b.ToString());
+                    return (a._reference.FuncValue?.Invoke() ?? Value.Invalid).CompareTo((b._reference.FuncValue?.Invoke() ?? Value.Invalid));
             }
             if (TryCompareNumeric(a, b, out int comp))
             {

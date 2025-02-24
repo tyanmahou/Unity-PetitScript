@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 
 namespace Petit.Runtime
 {
@@ -42,9 +43,10 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return +CompareValue(a._reference.ArrayValue);
                 case ValueType.Function:
-                    return Value.NaN;
+                    var funcResult = a._reference.FuncValue?.Invoke() ?? Value.Invalid;
+                    return +funcResult;
             }
-            return a;
+            return Value.NaN;
         }
         public static Value operator -(in Value a)
         {
@@ -80,9 +82,10 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return -CompareValue(a._reference.ArrayValue);
                 case ValueType.Function:
-                    return Value.NaN;
+                    var funcResult = a._reference.FuncValue?.Invoke() ?? Value.Invalid;
+                    return -funcResult;
             }
-            return a;
+            return Value.NaN;
         }
         public static Value operator +(in Value a, in Value b)
         {
@@ -100,8 +103,6 @@ namespace Petit.Runtime
                     return CompareString(a._reference.ArrayValue) + b.ToString();
                 case (_, ValueType.Array):
                     return a.ToString() + CompareString(b._reference.ArrayValue);
-                case (ValueType.Function, ValueType.Function):
-                    return a._reference.FuncValue.Composite(b._reference.FuncValue);
             }
             ValueType opType = TryGetArithmeticType(a, b,
                 out int aiValue,
@@ -233,6 +234,11 @@ namespace Petit.Runtime
                     return true;
                 }
             }
+            else if (IsFunction)
+            {
+                var funcResult = _reference.FuncValue?.Invoke() ?? Value.Invalid;
+                return funcResult.TryGetNumeric(out num);
+            }
             num = 0;
             return false;
         }
@@ -276,6 +282,11 @@ namespace Petit.Runtime
                     break;
                 case ValueType.Array:
                     return CompareValue(_reference.ArrayValue).TryGetNumericWithType(out intValue, out floatValue);
+                case ValueType.Function:
+                    {
+                        var funcResult = _reference.FuncValue?.Invoke() ?? Value.Invalid;
+                        return funcResult.TryGetNumericWithType(out intValue, out floatValue);
+                    }
             }
             return ValueType.Invalid;
         }

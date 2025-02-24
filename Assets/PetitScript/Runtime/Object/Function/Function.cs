@@ -20,6 +20,10 @@ namespace Petit.Runtime
             _func = func;
             _params = parameters;
         }
+        public Value Invoke()
+        {
+            return Invoke(new List<Value>());
+        }
         public Value Invoke(params Argument[] args)
         {
             return Invoke(args as IReadOnlyList<Argument>);
