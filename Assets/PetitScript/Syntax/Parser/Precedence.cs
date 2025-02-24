@@ -44,6 +44,7 @@
                 case TokenType.Dec:
                 case TokenType.LParen:   // Function call
                 case TokenType.LBracket: // Subscript
+                case TokenType.Dot:      // Member
                     return Precedence.Dot;
 
                 case TokenType.Mul:

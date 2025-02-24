@@ -485,6 +485,7 @@ namespace Petit.Syntax.Parser
                         return ParseInvocationExpression;
                     case TokenType.LBracket:
                         return ParseSubscriptExpression;
+                    case TokenType.Dot:
 
                     case TokenType.Add:
                     case TokenType.Sub:

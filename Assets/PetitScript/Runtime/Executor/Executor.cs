@@ -399,8 +399,11 @@ namespace Petit.Runtime.Executor
         }
         ExprResult ExecExpr(BinaryExpression expr, Environment env)
         {
-            // 短絡評価
-            if (expr.Op == "&&")
+            if (expr.Op == ".")
+            {
+                return new(ExecExpr(expr.Right, env).Result.ToFunction().Partial(ExecExpr(expr.Left, env).Result));
+            }
+            else if (expr.Op == "&&")
             {
                 return new(ExecExpr(expr.Left, env).Result && ExecExpr(expr.Right, env).Result);
             }
