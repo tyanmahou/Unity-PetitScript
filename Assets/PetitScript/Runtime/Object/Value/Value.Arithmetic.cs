@@ -100,6 +100,8 @@ namespace Petit.Runtime
                     return CompareString(a._reference.ArrayValue) + b.ToString();
                 case (_, ValueType.Array):
                     return a.ToString() + CompareString(b._reference.ArrayValue);
+                case (ValueType.Function, ValueType.Function):
+                    return a._reference.FuncValue.Composite(b._reference.FuncValue);
             }
             ValueType opType = TryGetArithmeticType(a, b,
                 out int aiValue,

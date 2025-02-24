@@ -128,6 +128,22 @@ namespace Petit.Runtime
             return SetArgument(index, new Argument(_params[index].Name, value));
         }
 
+        /// <summary>
+        /// 関数合成
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public Function Composite(Function other)
+        {
+            return new Function(
+                $"{this._name}.{other._name}",
+                args =>
+                {
+                    return Invoke(new List<Argument>() { new Argument(string.Empty, other.Invoke(args))});
+                },
+                other._params
+            );
+        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
