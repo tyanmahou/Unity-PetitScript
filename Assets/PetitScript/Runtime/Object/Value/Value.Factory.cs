@@ -143,28 +143,24 @@ namespace Petit.Runtime
             _type = ValueType.Bool;
             _value = default;
             _value.BoolValue = b;
-            _reference = default;
         }
         Value(int i)
         {
             _type = ValueType.Int;
             _value = default;
             _value.IntValue = i;
-            _reference = default;
         }
         Value(float f)
         {
             _type = ValueType.Float;
             _value = default;
             _value.FloatValue = f;
-            _reference = default;
         }
         Value(string s)
         {
             _type = ValueType.String;
             _value = default;
             _value.StringValue = s;
-            _reference = default;
         }
         Value(char c)
             :this(c.ToString())
@@ -174,15 +170,13 @@ namespace Petit.Runtime
         {
             _type = ValueType.Function;
             _value = default;
-            _reference = default;
-            _reference.FuncValue = func ?? Function.Empty;
+            _value.FuncValue = func ?? Function.Empty;
         }
         Value(IEnumerable<Value> collection)
         {
             _type = ValueType.Array;
             _value = default;
-            _reference = default;
-            _reference.ArrayValue = collection.ToList();
+            _value.ArrayValue = collection.ToList();
         }
         Value(IEnumerable<object> collection)
             :this(collection.Select(Value.Of))
@@ -192,11 +186,10 @@ namespace Petit.Runtime
         {
             _type = ValueType.Array;
             _value = default;
-            _reference = default;
-            _reference.ArrayValue = new List<Value>();
+            _value.ArrayValue = new List<Value>();
             foreach (object item in collection)
             {
-                _reference.ArrayValue.Add(Value.Of(item));
+                _value.ArrayValue.Add(Value.Of(item));
             }
         }
     }

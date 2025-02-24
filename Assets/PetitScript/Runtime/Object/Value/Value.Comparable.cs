@@ -63,7 +63,7 @@ namespace Petit.Runtime
                 case (ValueType.Bool, ValueType.Float):
                     return a.ToFloat().CompareTo(b._value.FloatValue);
                 case (ValueType.Bool, ValueType.Array):
-                    return Compare(a, CompareValue(b._reference.ArrayValue));
+                    return Compare(a, CompareValue(b._value.ArrayValue));
 
                 case (ValueType.Int, ValueType.Bool):
                     return a._value.IntValue.CompareTo(b.ToInt());
@@ -72,7 +72,7 @@ namespace Petit.Runtime
                 case (ValueType.Int, ValueType.Float):
                     return a.ToFloat().CompareTo(b._value.FloatValue);
                 case (ValueType.Int, ValueType.Array):
-                    return Compare(a, CompareValue(b._reference.ArrayValue));
+                    return Compare(a, CompareValue(b._value.ArrayValue));
 
                 case (ValueType.Float, ValueType.Bool):
                     return a._value.FloatValue.CompareTo(b.ToFloat());
@@ -81,24 +81,24 @@ namespace Petit.Runtime
                 case (ValueType.Float, ValueType.Float):
                     return a._value.FloatValue.CompareTo(b._value.FloatValue);
                 case (ValueType.Float, ValueType.Array):
-                    return Compare(a, CompareValue(b._reference.ArrayValue));
+                    return Compare(a, CompareValue(b._value.ArrayValue));
 
                 case (ValueType.String, ValueType.String):
                     return a._value.StringValue.CompareTo(b._value.StringValue);
                 case (ValueType.String, ValueType.Array):
-                    return a._value.StringValue.CompareTo(CompareString(b._reference.ArrayValue));
+                    return a._value.StringValue.CompareTo(CompareString(b._value.ArrayValue));
 
                 case (ValueType.Array, ValueType.Bool):
                 case (ValueType.Array, ValueType.Int):
                 case (ValueType.Array, ValueType.Float):
-                    return Compare(CompareValue(a._reference.ArrayValue), b);
+                    return Compare(CompareValue(a._value.ArrayValue), b);
                 case (ValueType.Array, ValueType.String):
-                    return CompareString(a._reference.ArrayValue).CompareTo(b._value.StringValue);
+                    return CompareString(a._value.ArrayValue).CompareTo(b._value.StringValue);
                 case (ValueType.Array, ValueType.Array):
-                    return Compare(a._reference.ArrayValue, b._reference.ArrayValue);
+                    return Compare(a._value.ArrayValue, b._value.ArrayValue);
 
                 case (ValueType.Function, ValueType.Function):
-                    return a._reference.FuncValue.Invoke().CompareTo(b._reference.FuncValue.Invoke());
+                    return a._value.FuncValue.Invoke().CompareTo(b._value.FuncValue.Invoke());
             }
             if (TryCompareNumeric(a, b, out int comp))
             {
@@ -135,7 +135,7 @@ namespace Petit.Runtime
         {
             if (v.IsArray)
             {
-                return CompareString(v._reference.ArrayValue);
+                return CompareString(v._value.ArrayValue);
             }
             return v.ToString();
         }

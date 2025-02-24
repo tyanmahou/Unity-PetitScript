@@ -41,9 +41,9 @@ namespace Petit.Runtime
                         return Value.NaN;
                     }
                 case ValueType.Array:
-                    return +CompareValue(a._reference.ArrayValue);
+                    return +CompareValue(a._value.ArrayValue);
                 case ValueType.Function:
-                    return +a._reference.FuncValue.Invoke();
+                    return +a._value.FuncValue.Invoke();
             }
             return Value.NaN;
         }
@@ -79,9 +79,9 @@ namespace Petit.Runtime
                         return Value.NaN;
                     }
                 case ValueType.Array:
-                    return -CompareValue(a._reference.ArrayValue);
+                    return -CompareValue(a._value.ArrayValue);
                 case ValueType.Function:
-                    return -a._reference.FuncValue.Invoke();
+                    return -a._value.FuncValue.Invoke();
             }
             return Value.NaN;
         }
@@ -96,11 +96,11 @@ namespace Petit.Runtime
                 case (_, ValueType.String):
                     return a.ToString() + b._value.StringValue;
                 case (ValueType.Array, ValueType.Array):
-                    return CompareString(a._reference.ArrayValue) + CompareString(b._reference.ArrayValue);
+                    return CompareString(a._value.ArrayValue) + CompareString(b._value.ArrayValue);
                 case (ValueType.Array, _):
-                    return CompareString(a._reference.ArrayValue) + b.ToString();
+                    return CompareString(a._value.ArrayValue) + b.ToString();
                 case (_, ValueType.Array):
-                    return a.ToString() + CompareString(b._reference.ArrayValue);
+                    return a.ToString() + CompareString(b._value.ArrayValue);
             }
             ValueType opType = TryGetArithmeticType(a, b,
                 out int aiValue,
@@ -234,7 +234,7 @@ namespace Petit.Runtime
             }
             else if (IsFunction)
             {
-                return _reference.FuncValue.Invoke().TryGetNumeric(out num);
+                return _value.FuncValue.Invoke().TryGetNumeric(out num);
             }
             num = 0;
             return false;
@@ -278,9 +278,9 @@ namespace Petit.Runtime
                     }
                     break;
                 case ValueType.Array:
-                    return CompareValue(_reference.ArrayValue).TryGetNumericWithType(out intValue, out floatValue);
+                    return CompareValue(_value.ArrayValue).TryGetNumericWithType(out intValue, out floatValue);
                 case ValueType.Function:
-                    return _reference.FuncValue.Invoke().TryGetNumericWithType(out intValue, out floatValue);
+                    return _value.FuncValue.Invoke().TryGetNumericWithType(out intValue, out floatValue);
             }
             return ValueType.Invalid;
         }

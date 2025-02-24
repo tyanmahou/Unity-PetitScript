@@ -46,20 +46,20 @@ namespace Petit.Runtime
                 case ValueType.String:
                     return _value.StringValue == other._value.StringValue;
                 case ValueType.Array:
-                    if (_reference.ArrayValue.Count != other._reference.ArrayValue.Count)
+                    if (_value.ArrayValue.Count != other._value.ArrayValue.Count)
                     {
                         return false;
                     }
-                    for (int index = 0; index < _reference.ArrayValue.Count; ++index)
+                    for (int index = 0; index < _value.ArrayValue.Count; ++index)
                     {
-                        if (!_reference.ArrayValue[index].Equals(other._reference.ArrayValue[index]))
+                        if (!_value.ArrayValue[index].Equals(other._value.ArrayValue[index]))
                         {
                             return false;
                         }
                     }
                     return true;
                 case ValueType.Function:
-                    return _reference.FuncValue == other._reference.FuncValue;
+                    return _value.FuncValue == other._value.FuncValue;
             }
             return false;
         }
@@ -145,20 +145,20 @@ namespace Petit.Runtime
                     return _value.StringValue == other.ToString();
                 case ValueType.Array:
                     var otherList = other.ToArray();
-                    if (_reference.ArrayValue.Count != otherList.Count)
+                    if (_value.ArrayValue.Count != otherList.Count)
                     {
                         return false;
                     }
-                    for (int index = 0; index < _reference.ArrayValue.Count; ++index)
+                    for (int index = 0; index < _value.ArrayValue.Count; ++index)
                     {
-                        if (!_reference.ArrayValue[index].EqualsLooseSingly(otherList[index]))
+                        if (!_value.ArrayValue[index].EqualsLooseSingly(otherList[index]))
                         {
                             return false;
                         }
                     }
                     return true;
                 case ValueType.Function:
-                    return _reference.FuncValue == other.ToFunction();
+                    return _value.FuncValue == other.ToFunction();
             }
             return _type == other._type;
         }

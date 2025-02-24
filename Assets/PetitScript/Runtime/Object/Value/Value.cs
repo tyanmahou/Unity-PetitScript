@@ -76,9 +76,9 @@ namespace Petit.Runtime
                 case ValueType.String:
                     return !string.IsNullOrEmpty(_value.StringValue);
                 case ValueType.Array:
-                    return _reference.ArrayValue.Count > 0;
+                    return _value.ArrayValue.Count > 0;
                 case ValueType.Function:
-                    return _reference.FuncValue.Invoke().ToBool();
+                    return _value.FuncValue.Invoke().ToBool();
             }
             return false;
         }
@@ -99,16 +99,16 @@ namespace Petit.Runtime
                     }
                     break;
                 case ValueType.Array:
-                    if (_reference.ArrayValue.Count == 0)
+                    if (_value.ArrayValue.Count == 0)
                     {
                         return 0;
                     }
                     else
                     {
-                        return _reference.ArrayValue[0].ToInt();
+                        return _value.ArrayValue[0].ToInt();
                     }
                 case ValueType.Function:
-                    return _reference.FuncValue.Invoke().ToInt();
+                    return _value.FuncValue.Invoke().ToInt();
             }
             return 0;
         }
@@ -129,16 +129,16 @@ namespace Petit.Runtime
                     }
                     break;
                 case ValueType.Array:
-                    if (_reference.ArrayValue.Count == 0)
+                    if (_value.ArrayValue.Count == 0)
                     {
                         return 0;
                     }
                     else
                     {
-                        return _reference.ArrayValue[0].ToFloat();
+                        return _value.ArrayValue[0].ToFloat();
                     }
                 case ValueType.Function:
-                    return _reference.FuncValue.Invoke().ToFloat();
+                    return _value.FuncValue.Invoke().ToFloat();
             }
             return 0;
         }
@@ -161,7 +161,7 @@ namespace Petit.Runtime
                         StringBuilder sb = new StringBuilder();
                         sb.Append('[');
                         bool isFirst = true;
-                        foreach (Value item in _reference.ArrayValue)
+                        foreach (Value item in _value.ArrayValue)
                         {
                             if (!isFirst)
                             {
@@ -174,7 +174,7 @@ namespace Petit.Runtime
                         return sb.ToString();
                     }
                 case ValueType.Function:
-                    return _reference.FuncValue.Invoke().ToString();
+                    return _value.FuncValue.Invoke().ToString();
             }
             return string.Empty;
         }
@@ -191,9 +191,9 @@ namespace Petit.Runtime
                 case ValueType.String:
                     return _value.StringValue.Select(x => Value.Of(x)).ToList();
                 case ValueType.Array:
-                    return _reference.ArrayValue;
+                    return _value.ArrayValue;
                 case ValueType.Function:
-                    return _reference.FuncValue.Invoke().ToArray();
+                    return _value.FuncValue.Invoke().ToArray();
             }
             return new List<Value>();
         }
@@ -203,7 +203,7 @@ namespace Petit.Runtime
             switch (_type)
             {
                 case ValueType.Function:
-                    return _reference.FuncValue;
+                    return _value.FuncValue;
             }
             return Function.Empty;
         }
@@ -232,9 +232,9 @@ namespace Petit.Runtime
             {
                 if (IsArray)
                 {
-                    if (i < _reference.ArrayValue.Count)
+                    if (i < _value.ArrayValue.Count)
                     {
-                        return _reference.ArrayValue[i];
+                        return _value.ArrayValue[i];
                     }
                 }
                 else if (IsString)
@@ -250,9 +250,9 @@ namespace Petit.Runtime
             {
                 if (IsArray)
                 {
-                    if (i < _reference.ArrayValue.Count)
+                    if (i < _value.ArrayValue.Count)
                     {
-                        _reference.ArrayValue[i] = value;
+                        _value.ArrayValue[i] = value;
                     }
                 }
             }
@@ -272,7 +272,7 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return ToString().GetHashCode();
                 case ValueType.Function:
-                    return _reference.FuncValue.GetHashCode();
+                    return _value.FuncValue.GetHashCode();
             }
             return 0;
         }
@@ -289,7 +289,7 @@ namespace Petit.Runtime
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        struct Primitive
+        struct Variant
         {
             [FieldOffset(0)]
             public bool BoolValue;
@@ -299,18 +299,14 @@ namespace Petit.Runtime
             public float FloatValue;
             [FieldOffset(0)]
             public string StringValue;
-        }
-        [StructLayout(LayoutKind.Explicit)]
-        struct Reference
-        {
-            [FieldOffset(0)]
-            public List<Value> ArrayValue;
 
-            [FieldOffset(0)]
+            // class
+            [FieldOffset(8)]
+            public List<Value> ArrayValue;
+            [FieldOffset(8)]
             public Function FuncValue;
         }
         private readonly ValueType _type;
-        private readonly Primitive _value;
-        private readonly Reference _reference;
+        private readonly Variant _value;
     }
 }
