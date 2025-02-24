@@ -11,6 +11,39 @@ namespace Petit.Runtime
     /// </summary>
     public readonly partial struct Value : IComparable<Value>
     {
+        public static bool operator >(in Value a, in Value b)
+        {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
+            return Compare(a, b) > 0;
+        }
+        public static bool operator <(in Value a, in Value b)
+        {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
+            return Compare(a, b) < 0;
+        }
+        public static bool operator >=(in Value a, in Value b)
+        {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
+            return Compare(a, b) >= 0;
+        }
+        public static bool operator <=(in Value a, in Value b)
+        {
+            if (a.IsNaN || b.IsNaN)
+            {
+                return false;
+            }
+            return Compare(a, b) <= 0;
+        }
+
         public int CompareTo(Value other)
         {
             return Compare(this, other);

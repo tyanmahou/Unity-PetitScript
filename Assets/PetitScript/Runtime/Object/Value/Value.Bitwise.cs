@@ -4,6 +4,15 @@ namespace Petit.Runtime
 {
     public readonly partial struct Value
     {
+        public static Value operator <<(in Value a, int b)
+        {
+            return Value.Of(a.ToInt() << b);
+        }
+        public static Value operator >>(in Value a, int b)
+        {
+            return Value.Of(a.ToInt() >> b);
+        }
+
         public static Value BitwiseNot(in Value a)
         {
             return Value.Of(~a.ToInt());
