@@ -230,11 +230,11 @@ namespace Petit.Syntax.Lexer
                             pos += 2;
                         }
                     }
-                    //else if (pos + 1 < length && line[pos + 1] == '>')
-                    //{
-                    //    _tokens.Add(new Token(TokenType.Arrow, "=>", lineNum, pos + 1));
-                    //    pos += 2;
-                    //}
+                    else if (pos + 1 < length && line[pos + 1] == '>')
+                    {
+                        _tokens.Add(new Token(TokenType.Arrow, "=>", lineNum, pos + 1));
+                        pos += 2;
+                    }
                     else
                     {
                         _tokens.Add(new Token(TokenType.Assign, "=", lineNum, pos + 1));

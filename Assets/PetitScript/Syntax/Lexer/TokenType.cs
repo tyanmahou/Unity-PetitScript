@@ -98,6 +98,11 @@
         Assign,
 
         /// <summary>
+        /// =>
+        /// </summary>
+        Arrow,
+
+        /// <summary>
         /// !
         /// </summary>
         Not, 

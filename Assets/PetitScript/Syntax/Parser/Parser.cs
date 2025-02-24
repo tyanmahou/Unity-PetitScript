@@ -407,8 +407,17 @@ namespace Petit.Syntax.Parser
             }
             TryErrorCheckType($"Not found fn {statement.Identifier}')'", TokenType.RParen);
             ++_pos; // )
+            if (TryCheckType(TokenType.Arrow))
+            {
+                // =>
+                ++_pos;
+                statement.Statement = ParseExpressionStatement();
+            }
+            else
+            {
+                statement.Statement = ParseStatement();
+            }
 
-            statement.Statement = ParseStatement();
             if (statement.Statement is null)
             {
                 Error($"Not found fn {statement.Identifier} statement");
