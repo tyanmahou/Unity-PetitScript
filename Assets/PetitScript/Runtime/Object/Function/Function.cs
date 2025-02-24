@@ -10,6 +10,7 @@ namespace Petit.Runtime
     /// </summary>
     public partial class Function
     {
+        public static readonly Function Empty = new Function(string.Empty, null);
         internal Function(
             string name,
             Func<IReadOnlyList<Value>, Value> func,

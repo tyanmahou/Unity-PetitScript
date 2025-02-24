@@ -43,8 +43,7 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return +CompareValue(a._reference.ArrayValue);
                 case ValueType.Function:
-                    var funcResult = a._reference.FuncValue?.Invoke() ?? Value.Invalid;
-                    return +funcResult;
+                    return +a._reference.FuncValue.Invoke();
             }
             return Value.NaN;
         }
@@ -82,8 +81,7 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return -CompareValue(a._reference.ArrayValue);
                 case ValueType.Function:
-                    var funcResult = a._reference.FuncValue?.Invoke() ?? Value.Invalid;
-                    return -funcResult;
+                    return -a._reference.FuncValue.Invoke();
             }
             return Value.NaN;
         }
@@ -236,8 +234,7 @@ namespace Petit.Runtime
             }
             else if (IsFunction)
             {
-                var funcResult = _reference.FuncValue?.Invoke() ?? Value.Invalid;
-                return funcResult.TryGetNumeric(out num);
+                return _reference.FuncValue.Invoke().TryGetNumeric(out num);
             }
             num = 0;
             return false;
@@ -283,10 +280,7 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return CompareValue(_reference.ArrayValue).TryGetNumericWithType(out intValue, out floatValue);
                 case ValueType.Function:
-                    {
-                        var funcResult = _reference.FuncValue?.Invoke() ?? Value.Invalid;
-                        return funcResult.TryGetNumericWithType(out intValue, out floatValue);
-                    }
+                    return _reference.FuncValue.Invoke().TryGetNumericWithType(out intValue, out floatValue);
             }
             return ValueType.Invalid;
         }

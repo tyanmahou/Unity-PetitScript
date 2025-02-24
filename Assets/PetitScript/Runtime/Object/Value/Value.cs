@@ -79,7 +79,7 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return _reference.ArrayValue.Count > 0;
                 case ValueType.Function:
-                    return _reference.FuncValue != null;
+                    return _reference.FuncValue.Invoke().ToBool();
             }
             return false;
         }
@@ -109,7 +109,7 @@ namespace Petit.Runtime
                         return _reference.ArrayValue[0].ToInt();
                     }
                 case ValueType.Function:
-                    return (_reference.FuncValue?.Invoke() ?? Value.Invalid).ToInt();
+                    return _reference.FuncValue.Invoke().ToInt();
             }
             return 0;
         }
@@ -139,7 +139,7 @@ namespace Petit.Runtime
                         return _reference.ArrayValue[0].ToFloat();
                     }
                 case ValueType.Function:
-                    return (_reference.FuncValue?.Invoke() ?? Value.Invalid).ToFloat();
+                    return _reference.FuncValue.Invoke().ToFloat();
             }
             return 0;
         }
@@ -175,7 +175,7 @@ namespace Petit.Runtime
                         return sb.ToString();
                     }
                 case ValueType.Function:
-                    return (_reference.FuncValue?.Invoke() ?? Value.Invalid).ToString();
+                    return _reference.FuncValue.Invoke().ToString();
             }
             return string.Empty;
         }
@@ -194,7 +194,7 @@ namespace Petit.Runtime
                 case ValueType.Array:
                     return _reference.ArrayValue;
                 case ValueType.Function:
-                    return (_reference.FuncValue?.Invoke() ?? Value.Invalid).ToArray();
+                    return _reference.FuncValue.Invoke().ToArray();
             }
             return new List<Value>();
         }
@@ -206,7 +206,7 @@ namespace Petit.Runtime
                 case ValueType.Function:
                     return _reference.FuncValue;
             }
-            return Function.Bind(() => Value.Invalid);
+            return Function.Empty;
         }
         public static explicit operator bool(in Value v) => v.ToBool();
         public static explicit operator int(in Value v) => v.ToInt();

@@ -175,7 +175,7 @@ namespace Petit.Runtime
             _type = ValueType.Function;
             _value = default;
             _reference = default;
-            _reference.FuncValue = func;
+            _reference.FuncValue = func ?? Function.Empty;
         }
         Value(IEnumerable<Value> collection)
         {
