@@ -20,6 +20,10 @@ namespace Petit.Runtime
             _func = func;
             _params = parameters;
         }
+        public Value Invoke(params Argument[] args)
+        {
+            return Invoke(args as IReadOnlyList<Argument>);
+        }
         public Value Invoke(IReadOnlyList<Argument> args)
         {
             List<Value> values;
@@ -91,10 +95,27 @@ namespace Petit.Runtime
             {
                 values = new();
             }
-            return Invoke(values);
+            return _func?.Invoke(values) ?? default;
         }
-        public Value Invoke(IReadOnlyList<Value> values)
+        public Value Invoke(params Value[] args)
         {
+            return Invoke(args as IReadOnlyList<Value>);
+        }
+        public Value Invoke(IReadOnlyList<Value> args)
+        {
+            List<Value> values = new List<Value>(_params.Length);
+            for (int i = 0; i < _params.Length; ++i)
+            {
+                if (i < args.Count)
+                {
+                    values.Add(args[i]);
+                }
+                else
+                {
+                    // デフォルト引数
+                    values.Add(_params[i].Value?.Invoke() ?? default);
+                }
+            }
             return _func?.Invoke(values) ?? default;
         }
         public Function SetArgument(int index, Argument arg)
@@ -139,9 +160,28 @@ namespace Petit.Runtime
                 $"{this._name}.{other._name}",
                 args =>
                 {
-                    return Invoke(new List<Argument>() { new Argument(string.Empty, other.Invoke(args))});
+                    return Invoke(other.Invoke(args));
                 },
                 other._params
+            );
+        }
+
+        /// <summary>
+        /// 部分適用
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public Function Partial(Value arg)
+        {
+            return new Function(
+                $"{this._name}{arg}",
+                args =>
+                {
+                    List<Value> argList = new List<Value>() { arg };
+                    argList.AddRange(args);
+                    return Invoke(argList);
+                },
+                _params.Skip(1).ToArray()
             );
         }
         public override string ToString()

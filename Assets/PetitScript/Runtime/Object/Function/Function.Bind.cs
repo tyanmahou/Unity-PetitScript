@@ -96,8 +96,7 @@ namespace Petit.Runtime
                 action?.Method?.Name,
                 args =>
                 {
-                    action?.Invoke(args[0]);
-                    return Value.Invalid;
+                    return action?.Invoke(args[0]) ?? Value.Invalid;
                 },
                 GetArgs(action)
             );
