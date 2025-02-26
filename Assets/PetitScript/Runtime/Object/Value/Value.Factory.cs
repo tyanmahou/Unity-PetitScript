@@ -139,10 +139,6 @@ namespace Petit.Runtime
                 return default;
             }
         }
-        public static Value ReferenceOf(object value)
-        {
-            return new Reference(Value.Of(value));
-        }
         public static implicit operator Value(bool v) => Value.Of(v);
         public static implicit operator Value(int v) => Value.Of(v);
         public static implicit operator Value(float v) => Value.Of(v);
@@ -196,10 +192,10 @@ namespace Petit.Runtime
         {
             _type = ValueType.Array;
             _value = default;
-            _value.ArrayValue = collection.Select(v => new Value(new Reference(v))).ToList();
+            _value.ArrayValue = collection.ToList();
         }
         Value(IEnumerable<object> collection)
-            :this(collection.Select(Value.ReferenceOf))
+            :this(collection.Select(Value.Of))
         {
         }
         Value(IEnumerable collection)
@@ -209,7 +205,7 @@ namespace Petit.Runtime
             _value.ArrayValue = new List<Value>();
             foreach (object item in collection)
             {
-                _value.ArrayValue.Add(Value.ReferenceOf(item));
+                _value.ArrayValue.Add(Value.Of(item));
             }
         }
     }

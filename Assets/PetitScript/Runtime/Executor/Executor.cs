@@ -20,7 +20,7 @@ namespace Petit.Runtime.Executor
         }
         public Value Exec(GlobalStatement global, Environment env)
         {
-            return ExecGlobalStatement(global, env);
+            return ExecGlobalStatement(global, env).Copy();
         }
         (Value, StatementCommand) ExecStatement(IStatement statement, Environment env)
         {
@@ -334,7 +334,10 @@ namespace Petit.Runtime.Executor
         }
         Value ExecExpr(VariableExpression expr, Environment env)
         {
-            return env.GetOrSet(expr.Identifier);
+            return new Reference(
+                get: () => env.Get(expr.Identifier),
+                set: v => env.Set(expr.Identifier, v)
+                );
         }
         Value ExecExpr(PrefixUnaryExpression expr, Environment env)
         {
@@ -583,7 +586,10 @@ namespace Petit.Runtime.Executor
         {
             var collection = ExecExpr(expr.Collection, env);
             var index = ExecExpr(expr.Index, env);
-            return collection[index];
+            return new Reference(
+                get: () => collection[index],
+                set: v => collection[index] = v
+                );
         }
     }
 }

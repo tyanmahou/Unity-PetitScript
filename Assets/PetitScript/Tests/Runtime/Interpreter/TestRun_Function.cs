@@ -99,19 +99,25 @@ return fib(10);
         [Test]
         public void TestDefaultArg()
         {
-            string code = @"
+            {
+                string code = @"
 fn myfunc(a = 2,  b = a * a) {
     return a + b;
 }
-myfunc(a);
+myfunc();
 ";
-            {
                 RunInt(code, 6);
                 Interpreter interpreter = new();
                 var result = interpreter.Run(code);
                 Assert.AreEqual(result, 6);
             }
             {
+                string code = @"
+fn myfunc(a = 2,  b = a * a) {
+    return a + b;
+}
+myfunc(a);
+";
                 Environment env = Environment.New();
                 env["a"] = 5;
                 RunInt(code, 30, env);

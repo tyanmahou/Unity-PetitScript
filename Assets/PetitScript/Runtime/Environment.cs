@@ -28,14 +28,7 @@ namespace Petit.Runtime
         /// <param name="value"></param>
         public void Set(string key, in Value value)
         {
-            if (_variables.TryGetValue(key, out Value v))
-            {
-                v.SetIndirect(value);
-            }
-            else
-            {
-                _variables.Add(key, new Reference(value));
-            }
+            _variables[key] = value;
         }
         public Value Get(string key)
         {

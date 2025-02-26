@@ -1,18 +1,21 @@
-﻿
+﻿using System;
+
 namespace Petit.Runtime
 {
     public class Reference
     {
-        public Reference(Value value)
+        internal Reference(System.Func<Value> get, Action<Value> set)
         {
-            _value = value;
+            _get = get;
+            _set = set;
         }
         public Value Indirection
         {
-            get => _value;
-            set => _value = value;
+            get => _get?.Invoke() ?? Value.Invalid;
+            set => _set.Invoke(value);
         }
 
-        Value _value;
+        readonly System.Func<Value> _get;
+        readonly Action<Value> _set;
     }
 }

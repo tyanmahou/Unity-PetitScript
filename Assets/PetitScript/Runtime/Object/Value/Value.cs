@@ -21,45 +21,38 @@ namespace Petit.Runtime
         /// <summary>
         /// 無効値か
         /// </summary>
-        public bool IsInvalid => _type == ValueType.Invalid
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsInvalid;
+        public bool IsInvalid => _type == ValueType.Invalid;
 
         /// <summary>
         /// bool型か
         /// </summary>
-        public bool IsBool => _type == ValueType.Bool
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsBool;
+        public bool IsBool => _type == ValueType.Bool;
 
 
         /// <summary>
         /// int型か
         /// </summary>
-        public bool IsInt => _type == ValueType.Int
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsInt;
+        public bool IsInt => _type == ValueType.Int;
 
         /// <summary>
         /// Float型か
         /// </summary>
-        public bool IsFloat => _type == ValueType.Float
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsFloat;
+        public bool IsFloat => _type == ValueType.Float;
 
         /// <summary>
         /// string型か
         /// </summary>
-        public bool IsString => _type == ValueType.String
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsString;
+        public bool IsString => _type == ValueType.String;
 
         /// <summary>
         /// Array型か
         /// </summary>
-        public bool IsArray => _type == ValueType.Array
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsArray;
+        public bool IsArray => _type == ValueType.Array;
 
         /// <summary>
         /// 関数型か
         /// </summary>
-        public bool IsFunction => _type == ValueType.Function
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsFunction;
+        public bool IsFunction => _type == ValueType.Function;
 
         /// <summary>
         /// 参照型か
@@ -69,14 +62,12 @@ namespace Petit.Runtime
         /// <summary>
         /// NaNか
         /// </summary>
-        public bool IsNaN => _type == ValueType.Float && float.IsNaN(_value.FloatValue)
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsNaN;
+        public bool IsNaN => _type == ValueType.Float && float.IsNaN(_value.FloatValue);
 
         /// <summary>
         /// Infか
         /// </summary>
-        public bool IsInf => _type == ValueType.Float && float.IsInfinity(_value.FloatValue)
-            || _type == ValueType.Reference && _value.Reference.Indirection.IsInf;
+        public bool IsInf => _type == ValueType.Float && float.IsInfinity(_value.FloatValue);
 
         public readonly bool ToBool()
         {
@@ -243,15 +234,7 @@ namespace Petit.Runtime
             }
             return Function.Empty;
         }
-        public Reference ToReference()
-        {
-            switch (_type)
-            {
-                case ValueType.Reference:
-                    return _value.Reference;
-            }
-            return new Reference(this);
-        }
+
         public static explicit operator bool(in Value v) => v.ToBool();
         public static explicit operator int(in Value v) => v.ToInt();
         public static explicit operator float(in Value v) => v.ToFloat();
@@ -308,11 +291,11 @@ namespace Petit.Runtime
                         var v = _value.ArrayValue[i];
                         if (v.IsReference)
                         {
-                            v.ToReference().Indirection = value;
+                            v._value.Reference.Indirection = value;
                         }
                         else
                         {
-                            _value.ArrayValue[i] = v;
+                            _value.ArrayValue[i] = value;
                         }
                     }
                 }
@@ -320,10 +303,7 @@ namespace Petit.Runtime
         }
         public Value SetIndirect(in Value value)
         {
-            if (IsReference)
-            {
-                _value.Reference.Indirection = value;
-            }
+            TrySetIndirect(value);
             return this;
         }
         public bool TrySetIndirect(in Value value)
