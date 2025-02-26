@@ -456,6 +456,7 @@ namespace Petit.Syntax.Parser
                     case TokenType.Inc:
                     case TokenType.Dec:
                     case TokenType.BitwiseNot:
+                    case TokenType.BitwiseAnd:
                         return ParsePrefixUnaryExpression;
                     case TokenType.LParen:
                         return ParseParen;

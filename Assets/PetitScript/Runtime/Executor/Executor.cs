@@ -328,12 +328,18 @@ namespace Petit.Runtime.Executor
             List<Value> values = new List<Value>(expr.Elements.Count);
             foreach (var e in expr.Elements)
             {
-                values.Add(ExecExpr(e, env));
+                values.Add(ExecExpr(e, env).Indirection());
             }
             return Value.Of(values);
         }
         Value ExecExpr(VariableExpression expr, Environment env)
         {
+            var result = env.Get(expr.Identifier);
+            if (result.IsReference)
+            {
+                // 参照ならそのまま返す
+                return result;
+            }
             return new Reference(
                 get: () => env.Get(expr.Identifier),
                 set: v => env.Set(expr.Identifier, v)
@@ -367,6 +373,11 @@ namespace Petit.Runtime.Executor
             {
                 return Value.BitwiseNot(ExecExpr(expr.Right, env));
             }
+            else if (expr.Op == "&")
+            {
+                var eval = ExecExpr(expr.Right, env);
+                return new Reference(get: () => eval, set: v => eval.SetIndirect(v));
+            }
             return ExecExpr(expr.Right, env);
         }
         Value ExecExpr(PostfixUnaryExpression expr, Environment env)
@@ -391,7 +402,7 @@ namespace Petit.Runtime.Executor
         {
             if (expr.Op == ".")
             {
-                return ExecExpr(expr.Right, env).ToFunction().Partial(ExecExpr(expr.Left, env));
+                return ExecExpr(expr.Right, env).ToFunction().Partial(ExecExpr(expr.Left, env).Indirection());
             }
             else if (expr.Op == "&&")
             {
@@ -480,7 +491,7 @@ namespace Petit.Runtime.Executor
             else if (expr.Op == "=")
             {
                 var left = ExecExpr(expr.Left, env);
-                var right = ExecExpr(expr.Right, env);
+                var right = ExecExpr(expr.Right, env).Indirection();
                 return left.SetIndirect(right);
             }
             else if (expr.Op == "+=")
@@ -578,7 +589,7 @@ namespace Petit.Runtime.Executor
         {
             Function func = ExecExpr(expr.Function, env).ToFunction();
             var args = expr.Args
-                .Select(arg => new Argument(arg.Name, ExecExpr(arg.Expression, env)))
+                .Select(arg => new Argument(arg.Name, ExecExpr(arg.Expression, env).Indirection()))
                 .ToList();
             return func.Invoke(args);
         }

@@ -35,6 +35,7 @@
                     case TokenType.Inc:
                     case TokenType.Dec:
                     case TokenType.BitwiseNot:
+                    case TokenType.BitwiseAnd: // address
                         return Precedence.Not;
                 }
             }

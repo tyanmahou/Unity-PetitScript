@@ -315,6 +315,14 @@ namespace Petit.Runtime
             }
             return false;
         }
+        public Value Indirection()
+        {
+            if (IsReference)
+            {
+                return _value.Reference.Indirection;
+            }
+            return this;
+        }
         public Value Copy()
         {
             if (IsReference)
