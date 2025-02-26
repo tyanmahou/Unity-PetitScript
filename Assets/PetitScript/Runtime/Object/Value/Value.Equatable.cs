@@ -25,6 +25,14 @@ namespace Petit.Runtime
 
         public bool Equals(Value other)
         {
+            if (_type == ValueType.Reference)
+            {
+                return _value.Reference.Indirection.Equals(other);
+            }
+            if (other._type == ValueType.Reference)
+            {
+                return Equals(other._value.Reference.Indirection);
+            }
             if (_type != other._type)
             {
                 return false;
@@ -93,6 +101,10 @@ namespace Petit.Runtime
             {
                 return Equals(Value.Of(func));
             }
+            else if (other is Reference reference)
+            {
+                return Equals(Value.Of(reference));
+            }
             else if (other is null)
             {
                 return Equals(Invalid);
@@ -132,6 +144,14 @@ namespace Petit.Runtime
             if (this.IsNaN || other.IsNaN)
             {
                 return false;
+            }
+            if (_type == ValueType.Reference)
+            {
+                return _value.Reference.Indirection.EqualsLooseSingly(other);
+            }
+            if (other._type == ValueType.Reference)
+            {
+                return EqualsLooseSingly(other._value.Reference.Indirection);
             }
             switch (_type)
             {

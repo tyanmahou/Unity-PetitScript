@@ -108,14 +108,14 @@ namespace Petit.Runtime.Executor
         }
         (Value, StatementCommand) ExecSwitchStatement(SwitchStatement switchStatement, Environment env)
         {
-            var condition = ExecExpr(switchStatement.Condition, env).Result;
+            var condition = ExecExpr(switchStatement.Condition, env);
 
             // どのセクションを使用するか確定する
             bool IsMatch(ISwitchLabel label, in Value v)
             {
                 if (label is SwitchCase caseLabel)
                 {
-                    return ExecExpr(caseLabel.Expression, env).Result == v;
+                    return ExecExpr(caseLabel.Expression, env) == v;
                 }
                 return false;
             }
@@ -228,7 +228,7 @@ namespace Petit.Runtime.Executor
             env.Set(function.Identifier, func);
             return (Value.Of(func), StatementCommand.None);
         }
-        ExprResult ExecExpr(IExpression expr, Environment env)
+        Value ExecExpr(IExpression expr, Environment env)
         {
             if (expr is null)
             {
@@ -288,23 +288,23 @@ namespace Petit.Runtime.Executor
             }
             return default;
         }
-        ExprResult ExecExpr(BoolLiteral expr)
+        Value ExecExpr(BoolLiteral expr)
         {
-            return new(Value.Of(expr.Value));
+            return Value.Of(expr.Value);
         }
-        ExprResult ExecExpr(IntLiteral expr)
+        Value ExecExpr(IntLiteral expr)
         {
-            return new(Value.Of(expr.Value));
+            return Value.Of(expr.Value);
         }
-        ExprResult ExecExpr(FloatLiteral expr)
+        Value ExecExpr(FloatLiteral expr)
         {
-            return new(Value.Of(expr.Value));
+            return Value.Of(expr.Value);
         }
-        ExprResult ExecExpr(StringLiteral expr)
+        Value ExecExpr(StringLiteral expr)
         {
-            return new(Value.Of(expr.Value));
+            return Value.Of(expr.Value);
         }
-        ExprResult ExecExpr(StringInterpolation expr, Environment env)
+        Value ExecExpr(StringInterpolation expr, Environment env)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var e in expr.Expressions)
@@ -317,367 +317,273 @@ namespace Petit.Runtime.Executor
                 }
                 else
                 {
-                    value = ExecExpr(e, env).Result.ToString();
+                    value = ExecExpr(e, env).ToString();
                 }
                 sb.Append(value);
             }
-            return new (Value.Of(sb.ToString()));
+            return Value.Of(sb.ToString());
         }
-        ExprResult ExecExpr(ListExpression expr, Environment env)
+        Value ExecExpr(ListExpression expr, Environment env)
         {
             List<Value> values = new List<Value>(expr.Elements.Count);
             foreach (var e in expr.Elements)
             {
                 values.Add(ExecExpr(e, env));
             }
-            return new(Value.Of(values));
+            return Value.Of(values);
         }
-        ExprResult ExecExpr(VariableExpression expr, Environment env)
+        Value ExecExpr(VariableExpression expr, Environment env)
         {
-            return new ExprResult()
-            {
-                Result = env.Get(expr.Identifier),
-                Address = new IdentAddress()
-                {
-                    Environment = env,
-                    Identifier = expr.Identifier,
-                }
-            };
+            return env.GetOrSet(expr.Identifier);
         }
-        ExprResult ExecExpr(PrefixUnaryExpression expr, Environment env)
+        Value ExecExpr(PrefixUnaryExpression expr, Environment env)
         {
             if (expr.Op == "!")
             {
-                return new(!ExecExpr(expr.Right, env).Result);
+                return !ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "+")
             {
-                return new(+ExecExpr(expr.Right, env).Result);
+                return +ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "-")
             {
-                return new(-ExecExpr(expr.Right, env).Result);
+                return -ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "++")
             {
                 var eval = ExecExpr(expr.Right, env);
-                var result = eval.Result + Value.Of(1);
-                eval.Set(result);
-                return new(result, eval.Address);
+                return eval.SetIndirect(eval + Value.Of(1));
             }
             else if (expr.Op == "--")
             {
                 var eval = ExecExpr(expr.Right, env);
-                var result = eval.Result - Value.Of(1);
-                eval.Set(result);
-                return new(result, eval.Address);
-
+                return eval.SetIndirect(eval - Value.Of(1));
             }
             else if (expr.Op == "~")
             {
-                return new(Value.BitwiseNot(ExecExpr(expr.Right, env).Result));
+                return Value.BitwiseNot(ExecExpr(expr.Right, env));
             }
             return ExecExpr(expr.Right, env);
         }
-        ExprResult ExecExpr(PostfixUnaryExpression expr, Environment env)
+        Value ExecExpr(PostfixUnaryExpression expr, Environment env)
         {
             if (expr.Op == "++")
             {
                 var eval = ExecExpr(expr.Left, env);
-                var result = eval.Result + Value.Of(1);
-                eval.Set(result);
-                return new(eval.Result);
+                var copy = eval.Copy();
+                eval.TrySetIndirect(eval + Value.Of(1));
+                return copy;
             }
             else if (expr.Op == "--")
             {
                 var eval = ExecExpr(expr.Left, env);
-                var result = eval.Result - Value.Of(1);
-                eval.Set(result);
-                return new(eval.Result);
+                var copy = eval.Copy();
+                eval.TrySetIndirect(eval - Value.Of(1));
+                return copy;
             }
             return ExecExpr(expr.Left, env);
         }
-        ExprResult ExecExpr(BinaryExpression expr, Environment env)
+        Value ExecExpr(BinaryExpression expr, Environment env)
         {
             if (expr.Op == ".")
             {
-                return new(ExecExpr(expr.Right, env).Result.ToFunction().Partial(ExecExpr(expr.Left, env).Result));
+                return ExecExpr(expr.Right, env).ToFunction().Partial(ExecExpr(expr.Left, env));
             }
             else if (expr.Op == "&&")
             {
-                return new(ExecExpr(expr.Left, env).Result && ExecExpr(expr.Right, env).Result);
+                return ExecExpr(expr.Left, env) && ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "||")
             {
-                return new(ExecExpr(expr.Left, env).Result || ExecExpr(expr.Right, env).Result);
+                return ExecExpr(expr.Left, env) || ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "==")
             {
-                return new(Value.Of(ExecExpr(expr.Left, env).Result == ExecExpr(expr.Right, env).Result));
+                return ExecExpr(expr.Left, env) == ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "===")
             {
-                return new(Value.Of(Value.Identical(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
+                return Value.Identical(ExecExpr(expr.Left, env), ExecExpr(expr.Right, env));
             }
             else if (expr.Op == "!=")
             {
-                return new(Value.Of(ExecExpr(expr.Left, env).Result != ExecExpr(expr.Right, env).Result));
+                return ExecExpr(expr.Left, env) != ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "!==")
             {
-                return new(Value.Of(Value.NotIdentical(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
+                return Value.NotIdentical(ExecExpr(expr.Left, env), ExecExpr(expr.Right, env));
             }
             else if (expr.Op == ">")
             {
-                return new(Value.Of(ExecExpr(expr.Left, env).Result > ExecExpr(expr.Right, env).Result));
+                return ExecExpr(expr.Left, env) > ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "<")
             {
-                return new(Value.Of(ExecExpr(expr.Left, env).Result < ExecExpr(expr.Right, env).Result));
+                return ExecExpr(expr.Left, env) < ExecExpr(expr.Right, env);
             }
             else if (expr.Op == ">=")
             {
-                return new(Value.Of(ExecExpr(expr.Left, env).Result >= ExecExpr(expr.Right, env).Result));
+                return ExecExpr(expr.Left, env) >= ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "<=")
             {
-                return new(Value.Of(ExecExpr(expr.Left, env).Result <= ExecExpr(expr.Right, env).Result));
+                return ExecExpr(expr.Left, env) <= ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "<=>")
             {
-                return new(Value.Of(Value.Compare(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result)));
+                return Value.Compare(ExecExpr(expr.Left, env), ExecExpr(expr.Right, env));
             }
             else if (expr.Op == "&")
             {
-                return new(Value.BitwiseAnd(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result));
+                return Value.BitwiseAnd(ExecExpr(expr.Left, env), ExecExpr(expr.Right, env));
             }
             else if (expr.Op == "|")
             {
-                return new(Value.BitwiseOr(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result));
+                return Value.BitwiseOr(ExecExpr(expr.Left, env), ExecExpr(expr.Right, env));
             }
             else if (expr.Op == "^")
             {
-                return new(Value.BitwiseXor(ExecExpr(expr.Left, env).Result, ExecExpr(expr.Right, env).Result));
+                return Value.BitwiseXor(ExecExpr(expr.Left, env), ExecExpr(expr.Right, env));
             }
             else if (expr.Op == "<<")
             {
-                return new(ExecExpr(expr.Left, env).Result << ExecExpr(expr.Right, env).Result.ToInt());
+                return ExecExpr(expr.Left, env) << ExecExpr(expr.Right, env).ToInt();
             }
             else if (expr.Op == ">>")
             {
-                return new(ExecExpr(expr.Left, env).Result >> ExecExpr(expr.Right, env).Result.ToInt());
+                return ExecExpr(expr.Left, env) >> ExecExpr(expr.Right, env).ToInt();
             }
             else if (expr.Op == "+")
             {
-                return new(ExecExpr(expr.Left, env).Result + ExecExpr(expr.Right, env).Result);
+                return ExecExpr(expr.Left, env) + ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "-")
             {
-                return new(ExecExpr(expr.Left, env).Result - ExecExpr(expr.Right, env).Result);
+                return ExecExpr(expr.Left, env) - ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "*")
             {
-                return new(ExecExpr(expr.Left, env).Result * ExecExpr(expr.Right, env).Result);
+                return ExecExpr(expr.Left, env) * ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "/")
             {
-                return new(ExecExpr(expr.Left, env).Result / ExecExpr(expr.Right, env).Result);
+                return ExecExpr(expr.Left, env) / ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "%")
             {
-                return new(ExecExpr(expr.Left, env).Result % ExecExpr(expr.Right, env).Result);
+                return ExecExpr(expr.Left, env) % ExecExpr(expr.Right, env);
             }
             else if (expr.Op == "=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
-                left.Set(right);
-                return new(right.Result, left.Address);
+                return left.SetIndirect(right);
             }
             else if (expr.Op == "+=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = left.Result + right.Result;
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = left + right;
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == "-=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = left.Result - right.Result;
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = left -right;
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == "*=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = left.Result * right.Result;
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = left * right;
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == "/=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = left.Result / right.Result;
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = left / right;
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == "%=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = left.Result % right.Result;
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = left % right;
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == "&=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = Value.BitwiseAnd(left.Result, right.Result);
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = Value.BitwiseAnd(left, right);
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == "|=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = Value.BitwiseOr(left.Result, right.Result);
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = Value.BitwiseOr(left, right);
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == "^=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = Value.BitwiseXor(left.Result, right.Result);
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = Value.BitwiseXor(left, right);
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == "<<=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = left.Result << right.Result.ToInt();
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = left << right.ToInt();
+                return left.SetIndirect(eval);
             }
             else if (expr.Op == ">>=")
             {
                 var left = ExecExpr(expr.Left, env);
                 var right = ExecExpr(expr.Right, env);
 
-                var eval = left.Result >> right.Result.ToInt();
-                left.Set(eval);
-                return new(eval, left.Address);
+                var eval = left >> right.ToInt();
+                return left.SetIndirect(eval);
             }
             return ExecExpr(expr.Left, env);
         }
-        ExprResult ExecExpr(TernaryExpression expr, Environment env)
+        Value ExecExpr(TernaryExpression expr, Environment env)
         {
             if (expr.Op == "?" && expr.Op2 == ":")
             {
-                var cond = ExecExpr(expr.Left, env).Result.ToBool();
-
-                ExprResult mid = default;
-                ExprResult right = default;
-                return new(
-                    (cond ? (mid = ExecExpr(expr.Mid, env)).Result : (right = ExecExpr(expr.Right, env)).Result),
-                    (cond ? mid.Address : right.Address)
-                    );
+                var cond = ExecExpr(expr.Left, env).ToBool();
+                return cond ? ExecExpr(expr.Mid, env) : ExecExpr(expr.Right, env);
             }
             return default;
         }
-        ExprResult ExecExpr(InvocationExpression expr, Environment env)
+        Value ExecExpr(InvocationExpression expr, Environment env)
         {
-            Function func = ExecExpr(expr.Function, env).Result.ToFunction();
+            Function func = ExecExpr(expr.Function, env).ToFunction();
             var args = expr.Args
-                .Select(arg => new Argument(arg.Name, ExecExpr(arg.Expression, env).Result))
+                .Select(arg => new Argument(arg.Name, ExecExpr(arg.Expression, env)))
                 .ToList();
-            return new() { Result = func.Invoke(args)};
+            return func.Invoke(args);
         }
-        ExprResult ExecExpr(SubscriptExpression expr, Environment env)
+        Value ExecExpr(SubscriptExpression expr, Environment env)
         {
             var collection = ExecExpr(expr.Collection, env);
             var index = ExecExpr(expr.Index, env);
-
-            IAddress address = null;
-            if (collection.Address != null)
-            {
-                var indexAddress = new IndexAddress();
-                indexAddress.Parent = collection.Address;
-                indexAddress.Index = index.Result;
-                address = indexAddress;
-            }
-            return new()
-            {
-                Result = collection.Result[index.Result],
-                Address = address,
-            };
-        }
-        struct ExprResult
-        {
-            public Value Result;
-            public IAddress Address;
-
-            public ExprResult(in Value result, in IAddress address = null)
-            {
-                Result = result;
-                Address = address;
-            }
-            public static implicit operator Value(in ExprResult v) => v.Result;
-            public static implicit operator bool(in ExprResult v) => v.Result.ToBool();
-
-            public void Set(in Value value)
-            {
-                Address?.Set(value);
-            }
-        }
-        interface IAddress
-        {
-            Value Value{  get; }
-            void Set(in Value value);
-        }
-        struct IdentAddress : IAddress
-        {
-            public Environment Environment;
-            public string Identifier;
-
-            public Value Value
-            {
-                get => Environment.Get(Identifier);
-            }
-            public void Set(in Value value)
-            {
-                Environment.Set(Identifier, value);
-            }
-        }
-        struct IndexAddress : IAddress
-        {
-            public IAddress Parent;
-            public Value Index;
-            public Value Value
-            {
-                get => Parent.Value[Index];
-            }
-            public void Set(in Value value)
-            {
-                Value v = Parent.Value;
-                v[Index] = value;
-            }
+            return collection[index];
         }
     }
 }

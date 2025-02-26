@@ -98,7 +98,18 @@ namespace Petit.Runtime
                     return Compare(a._value.ArrayValue, b._value.ArrayValue);
 
                 case (ValueType.Function, ValueType.Function):
-                    return a._value.FuncValue.Invoke().CompareTo(b._value.FuncValue.Invoke());
+                    return Compare(a._value.FuncValue.Invoke(), b._value.FuncValue.Invoke());
+                case (ValueType.Function, _):
+                    return Compare(a._value.FuncValue.Invoke(), b);
+                case (_, ValueType.Function):
+                    return Compare(a, b._value.FuncValue.Invoke());
+
+                case (ValueType.Reference, ValueType.Reference):
+                    return Compare(a._value.Reference.Indirection, b._value.Reference.Indirection);
+                case (ValueType.Reference, _):
+                    return Compare(a._value.Reference.Indirection, b);
+                case (_, ValueType.Reference):
+                    return Compare(a, b._value.Reference.Indirection);
             }
             if (TryCompareNumeric(a, b, out int comp))
             {
@@ -133,13 +144,17 @@ namespace Petit.Runtime
         }
         static string CompareString(in Value v)
         {
-            if (v.IsArray)
+            if (v._type == ValueType.Array)
             {
                 return CompareString(v._value.ArrayValue);
             }
+            else if (v._type == ValueType.Reference)
+            {
+                return CompareString(v._value.Reference.Indirection);
+            }
             return v.ToString();
         }
-        static string CompareString(List<Value> array)
+        internal static string CompareString(List<Value> array)
         {
             StringBuilder sb = new StringBuilder();
             bool isFirst = true;

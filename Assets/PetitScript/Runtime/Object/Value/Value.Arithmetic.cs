@@ -44,6 +44,8 @@ namespace Petit.Runtime
                     return +CompareValue(a._value.ArrayValue);
                 case ValueType.Function:
                     return +a._value.FuncValue.Invoke();
+                case ValueType.Reference:
+                    return +a._value.Reference.Indirection;
             }
             return Value.NaN;
         }
@@ -82,6 +84,8 @@ namespace Petit.Runtime
                     return -CompareValue(a._value.ArrayValue);
                 case ValueType.Function:
                     return -a._value.FuncValue.Invoke();
+                case ValueType.Reference:
+                    return -a._value.Reference.Indirection;
             }
             return Value.NaN;
         }
@@ -89,6 +93,12 @@ namespace Petit.Runtime
         {
             switch((a._type, b._type))
             {
+                case (ValueType.Reference, ValueType.Reference):
+                    return a._value.Reference.Indirection + b._value.Reference.Indirection;
+                case (ValueType.Reference, _):
+                    return a._value.Reference.Indirection + b;
+                case (_, ValueType.Reference):
+                    return a + b._value.Reference.Indirection;
                 case (ValueType.String, ValueType.String):
                     return a._value.StringValue + b._value.StringValue;
                 case (ValueType.String, _):
@@ -281,6 +291,8 @@ namespace Petit.Runtime
                     return CompareValue(_value.ArrayValue).TryGetNumericWithType(out intValue, out floatValue);
                 case ValueType.Function:
                     return _value.FuncValue.Invoke().TryGetNumericWithType(out intValue, out floatValue);
+                case ValueType.Reference:
+                    return _value.Reference.Indirection.TryGetNumericWithType(out intValue, out floatValue);
             }
             return ValueType.Invalid;
         }

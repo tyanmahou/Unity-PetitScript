@@ -60,6 +60,10 @@ namespace Petit.Runtime
         {
             return new Value(func);
         }
+        public static Value Of(Reference reference)
+        {
+            return new Value(reference);
+        }
         public static Value Of(IEnumerable enumerable)
         {
             return new Value(enumerable);
@@ -122,6 +126,10 @@ namespace Petit.Runtime
             {
                 return Value.Of(func);
             }
+            else if (o is Reference reference)
+            {
+                return Value.Of(reference);
+            }
             else if (o is IEnumerable enumerable)
             {
                 return Value.Of(enumerable);
@@ -131,12 +139,17 @@ namespace Petit.Runtime
                 return default;
             }
         }
+        public static Value ReferenceOf(object value)
+        {
+            return new Reference(Value.Of(value));
+        }
         public static implicit operator Value(bool v) => Value.Of(v);
         public static implicit operator Value(int v) => Value.Of(v);
         public static implicit operator Value(float v) => Value.Of(v);
         public static implicit operator Value(string v) => Value.Of(v);
         public static implicit operator Value(char v) => Value.Of(v);
         public static implicit operator Value(Function v) => Value.Of(v);
+        public static implicit operator Value(Reference v) => Value.Of(v);
 
         Value(bool b)
         {
@@ -172,14 +185,21 @@ namespace Petit.Runtime
             _value = default;
             _value.FuncValue = func ?? Function.Empty;
         }
+
+        Value(Reference reference)
+        {
+            _type = ValueType.Reference;
+            _value = default;
+            _value.Reference = reference;
+        }
         Value(IEnumerable<Value> collection)
         {
             _type = ValueType.Array;
             _value = default;
-            _value.ArrayValue = collection.ToList();
+            _value.ArrayValue = collection.Select(v => new Value(new Reference(v))).ToList();
         }
         Value(IEnumerable<object> collection)
-            :this(collection.Select(Value.Of))
+            :this(collection.Select(Value.ReferenceOf))
         {
         }
         Value(IEnumerable collection)
@@ -189,7 +209,7 @@ namespace Petit.Runtime
             _value.ArrayValue = new List<Value>();
             foreach (object item in collection)
             {
-                _value.ArrayValue.Add(Value.Of(item));
+                _value.ArrayValue.Add(Value.ReferenceOf(item));
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Petit.Runtime
 {
@@ -27,17 +28,40 @@ namespace Petit.Runtime
         /// <param name="value"></param>
         public void Set(string key, in Value value)
         {
-            _variables[key] = value;
+            if (_variables.TryGetValue(key, out Value v))
+            {
+                v.SetIndirect(value);
+            }
+            else
+            {
+                _variables.Add(key, new Reference(value));
+            }
         }
         public Value Get(string key)
+        {
+            return GetOpt(key) ?? Value.Invalid;
+        }
+        public Value? GetOpt(string key)
         {
             if (_variables.TryGetValue(key, out Value value))
             {
                 return value;
             }
-            return _parent?.Get(key) ?? Value.Invalid;
+            return _parent?.GetOpt(key);
         }
-
+        public Value GetOrSet(string key)
+        {
+            Value? result = GetOpt(key);
+            if (result is null)
+            {
+                Set(key, Value.Invalid);
+                return Get(key);
+            }
+            else
+            {
+                return result.Value;
+            }
+        }
         public Value this[string key]
         {
             get => Get(key);

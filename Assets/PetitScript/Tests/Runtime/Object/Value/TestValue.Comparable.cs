@@ -81,6 +81,8 @@ namespace Petit.Runtime
         [Test]
         public void TestCompareArrayPremitive()
         {
+            UnityEngine.Debug.LogWarning(Value.CompareString(Value.ArrayOf(1, 2, 3, Value.ArrayOf(4, 5)).ToArray()));
+            UnityEngine.Debug.LogWarning(Value.CompareString(Value.ArrayOf(Value.Of("1,2,3,4,5")).ToArray()));
             Assert.AreEqual(Value.Compare(Value.ArrayOf(9), Value.Of(10)), -1);
             Assert.AreEqual(Value.Compare(Value.ArrayOf(9), Value.Of(9)), 0);
             Assert.AreEqual(Value.Compare(Value.ArrayOf(9), Value.Of(8)), 1);
