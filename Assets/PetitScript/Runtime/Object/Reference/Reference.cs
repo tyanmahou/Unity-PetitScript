@@ -2,7 +2,7 @@
 
 namespace Petit.Runtime
 {
-    public class Reference
+    public readonly struct Reference
     {
         internal Reference(System.Func<Value> get, Action<Value> set)
         {
