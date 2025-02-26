@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 namespace Petit.Runtime
 {
@@ -28,33 +29,52 @@ namespace Petit.Runtime
         /// <param name="value"></param>
         public void Set(string key, in Value value)
         {
+            if (!TrySet(key, value)) 
+            {
+                _variables[key] = value;
+            }
+        }
+        /// <summary>
+        /// このスコープに変数をセット
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetScope(string key, in Value value)
+        {
             _variables[key] = value;
         }
+        public bool TrySet(string key, in Value value)
+        {
+            if (_variables.ContainsKey(key))
+            {
+                _variables[key] = value;
+                return true;
+            }
+            return _parent?.TrySet(key, value) ?? false;
+        }
+
+        /// <summary>
+        /// 変数の取得
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public Value Get(string key)
         {
-            return GetOpt(key) ?? Value.Invalid;
+            if (TryGet(key, out var result))
+            {
+                return result;
+            }
+            return Value.Invalid;
         }
-        public Value? GetOpt(string key)
+        public bool TryGet(string key, out Value result)
         {
-            if (_variables.TryGetValue(key, out Value value))
+            if (_variables.TryGetValue(key, out result))
             {
-                return value;
+                return true;
             }
-            return _parent?.GetOpt(key);
+            return _parent?.TryGet(key, out result) ?? false;
         }
-        public Value GetOrSet(string key)
-        {
-            Value? result = GetOpt(key);
-            if (result is null)
-            {
-                Set(key, Value.Invalid);
-                return Get(key);
-            }
-            else
-            {
-                return result.Value;
-            }
-        }
+
         public Value this[string key]
         {
             get => Get(key);

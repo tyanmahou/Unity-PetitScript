@@ -219,13 +219,13 @@ namespace Petit.Runtime.Executor
                         {
                             arg = ExecExpr(parameters[i].DefaultValue, newEnv);
                         }
-                        newEnv.Set(parameters[i].Name, arg);
+                        newEnv.SetScope(parameters[i].Name, arg);
                     }
                     return ExecStatement(function.Statement, newEnv).Item1;
                 },
                 function.Paramerters.Select(p => new Argument(p.Name, (Func<Value>)null)).ToArray()
             );
-            env.Set(function.Identifier, func);
+            env.SetScope(function.Identifier, func);
             return (Value.Of(func), StatementCommand.None);
         }
         Value ExecExpr(IExpression expr, Environment env)
