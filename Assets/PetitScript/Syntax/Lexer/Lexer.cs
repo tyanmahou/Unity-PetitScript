@@ -31,6 +31,20 @@ namespace Petit.Syntax.Lexer
             }
             while(pos < length)
             {
+                if (_isBlockComment)
+                {
+                    // ブロックコメント
+                    if (line[pos] == '*' && pos + 1 < length && line[pos + 1] == '/')
+                    {
+                        _isBlockComment = false;
+                        pos += 2;
+                    }
+                    else
+                    {
+                        ++pos;
+                    }
+                    continue;
+                }
                 bool isInterpolationEnd = (isInterpolation.Count > 0 && !isInterpolation.Peek());
                 // 空白スキップ
                 while (!isInterpolationEnd && char.IsWhiteSpace(line[pos]))
@@ -432,6 +446,13 @@ namespace Petit.Syntax.Lexer
                         // コメント
                         return;
                     }
+                    else if (pos + 1 < length && line[pos + 1] == '*')
+                    {
+                        // ブロックコメント
+                        _isBlockComment = true;
+                        pos += 2;
+                        continue;
+                    }
                     else if (pos + 1 < length && line[pos + 1] == '=')
                     {
                         _tokens.Add(new Token(TokenType.DivAssign, "/=", lineNum, pos + 1));
@@ -470,6 +491,7 @@ namespace Petit.Syntax.Lexer
 
         }
         List<Token> _tokens = new List<Token>();
+        bool _isBlockComment = false;
     }
 
     static class LexerHelper
