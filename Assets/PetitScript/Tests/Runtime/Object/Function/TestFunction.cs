@@ -1,20 +1,54 @@
 ﻿using NUnit.Framework;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Petit.Runtime
 {
     class TestFunction
     {
-        Value Add(Value a1, Value b1)
-        {
-            return a1 + b1;
-        }
         [Test]
         public void TestNormal()
         {
+            Value Add(Value a1, Value b1)
+            {
+                return a1 + b1;
+            }
             Function func = Function.Bind(Add);
             Assert.AreEqual(func.Parameters[0].Name, "a1");
             Assert.AreEqual(func.Parameters[1].Name, "b1");
             Assert.AreEqual(func.Invoke(1, 2), 3);
+        }
+        [Test]
+        public void TestNormalPure()
+        {
+            {
+                int Add(int a1, int b1)
+                {
+                    return a1 + b1;
+                }
+                Function func = Function.Bind<int, int, int>(Add);
+                Assert.AreEqual(func.Parameters[0].Name, "a1");
+                Assert.AreEqual(func.Parameters[1].Name, "b1");
+                Assert.AreEqual(func.Invoke(1, 2), 3);
+            }
+            {
+                void Check<T>()
+                    where T : IEnumerable<int>
+                {
+                    int Sum(T ar)
+                    {
+                        return ar.Sum();
+                    }
+                    Function func = Function.Bind<T, int>(Sum);
+                    Assert.AreEqual(func.Invoke(Value.ArrayOf(1, "2", 3.0f)), 6);
+                }
+                Check<int[]>();
+                Check<List<int>>();
+                Check<IList<int>>();
+                Check<IReadOnlyList<int>>();
+                Check<IReadOnlyCollection<int>>();
+                Check<IEnumerable<int>>();
+            }
         }
         [Test]
         public void TestLambda()

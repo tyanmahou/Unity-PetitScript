@@ -31,6 +31,18 @@ namespace Petit.Runtime
                 GetArgs(action)
             );
         }
+        public static Function Bind<T0>(Action<T0> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0].Cast<T0>());
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
+        }
         public static Function Bind(Action<Value, Value> action)
         {
             return new Function(
@@ -38,6 +50,18 @@ namespace Petit.Runtime
                 args =>
                 {
                     action?.Invoke(args[0], args[1]);
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
+        }
+        public static Function Bind<T0, T1>(Action<T0, T1> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0].Cast<T0>(), args[1].Cast<T1>());
                     return Value.Invalid;
                 },
                 GetArgs(action)
@@ -55,6 +79,18 @@ namespace Petit.Runtime
                 GetArgs(action)
             );
         }
+        public static Function Bind<T0, T1, T2>(Action<T0, T1, T2> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0].Cast<T0>(), args[1].Cast<T1>(), args[2].Cast<T2>());
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
+        }
         public static Function Bind(Action<Value, Value, Value, Value> action)
         {
             return new Function(
@@ -62,6 +98,18 @@ namespace Petit.Runtime
                 args =>
                 {
                     action?.Invoke(args[0], args[1], args[2], args[3]);
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
+        }
+        public static Function Bind<T0, T1, T2, T3>(Action<T0, T1, T2, T3> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0].Cast<T0>(), args[1].Cast<T1>(), args[2].Cast<T2>(), args[3].Cast<T3>());
                     return Value.Invalid;
                 },
                 GetArgs(action)
@@ -79,7 +127,18 @@ namespace Petit.Runtime
                 GetArgs(action)
             );
         }
-
+        public static Function Bind<T0, T1, T2, T3, T4>(Action<T0, T1, T2, T3, T4> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    action?.Invoke(args[0].Cast<T0>(), args[1].Cast<T1>(), args[2].Cast<T2>(), args[3].Cast<T3>(), args[4].Cast<T4>());
+                    return Value.Invalid;
+                },
+                GetArgs(action)
+            );
+        }
         public static Function Bind(Func<Value> action)
         {
             return new Function(
@@ -90,6 +149,20 @@ namespace Petit.Runtime
                 }
             );
         }
+        public static Function Bind<TResult>(Func<TResult> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    if (action is null)
+                    {
+                        return Value.Invalid;
+                    }
+                    return Value.Of(action.Invoke());
+                }
+            );
+        }
         public static Function Bind(Func<Value, Value> action)
         {
             return new Function(
@@ -97,6 +170,21 @@ namespace Petit.Runtime
                 args =>
                 {
                     return action?.Invoke(args[0]) ?? Value.Invalid;
+                },
+                GetArgs(action)
+            );
+        }
+        public static Function Bind<T0, TResult>(Func<T0, TResult> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    if (action is null)
+                    {
+                        return Value.Invalid;
+                    }
+                    return Value.Of(action.Invoke(args[0].Cast<T0>()));
                 },
                 GetArgs(action)
             );
@@ -112,6 +200,21 @@ namespace Petit.Runtime
                 GetArgs(action)
             );
         }
+        public static Function Bind<T0, T1, TResult>(Func<T0, T1, TResult> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    if (action is null)
+                    {
+                        return Value.Invalid;
+                    }
+                    return Value.Of(action.Invoke(args[0].Cast<T0>(), args[1].Cast<T1>()));
+                },
+                GetArgs(action)
+            );
+        }
         public static Function Bind(Func<Value, Value, Value, Value> action)
         {
             return new Function(
@@ -119,6 +222,21 @@ namespace Petit.Runtime
                 args =>
                 {
                     return action?.Invoke(args[0], args[1], args[2]) ?? Value.Invalid;
+                },
+                GetArgs(action)
+            );
+        }
+        public static Function Bind<T0, T1, T2, TResult>(Func<T0, T1, T2, TResult> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    if (action is null)
+                    {
+                        return Value.Invalid;
+                    }
+                    return Value.Of(action.Invoke(args[0].Cast<T0>(), args[1].Cast<T1>(), args[2].Cast<T2>()));
                 },
                 GetArgs(action)
             );
@@ -134,6 +252,21 @@ namespace Petit.Runtime
                 GetArgs(action)
             );
         }
+        public static Function Bind<T0, T1, T2, T3, TResult>(Func<T0, T1, T2, T3, TResult> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    if (action is null)
+                    {
+                        return Value.Invalid;
+                    }
+                    return Value.Of(action.Invoke(args[0].Cast<T0>(), args[1].Cast<T1>(), args[2].Cast<T2>(), args[3].Cast<T3>()));
+                },
+                GetArgs(action)
+            );
+        }
         public static Function Bind(Func<Value, Value, Value, Value, Value, Value> action)
         {
             return new Function(
@@ -141,6 +274,21 @@ namespace Petit.Runtime
                 args =>
                 {
                     return action?.Invoke(args[0], args[1], args[2], args[3], args[4]) ?? Value.Invalid;
+                },
+                GetArgs(action)
+            );
+        }
+        public static Function Bind<T0, T1, T2, T3, T4, TResult>(Func<T0, T1, T2, T3, T4, TResult> action)
+        {
+            return new Function(
+                action?.Method?.Name,
+                args =>
+                {
+                    if (action is null)
+                    {
+                        return Value.Invalid;
+                    }
+                    return Value.Of(action.Invoke(args[0].Cast<T0>(), args[1].Cast<T1>(), args[2].Cast<T2>(), args[3].Cast<T3>(), args[4].Cast<T4>()));
                 },
                 GetArgs(action)
             );
