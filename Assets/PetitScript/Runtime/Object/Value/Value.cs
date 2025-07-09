@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
+using System.Collections;
+using Unity.Plastic.Newtonsoft.Json.Linq;
 
 namespace Petit.Runtime
 {
@@ -352,7 +355,64 @@ namespace Petit.Runtime
             }
             return 0;
         }
-       
+        internal object Cast(Type type)
+        {
+            if (type == typeof(bool))
+            {
+                return ToBool();
+            }
+            if (type == typeof(int))
+            {
+                return ToInt();
+            }
+            if (type == typeof(float))
+            {
+                return ToFloat();
+            }
+            if (type == typeof(string))
+            {
+                return ToString();
+            }
+            if (type == typeof(Value))
+            {
+                return this;
+            }
+            if (type.IsArray)
+            {
+                Type elementType = type.GetElementType();
+                List<Value> source = ToArray();
+
+                Array result = Array.CreateInstance(elementType, source.Count);
+                for (int i = 0; i < source.Count; ++i)
+                {
+                    result.SetValue(source[i].Cast(elementType), i);
+                }
+                return result;
+            }
+            if (type.IsGenericType)
+            {
+                Type elementType = type.GetGenericArguments()[0];
+                Type listType = typeof(List<>).MakeGenericType(elementType);
+                if (type.IsAssignableFrom(listType))
+                {
+                    List<Value> source = ToArray();
+                    // コンストラクタを取得
+                    var ctor = listType.GetConstructor(new[] { typeof(int) });
+                    var result = (IList)ctor.Invoke(new object[] { source.Count });
+                    foreach (var item in source)
+                    {
+                        result.Add(item.Cast(elementType));
+                    }
+                    return result;
+                }
+            }
+            throw new NotImplementedException($"Not Support Cast to {type}");
+        }
+        internal T Cast<T>()
+        {
+            return (T)Cast(typeof(T));
+        }
+
         enum ValueType
         {
             Invalid,
