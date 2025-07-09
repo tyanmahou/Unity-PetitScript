@@ -21,6 +21,8 @@ namespace Petit.Runtime
             _func = func;
             _params = parameters;
         }
+        public string Name => _name;
+
         public Value Invoke()
         {
             return Invoke(new List<Value>());
@@ -96,9 +98,13 @@ namespace Petit.Runtime
                     }
                 }
             }
+            else if (args.Count > 0)
+            {
+                values = args.Select(arg => arg.Value?.Invoke() ?? default).ToList();
+            }
             else
             {
-                values = new();
+                values = new(0);
             }
             return _func?.Invoke(values) ?? default;
         }

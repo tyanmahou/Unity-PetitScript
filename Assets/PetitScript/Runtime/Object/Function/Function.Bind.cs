@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Petit.Runtime
@@ -8,6 +9,14 @@ namespace Petit.Runtime
     /// </summary>
     public partial class Function
     {
+        public static Function Raw(Func<IReadOnlyList<Value>, Value> func)
+        {
+            return new Function(
+                func?.Method?.Name,
+                func,
+                null
+                );
+        }
         public static Function Bind(Action action)
         {
             return new Function(

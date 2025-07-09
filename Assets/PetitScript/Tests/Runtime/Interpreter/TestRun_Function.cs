@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Petit.Runtime
 {
@@ -22,6 +24,18 @@ Add(1, 2 * 2)
             Environment env = Environment.New();
             env["Add"] = Function.Bind((a1, a2) => a1 + a2);
             RunInt("Add(1, 2 * 2)", 5, env);
+        }
+        [Test]
+        public void TestFuncRaw()
+        {
+            Environment env = Environment.New();
+            Value Sum(IReadOnlyList<Value> args)
+            {
+                return args.Sum(a => a.ToInt());
+            }
+            env["Sum"] = Function.Raw(Sum);
+            RunInt("Sum(1, 2)", 3, env);
+            RunInt("Sum(1, 2, 3)", 6, env);
         }
         [Test]
         public void TestNamedArgs()
